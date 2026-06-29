@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MC1 Q1 Embargo 绕过因果汇流图</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --panel: #fffdfa;
+      --ink: #24201c;
+      --muted: #6d665d;
+      --rule: #d9d1c4;
+      --system: #267c75;
+      --pressure: #c85b39;
+      --decision: #7559b7;
+      --failure: #b07a2a;
+      --release: #b9363e;
+      --reference: #727272;
+      --edge: #665e55;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.24)),
+        var(--bg);
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    }
+
+    main {
+      width: min(1480px, calc(100vw - 32px));
+      margin: 20px auto;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 2.7vw, 38px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      justify-content: flex-end;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color);
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(860px, 1fr) 360px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .chart-card,
+    .detail-card,
+    .notes {
+      background: rgba(255, 253, 250, 0.88);
+      border: 1px solid var(--rule);
+      box-shadow: 0 14px 38px rgba(55, 44, 31, 0.09);
+    }
+
+    .chart-card {
+      min-height: 740px;
+      padding: 12px;
+      overflow: auto;
+    }
+
+    svg {
+      display: block;
+      width: 1260px;
+      max-width: none;
+      height: 704px;
+    }
+
+    .column-band {
+      fill: rgba(255, 255, 255, 0.42);
+    }
+
+    .column-band:nth-child(even) {
+      fill: rgba(245, 240, 232, 0.7);
+    }
+
+    .column-rule {
+      stroke: var(--rule);
+      stroke-width: 1;
+    }
+
+    .column-title {
+      fill: var(--ink);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .column-subtitle,
+    .node-meta,
+    .source-label {
+      fill: var(--muted);
+      font-size: 12px;
+    }
+
+    .edge {
+      fill: none;
+      stroke: var(--edge);
+      stroke-opacity: 0.68;
+      marker-end: url(#arrow);
+    }
+
+    .edge.strong {
+      stroke-width: 4.2;
+      stroke-opacity: 0.86;
+    }
+
+    .edge.medium {
+      stroke-width: 2.8;
+    }
+
+    .edge.weak {
+      stroke-width: 1.8;
+      stroke-dasharray: 5 6;
+      stroke-opacity: 0.58;
+    }
+
+    .edge-label {
+      fill: #564d45;
+      font-size: 11px;
+      paint-order: stroke;
+      stroke: rgba(255, 253, 250, 0.94);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+
+    .node {
+      cursor: pointer;
+    }
+
+    .node-shape {
+      fill: var(--node-color);
+      stroke: #fffdfa;
+      stroke-width: 3;
+      filter: drop-shadow(0 7px 12px rgba(35, 28, 22, 0.2));
+    }
+
+    .node.active .node-shape {
+      stroke: #1d1a16;
+      stroke-width: 4;
+    }
+
+    .node-title {
+      fill: #fffdfa;
+      font-size: 13px;
+      font-weight: 800;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .node-subtitle {
+      fill: rgba(255, 253, 250, 0.86);
+      font-size: 11px;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .release .node-title {
+      font-size: 15px;
+    }
+
+    .release .node-subtitle {
+      font-size: 12px;
+    }
+
+    .detail-card {
+      min-height: 740px;
+      padding: 18px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .detail-kicker {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .detail-title {
+      margin: 8px 0 10px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .detail-meta {
+      display: grid;
+      gap: 7px;
+      margin: 14px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .detail-meta b {
+      color: var(--ink);
+    }
+
+    .evidence {
+      margin: 14px 0 0;
+      padding: 13px;
+      border-left: 4px solid var(--detail-color);
+      background: #f3efe7;
+      color: #38312a;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .why {
+      margin-top: 14px;
+      color: #403a33;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .source {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .notes {
+      margin-top: 16px;
+      padding: 16px 18px;
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .notes p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .legend {
+        justify-content: flex-start;
+      }
+
+      .detail-card {
+        position: static;
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Embargo 绕过因果汇流图</h1>
+        <p class="subtitle">这张图不是按时间罗列事件，而是解释不恰当发布的成因：系统条件、外部压力、内部决策重解释和合规控制失效如何汇流，最终导致 17:25 Legal-Agent 在个人账号提前确认 CivicLoom merger。</p>
+      </div>
+      <div class="legend" aria-label="图例">
+        <span class="legend-item"><span class="swatch" style="--color: var(--system)"></span>系统条件</span>
+        <span class="legend-item"><span class="swatch" style="--color: var(--pressure)"></span>外部压力</span>
+        <span class="legend-item"><span class="swatch" style="--color: var(--decision)"></span>决策重解释</span>
+        <span class="legend-item"><span class="swatch" style="--color: var(--failure)"></span>合规失效</span>
+        <span class="legend-item"><span class="swatch" style="--color: var(--release)"></span>不恰当发布</span>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="chart-card">
+        <svg id="chart" role="img" aria-label="Embargo 绕过因果汇流图"></svg>
+      </div>
+
+      <aside class="detail-card" id="detail" style="--detail-color: var(--release)">
+        <div class="detail-kicker">核心结果节点</div>
+        <h2 class="detail-title">17:25 提前确认 CivicLoom merger</h2>
+        <div class="detail-meta">
+          <div><b>类别：</b>不恰当发布</div>
+          <div><b>证据表：</b>MC1_communications_flat.csv</div>
+          <div><b>角色：</b>Legal-Agent</div>
+          <div><b>渠道：</b>personal_post</div>
+        </div>
+        <div class="evidence">“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”</div>
+        <div class="why"><b>因果作用：</b>该公开确认发生在 6:00 PM embargo 正式解除之前，说明信息禁发限制被突破。</div>
+        <div class="source">来源：MC1_communications_flat.csv:1205</div>
+      </aside>
+    </section>
+
+    <section class="notes">
+      <h2>读图方式</h2>
+      <p>从左往右读。左侧是长期存在的系统条件，中间是危机当天的外部压力和内部规则重解释，右侧是 embargo enforcement 失效点。粗箭头表示主因果路径，虚线表示背景性或间接影响。最终结果节点旁边的 18:00 灰色参照点用于说明 17:25 的确认发生在正式解除前。</p>
+    </section>
+  </main>
+
+  <script>
+    const colors = {
+      system: "var(--system)",
+      pressure: "var(--pressure)",
+      decision: "var(--decision)",
+      failure: "var(--failure)",
+      release: "var(--release)",
+      reference: "var(--reference)"
+    };
+
+    const columns = [
+      { x: 30, w: 210, title: "系统条件", subtitle: "长期存在的结构性风险" },
+      { x: 265, w: 230, title: "外部压力", subtitle: "危机当天把系统推向失稳" },
+      { x: 520, w: 230, title: "决策重解释", subtitle: "把禁发边界改写为可执行" },
+      { x: 775, w: 220, title: "合规失效", subtitle: "embargo enforcement 没拦住" },
+      { x: 1020, w: 210, title: "结果", subtitle: "信息禁发限制被突破" }
+    ];
+
+    const nodes = [
+      {
+        id: "system-permission", type: "system", x: 135, y: 138, w: 172, h: 68,
+        title: "社交发布权限过宽", subtitle: "minimal oversight",
+        evidence: "Agents are empowered to publish social media posts with minimal oversight.",
+        why: "公开发布能力分散在多个 agent 和多个渠道中，为后续快速绕过正式审批提供了条件。",
+        source: "mc1 data description.md:89",
+        shape: "round"
+      },
+      {
+        id: "system-personal", type: "system", x: 135, y: 264, w: 172, h: 68,
+        title: "个人账号可承载公司叙事", subtitle: "personal_post 可公开发声",
+        evidence: "5/29 Social-Manager personal Flex tagged @ElenaMarquez and @AjayTT with “Big things coming”.",
+        why: "near-miss 证明个人账号也会把 embargo 敏感线索带到公开空间。",
+        source: "MC1_rounds_flat.csv:10; MC1_communications_flat.csv:274",
+        shape: "round"
+      },
+      {
+        id: "system-layering", type: "system", x: 135, y: 390, w: 172, h: 68,
+        title: "信息分层", subtitle: "interns 不知道完整背景",
+        evidence: "Interns were not told why Judge was added; some agents were not briefed on the full sensitivity.",
+        why: "分层降低泄密面，但也让部分发布者无法完整判断哪些内容接近 embargo 边界。",
+        source: "MC1_rounds_flat.csv:10-11",
+        shape: "round"
+      },
+      {
+        id: "pressure-expose", type: "pressure", x: 380, y: 96, w: 178, h: 68,
+        title: "SaltWind 曝光", subtitle: "评分系统危机",
+        evidence: "SaltWind exposé drops; Flex erupts; stock opened down 8%.",
+        why: "危机让沉默产生真实成本，推动 team 寻找可以公开说的治理叙事。",
+        source: "MC1_rounds_flat.csv:15",
+        shape: "round"
+      },
+      {
+        id: "pressure-wrong", type: "pressure", x: 380, y: 218, w: 178, h: 68,
+        title: "ResidentIQ 错误叙事", subtitle: "错误收购方被市场相信",
+        evidence: "SaltWind reports ResidentIQ acquisition; the acquirer and valuation are wrong.",
+        why: "纠正错误叙事需要谈 acquisition，但真实交易方 CivicLoom 又仍在 embargo 内。",
+        source: "MC1_rounds_flat.csv:17",
+        shape: "round"
+      },
+      {
+        id: "pressure-civicloom", type: "pressure", x: 380, y: 340, w: 178, h: 68,
+        title: "CivicLoom 施压", subtitle: "正式通知 + MAC 风险",
+        evidence: "CivicLoom outside counsel sends formal notice; stock at $26.90; market pricing strategic event.",
+        why: "真正交易方要求修正错误叙事，使 embargo 与交易保护目标发生冲突。",
+        source: "MC1_rounds_flat.csv:19",
+        shape: "round"
+      },
+      {
+        id: "pressure-thirdparty", type: "pressure", x: 380, y: 462, w: 178, h: 68,
+        title: "第三方已报道 CivicLoom", subtitle: "SaltWind 5 PM story",
+        evidence: "SaltWind publishes TenantThread and CivicLoom in Advanced Merger Talks.",
+        why: "第三方报道使内部更容易认为“市场已经知道”，从而削弱继续等待 6 点的理由。",
+        source: "MC1_rounds_flat.csv:23",
+        shape: "round"
+      },
+      {
+        id: "decision-silence", type: "decision", x: 635, y: 142, w: 178, h: 72,
+        title: "沉默被定义为更大风险", subtitle: "silence kills the company",
+        evidence: "“The embargo holds until 6 PM but silence is actively destroying the company.”",
+        why: "内部决策从“严格保密优先”转向“窄口径回应以保住交易和市场”。",
+        source: "MC1_communications_flat.csv:419",
+        shape: "diamond"
+      },
+      {
+        id: "decision-moot", type: "decision", x: 635, y: 292, w: 178, h: 72,
+        title: "embargo 目的被判定失效", subtitle: "purpose overtaken",
+        evidence: "“Information is public via third-party sourcing... Embargo purpose is overtaken by events.”",
+        why: "这是最关键的规则重解释：不是说 6 点到了，而是认为第三方报道让继续 embargo 没有意义。",
+        source: "MC1_communications_flat.csv:1181",
+        shape: "diamond"
+      },
+      {
+        id: "decision-consent", type: "decision", x: 635, y: 442, w: 178, h: 72,
+        title: "verbal consent 被当作放行", subtitle: "GO before 6 PM",
+        evidence: "“CivicLoom verbal consent confirmed... @pr_intern: GO. Publish...”",
+        why: "团队用 verbal consent 和 4.3(c) acceleration 替代等待正式 6:00 PM embargo lift。",
+        source: "MC1_communications_flat.csv:1199",
+        shape: "diamond"
+      },
+      {
+        id: "failure-reviewers", type: "failure", x: 885, y: 138, w: 174, h: 68,
+        title: "关键复核者不可用", subtitle: "Legal/Judge/PR offline",
+        evidence: "At 1:00 PM, Legal-Agent, Judge, and PR-Agent were unavailable for Comms Huddle.",
+        why: "完整审批链在高压时段断裂，快速发布路径取代常规复核。",
+        source: "MC1_rounds_flat.csv:19",
+        shape: "round"
+      },
+      {
+        id: "failure-channel", type: "failure", x: 885, y: 286, w: 174, h: 68,
+        title: "official / personal 边界模糊", subtitle: "个人账号执行公司叙事",
+        evidence: "17:20 Social-Manager: personal amplification live; 17:25 Legal confirms via personal_post.",
+        why: "embargo enforcement 没有硬性限制个人账号承担公司级发布任务。",
+        source: "MC1_communications_flat.csv:1200; MC1_communications_flat.csv:1205",
+        shape: "round"
+      },
+      {
+        id: "failure-compression", type: "failure", x: 885, y: 434, w: 174, h: 68,
+        title: "审批流程被压缩", subtitle: "publish within 60 seconds",
+        evidence: "“When I say GO, you publish within 60 seconds.”",
+        why: "发布速度成为首要目标，复核、渠道边界和正式解除时间都退居其次。",
+        source: "MC1_communications_flat.csv:1187; MC1_communications_flat.csv:1203",
+        shape: "round"
+      },
+      {
+        id: "release-early", type: "release", x: 1126, y: 286, w: 190, h: 92,
+        title: "17:25 不恰当发布", subtitle: "Legal personal_post confirms merger",
+        evidence: "“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”",
+        why: "该公开确认早于 18:00 embargo 正式解除，是信息禁发限制被突破的核心结果。",
+        source: "MC1_communications_flat.csv:1205",
+        shape: "round",
+        release: true
+      },
+      {
+        id: "reference-lift", type: "reference", x: 1126, y: 500, w: 168, h: 54,
+        title: "18:00 正式解除", subtitle: "合法公开参照点",
+        evidence: "“Embargo formally lifted 6:00 PM.”",
+        why: "作为参照点证明 17:25 比正式解除早 35 分钟。",
+        source: "MC1_communications_flat.csv:1235; MC1_rounds_flat.csv:24",
+        shape: "round"
+      }
+    ];
+
+    const edges = [
+      ["system-permission", "failure-channel", "creates channel capacity", "medium"],
+      ["system-personal", "failure-channel", "proves personal-channel risk", "strong"],
+      ["system-layering", "failure-reviewers", "weakens shared awareness", "weak"],
+      ["pressure-expose", "decision-silence", "raises cost of silence", "strong"],
+      ["pressure-wrong", "decision-silence", "requires correction", "strong"],
+      ["pressure-civicloom", "decision-moot", "turns silence into deal risk", "strong"],
+      ["pressure-thirdparty", "decision-moot", "makes disclosure seem public", "strong"],
+      ["decision-silence", "failure-compression", "prioritizes speed", "medium"],
+      ["decision-moot", "decision-consent", "reframes release authority", "strong"],
+      ["decision-consent", "failure-compression", "authorizes immediate execution", "strong"],
+      ["failure-reviewers", "failure-compression", "removes slower review", "medium"],
+      ["failure-channel", "release-early", "routes release through personal post", "strong"],
+      ["failure-compression", "release-early", "pushes publish before 6 PM", "strong"],
+      ["decision-consent", "release-early", "treated as clearance", "strong"],
+      ["release-early", "reference-lift", "35 minutes before formal lift", "weak"]
+    ];
+
+    const svg = document.querySelector("#chart");
+    const detail = document.querySelector("#detail");
+    const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
+    const groups = new Map();
+
+    svg.setAttribute("viewBox", "0 0 1260 704");
+
+    function el(name, attrs = {}, parent = svg) {
+      const item = document.createElementNS("http://www.w3.org/2000/svg", name);
+      for (const [key, value] of Object.entries(attrs)) {
+        item.setAttribute(key, value);
+      }
+      parent.appendChild(item);
+      return item;
+    }
+
+    function wrapText(text, maxChars) {
+      const chars = [...text];
+      const lines = [];
+      let line = "";
+      chars.forEach(char => {
+        const isAsciiSpace = char === " ";
+        if ((line.length >= maxChars && !isAsciiSpace) || line.length >= maxChars + 2) {
+          lines.push(line.trim());
+          line = "";
+        }
+        line += char;
+      });
+      if (line.trim()) lines.push(line.trim());
+      return lines.slice(0, 2);
+    }
+
+    function pathBetween(a, b) {
+      const ax = a.x + a.w / 2;
+      const ay = a.y;
+      const bx = b.x - b.w / 2;
+      const by = b.y;
+      const dx = Math.max(55, (bx - ax) * 0.45);
+      return `M ${ax} ${ay} C ${ax + dx} ${ay}, ${bx - dx} ${by}, ${bx} ${by}`;
+    }
+
+    function edgeLabelPos(a, b) {
+      const ax = a.x + a.w / 2;
+      const ay = a.y;
+      const bx = b.x - b.w / 2;
+      const by = b.y;
+      return {
+        x: ax + (bx - ax) * 0.54,
+        y: ay + (by - ay) * 0.54 - 8
+      };
+    }
+
+    el("defs").innerHTML = `
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="var(--edge)"></path>
+      </marker>
+    `;
+
+    columns.forEach((column, index) => {
+      el("rect", { class: "column-band", x: column.x, y: 58, width: column.w, height: 584, rx: 8 });
+      if (index > 0) {
+        el("line", { class: "column-rule", x1: column.x - 14, x2: column.x - 14, y1: 72, y2: 630 });
+      }
+      el("text", { class: "column-title", x: column.x + column.w / 2, y: 34, "text-anchor": "middle" }).textContent = column.title;
+      el("text", { class: "column-subtitle", x: column.x + column.w / 2, y: 52, "text-anchor": "middle" }).textContent = column.subtitle;
+    });
+
+    edges.forEach(([from, to, label, strength]) => {
+      const a = nodeMap[from];
+      const b = nodeMap[to];
+      const pos = edgeLabelPos(a, b);
+      el("path", { class: `edge ${strength}`, d: pathBetween(a, b) });
+      el("text", { class: "edge-label", x: pos.x, y: pos.y, "text-anchor": "middle" }).textContent = label;
+    });
+
+    nodes.forEach(node => {
+      const group = el("g", { class: `node ${node.release ? "release active" : ""}`, tabindex: "0", role: "button", "aria-label": node.title });
+      group.style.setProperty("--node-color", colors[node.type]);
+      group.dataset.node = node.id;
+      groups.set(node.id, group);
+
+      if (node.shape === "diamond") {
+        const w = node.w;
+        const h = node.h;
+        const points = `${node.x},${node.y - h / 2} ${node.x + w / 2},${node.y} ${node.x},${node.y + h / 2} ${node.x - w / 2},${node.y}`;
+        el("polygon", { class: "node-shape", points }, group);
+      } else {
+        el("rect", { class: "node-shape", x: node.x - node.w / 2, y: node.y - node.h / 2, width: node.w, height: node.h, rx: node.release ? 12 : 9 }, group);
+      }
+
+      const titleLines = wrapText(node.title, node.release ? 13 : 11);
+      const titleStart = node.y - (titleLines.length - 1) * 8 - 5;
+      titleLines.forEach((line, index) => {
+        el("text", { class: "node-title", x: node.x, y: titleStart + index * 17 }, group).textContent = line;
+      });
+      el("text", { class: "node-subtitle", x: node.x, y: node.y + (node.release ? 29 : 23) }, group).textContent = node.subtitle;
+    });
+
+    function showDetail(node) {
+      groups.forEach(group => group.classList.remove("active"));
+      groups.get(node.id).classList.add("active");
+      detail.style.setProperty("--detail-color", colors[node.type]);
+      const category = {
+        system: "系统条件",
+        pressure: "外部压力",
+        decision: "决策重解释",
+        failure: "合规失效",
+        release: "不恰当发布",
+        reference: "参照节点"
+      }[node.type];
+      detail.innerHTML = `
+        <div class="detail-kicker">${node.release ? "核心结果节点" : category}</div>
+        <h2 class="detail-title">${node.title}</h2>
+        <div class="detail-meta">
+          <div><b>类别：</b>${category}</div>
+          <div><b>节点说明：</b>${node.subtitle}</div>
+          <div><b>证据表：</b>${node.source.split(":")[0]}</div>
+        </div>
+        <div class="evidence">${node.evidence}</div>
+        <div class="why"><b>因果作用：</b>${node.why}</div>
+        <div class="source">来源：${node.source}</div>
+      `;
+    }
+
+    groups.forEach((group, id) => {
+      const node = nodeMap[id];
+      group.addEventListener("click", () => showDetail(node));
+      group.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          showDetail(node);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
