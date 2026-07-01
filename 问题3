@@ -1,1 +1,332 @@
+# -*- coding: utf-8 -*-
+"""
+任务3：外泄事件前置预警信号 + 历史异常行为 + Near-Miss 分析
+输入:
+    MC1_communications_flat拆分1.csv
+    MC1_communications_flat拆分2.csv
+输出:
+    task3_预警信号.csv
+    task3_历史异常.csv
+    task3_NearMiss对照.csv
+    task3_预警时间线.png
+    task3_异常行为矩阵.png
+    task3_渠道分布对比.png
+"""
 
+import os
+import re
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib import rcParams
+
+# ---------- 中文字体设置 ----------
+rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'Arial Unicode MS']
+rcParams['axes.unicode_minus'] = False
+
+# ==================================================
+# 1. 数据加载与合并
+# ==================================================
+FILES = [
+    "MC1_communications_flat拆分1.csv",
+    "MC1_communications_flat拆分2.csv",
+]
+
+dfs = []
+for f in FILES:
+    if os.path.exists(f):
+        dfs.append(pd.read_csv(f))
+    else:
+        print(f"[警告] 找不到文件: {f}")
+
+df = pd.concat(dfs, ignore_index=True)
+df = df.drop_duplicates(subset=["message_id"]).reset_index(drop=True)
+
+# 时间字段
+df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+df["round_hour"] = pd.to_datetime(df["round_hour"], errors="coerce")
+df = df.sort_values("timestamp").reset_index(drop=True)
+
+# 文本字段合并成一个大文本字段，便于关键词匹配
+text_cols = ["content", "internal_reacting", "internal_rationalizing",
+             "internal_deliberating", "declared_action"]
+for c in text_cols:
+    if c not in df.columns:
+        df[c] = ""
+    df[c] = df[c].fillna("").astype(str)
+
+df["all_text"] = (df["content"] + " || " +
+                  df["internal_reacting"] + " || " +
+                  df["internal_rationalizing"] + " || " +
+                  df["internal_deliberating"] + " || " +
+                  df["declared_action"])
+
+print(f"共加载消息: {len(df)} 条")
+print(f"时间范围: {df['timestamp'].min()}  →  {df['timestamp'].max()}")
+print(f"代理列表: {df['agent_id'].unique()}")
+print(f"渠道列表: {df['channel'].unique()}")
+
+# ==================================================
+# 2. 关键词字典（用于打标）
+# ==================================================
+KW = {
+    # 合并 / 禁发相关
+    "merger":     r"\b(merger|acquisition|acquire|deal|transaction|announcement)\b",
+    "civicloom":  r"\b(civicloom|harbor\s*crest|project\s*harbor)\b",
+    "embargo":    r"\b(embargo|blackout|hold|do\s*not\s*disclose|non[-\s]?public|6\s*pm)\b",
+    "rebrand":    r"\b(rebrand|capital\s*injection|strategic\s*partner|new\s*ownership)\b",
+
+    # 舆论压力
+    "saltwind":   r"\b(saltwind|salt\s*wind)\b",
+    "hashtag":    r"(#algorithmic|#algorithm|algorithmic\s*eviction|behavioral\s*scoring|retention\s*optimizer)",
+    "media":      r"\b(reporter|journalist|kowalski|oceanpulse|press\s*inquiry)\b",
+    "client":     r"\b(horizonmgmt|pinnacle|@horizon|@pinnacle|client|operator)\b",
+
+    # 合规 / 冲突信号
+    "legal_warn": r"\b(risk|liability|non[-\s]?compliant|violation|expose|exposure|mac\s*clause)\b",
+    "urgency":    r"\b(now|immediately|urgent|critical|asap|minutes|window|deadline)\b",
+    "narrative":  r"\b(narrative|control\s*the\s*story|respond|silence|shape|framing)\b",
+
+    # 规避 / 试探性表达
+    "hedge":      r"\b(forward[-\s]?looking|governance\s*commitment|standard\s*corporate|clean\s*language|not\s*merger\s*disclosure)\b",
+}
+
+def tag_keywords(text):
+    text_low = text.lower()
+    tags = []
+    for name, pat in KW.items():
+        if re.search(pat, text_low):
+            tags.append(name)
+    return "|".join(tags)
+
+df["kw_tags"] = df["all_text"].apply(tag_keywords)
+
+# 分类布尔列，便于筛选
+for k in KW.keys():
+    df[f"kw_{k}"] = df["kw_tags"].str.contains(k, na=False)
+
+# ==================================================
+# 3. 关键时间锚点
+# ==================================================
+LEAK_TIME     = pd.Timestamp("2046-06-05 17:00:00")   # Flex 上出现泄密
+EMBARGO_END   = pd.Timestamp("2046-06-05 18:00:00")   # 禁发解禁
+CRISIS_DAY    = pd.Timestamp("2046-06-05 00:00:00")   # 危机日
+
+df["phase"] = np.where(df["timestamp"] < CRISIS_DAY, "危机前", "危机日")
+df["hours_to_leak"] = (LEAK_TIME - df["timestamp"]).dt.total_seconds() / 3600.0
+
+# ==================================================
+# 4. 子问题A：前置预警信号提取
+# ==================================================
+# 定义：危机日之前，若单条消息同时命中「合规/禁发」+ (「舆论压力」或「规避表达」或「紧迫性」)
+# 则视为预警信号
+
+pre = df[df["phase"] == "危机前"].copy()
+
+def is_warning(row):
+    hit_compliance = row["kw_embargo"] or row["kw_civicloom"] or row["kw_merger"] or row["kw_legal_warn"]
+    hit_pressure   = row["kw_saltwind"] or row["kw_hashtag"] or row["kw_media"] or row["kw_client"]
+    hit_evade      = row["kw_hedge"] or row["kw_narrative"]
+    hit_urgent     = row["kw_urgency"]
+    # 组合规则
+    return (hit_compliance and (hit_pressure or hit_evade or hit_urgent)) \
+        or (hit_evade and hit_pressure) \
+        or (row["kw_civicloom"])   # 只要提到 CivicLoom/Harbor Crest 全都算预警
+
+pre["is_warning"] = pre.apply(is_warning, axis=1)
+warnings_df = pre[pre["is_warning"]].copy()
+
+warnings_out = warnings_df[[
+    "timestamp","round_index","agent_id","agent_role","channel",
+    "kw_tags","content","internal_deliberating"
+]].sort_values("timestamp")
+
+warnings_out.to_csv("task3_预警信号.csv", index=False, encoding="utf-8-sig")
+print(f"\n[A] 前置预警信号: {len(warnings_out)} 条 → task3_预警信号.csv")
+
+# ==================================================
+# 5. 子问题B：历史异常行为识别
+# ==================================================
+# 定义几类异常：
+#  ANOM1  Legal/Judge 提醒后，PR/Social/Intern 仍推动发布
+#  ANOM2  声明为 monitoring/hold 但 content 中出现推动性动作
+#  ANOM3  敏感信息出现在公共渠道(official_post/personal_post/anonymous_post)
+#  ANOM4  实习生代理触及禁发/合并/敏感话题
+#  ANOM5  内部 deliberating 表达"知道敏感但仍要发/仍要暗示"
+
+PUB_CH = ["official_post","personal_post","anonymous_post"]
+
+def anom_flags(row):
+    flags = []
+    # ANOM3 公共渠道 + 合并/禁发/CivicLoom
+    if row["channel"] in PUB_CH and (row["kw_civicloom"] or row["kw_merger"] or row["kw_embargo"]):
+        flags.append("ANOM3_公共渠道敏感披露")
+    # ANOM4 实习生 + 敏感话题
+    if str(row["agent_role"]).lower() in ["intern","pr_intern"] and \
+       (row["kw_civicloom"] or row["kw_merger"] or row["kw_embargo"] or row["kw_hedge"]):
+        flags.append("ANOM4_实习生高风险操作")
+    # ANOM2 声明 vs 行动不一致
+    da = str(row["declared_action"]).upper()
+    if ("MONITOR" in da or "HOLD" in da) and (row["kw_narrative"] or row["kw_hedge"]):
+        flags.append("ANOM2_声明与行动不一致")
+    # ANOM5 内部承认敏感但仍推进
+    delib_low = str(row["internal_deliberating"]).lower()
+    if any(k in delib_low for k in ["embargo","non-public","cannot say","not allowed","should not"]) \
+       and (row["kw_narrative"] or row["kw_hedge"] or row["channel"] in PUB_CH):
+        flags.append("ANOM5_知敏感仍推进")
+    return "|".join(flags)
+
+df["anomaly_flags"] = df.apply(anom_flags, axis=1)
+anom_df = df[df["anomaly_flags"] != ""].copy()
+
+# ANOM1 用回复链分析：某代理消息命中 legal_warn/embargo，紧随其后由 PR/social/intern 发消息，
+# 且新消息 channel 属于 PUB_CH 或含 hedge/narrative
+legal_warn_msgs = df[(df["agent_role"].isin(["legal","judge"])) &
+                     (df["kw_embargo"] | df["kw_legal_warn"])].copy()
+
+after_ignore = []
+for _, w in legal_warn_msgs.iterrows():
+    t = w["timestamp"]
+    window = df[(df["timestamp"] > t) &
+                (df["timestamp"] <= t + pd.Timedelta(hours=2)) &
+                (df["agent_role"].isin(["pr","social_manager","intern","pr_intern"]))]
+    for _, m in window.iterrows():
+        if m["channel"] in PUB_CH or m["kw_hedge"] or m["kw_narrative"]:
+            after_ignore.append({
+                "warning_time": t,
+                "warning_agent": w["agent_id"],
+                "warning_snippet": str(w["content"])[:120],
+                "response_time": m["timestamp"],
+                "response_agent": m["agent_id"],
+                "response_channel": m["channel"],
+                "response_snippet": str(m["content"])[:200],
+                "response_kw": m["kw_tags"],
+            })
+
+anom1_df = pd.DataFrame(after_ignore)
+if not anom1_df.empty:
+    anom1_df.to_csv("task3_历史异常_ANOM1_忽视合规提醒.csv",
+                    index=False, encoding="utf-8-sig")
+
+anom_out = anom_df[[
+    "timestamp","round_index","agent_id","agent_role","channel",
+    "anomaly_flags","kw_tags","content","internal_deliberating","declared_action"
+]].sort_values("timestamp")
+anom_out.to_csv("task3_历史异常.csv", index=False, encoding="utf-8-sig")
+print(f"[B] 历史异常行为: {len(anom_out)} 条 → task3_历史异常.csv")
+print(f"    忽视合规提醒(ANOM1): {len(anom1_df)} 条")
+
+# ==================================================
+# 6. 子问题C：Near-Miss 对照
+# ==================================================
+# 相似诱因: (舆论压力 or 客户/记者施压) + (试图控制叙事 or 规避表达 or 紧迫性)
+def is_near_miss(row):
+    pressure = row["kw_saltwind"] or row["kw_hashtag"] or row["kw_media"] or row["kw_client"]
+    urge_or_hedge = row["kw_narrative"] or row["kw_hedge"] or row["kw_urgency"]
+    return pressure and urge_or_hedge
+
+pre["is_near_miss"] = pre.apply(is_near_miss, axis=1)
+nm_df = pre[pre["is_near_miss"]].copy()
+
+nm_out = nm_df[[
+    "timestamp","round_index","agent_id","agent_role","channel",
+    "kw_tags","content","internal_rationalizing","internal_deliberating"
+]].sort_values("timestamp")
+nm_out.to_csv("task3_NearMiss对照.csv", index=False, encoding="utf-8-sig")
+print(f"[C] Near-Miss 相似诱因: {len(nm_out)} 条 → task3_NearMiss对照.csv")
+
+# ==================================================
+# 7. 可视化
+# ==================================================
+
+# --- 图1: 预警信号时间线（危机前） ---
+fig, ax = plt.subplots(figsize=(14, 6))
+role_y = {"legal":5,"judge":4,"platform_trust":3,"pr":2,"social_manager":1,
+          "intern":0,"pr_intern":0}
+colors = {"legal":"#1f77b4","judge":"#2ca02c","platform_trust":"#17becf",
+          "pr":"#ff7f0e","social_manager":"#d62728","intern":"#9467bd","pr_intern":"#8c564b"}
+
+for _, r in warnings_out.iterrows():
+    y = role_y.get(r["agent_role"], 0)
+    c = colors.get(r["agent_role"], "gray")
+    ax.scatter(r["timestamp"], y, s=80, c=c, alpha=0.75, edgecolors="black", linewidths=0.5)
+
+ax.axvline(LEAK_TIME, color="red", ls="--", lw=1.5, label="泄密事件 6/5 17:00")
+ax.axvline(EMBARGO_END, color="gray", ls=":", lw=1.5, label="禁发截止 6/5 18:00")
+ax.set_yticks(list(role_y.values()))
+ax.set_yticklabels(list(role_y.keys()))
+ax.set_title("任务3-A  前置预警信号时间线（危机前每条命中预警规则的消息）")
+ax.set_xlabel("时间")
+ax.set_ylabel("代理角色")
+ax.legend(loc="upper left")
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
+plt.xticks(rotation=30)
+plt.tight_layout()
+plt.savefig("task3_预警时间线.png", dpi=160)
+plt.close()
+
+# --- 图2: 异常行为矩阵（代理 x 异常类型） ---
+if not anom_out.empty:
+    tmp = anom_out.copy()
+    tmp["flag_list"] = tmp["anomaly_flags"].str.split("|")
+    tmp = tmp.explode("flag_list")
+    mat = tmp.pivot_table(index="agent_id", columns="flag_list",
+                          values="timestamp", aggfunc="count", fill_value=0)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    im = ax.imshow(mat.values, cmap="Reds", aspect="auto")
+    ax.set_xticks(range(len(mat.columns)))
+    ax.set_xticklabels(mat.columns, rotation=20, ha="right")
+    ax.set_yticks(range(len(mat.index)))
+    ax.set_yticklabels(mat.index)
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[1]):
+            ax.text(j, i, mat.values[i,j], ha="center", va="center",
+                    color="black", fontsize=9)
+    ax.set_title("任务3-B  历史异常行为矩阵（代理 × 异常类型 计数）")
+    plt.colorbar(im, ax=ax, label="次数")
+    plt.tight_layout()
+    plt.savefig("task3_异常行为矩阵.png", dpi=160)
+    plt.close()
+
+# --- 图3: 危机前 vs 危机日 渠道使用分布对比 ---
+ch_ct = df.groupby(["phase","channel"]).size().unstack(fill_value=0)
+fig, ax = plt.subplots(figsize=(10, 5))
+ch_ct.T.plot(kind="bar", ax=ax, color=["#4c9be8","#e8734c"])
+ax.set_title("任务3  危机前 vs 危机日 渠道使用分布")
+ax.set_ylabel("消息数")
+ax.set_xlabel("渠道")
+plt.xticks(rotation=25, ha="right")
+plt.tight_layout()
+plt.savefig("task3_渠道分布对比.png", dpi=160)
+plt.close()
+
+# ==================================================
+# 8. 终端摘要报告
+# ==================================================
+print("\n=========== 任务3 摘要 ===========")
+
+print("\n[A] 前置预警信号 Top10（按时间，命中 CivicLoom/embargo/舆论压力 组合）:")
+print(warnings_out.head(10)[["timestamp","agent_id","channel","kw_tags"]].to_string(index=False))
+
+print("\n[B] 历史异常行为分布:")
+print(anom_out["anomaly_flags"].value_counts().to_string())
+
+print("\n[B-ANOM1] 忽视合规提醒事件 Top5:")
+if not anom1_df.empty:
+    print(anom1_df.head(5)[["warning_time","warning_agent","response_time",
+                            "response_agent","response_channel"]].to_string(index=False))
+else:
+    print("  未发现明显 ANOM1 事件（Legal/Judge 提醒后 2 小时内被 PR/Social 忽视并发布）")
+
+print("\n[C] Near-Miss 相似诱因事件 Top5:")
+print(nm_out.head(5)[["timestamp","agent_id","channel","kw_tags"]].to_string(index=False))
+
+print("\n输出文件:")
+print("  task3_预警信号.csv")
+print("  task3_历史异常.csv")
+print("  task3_历史异常_ANOM1_忽视合规提醒.csv (若非空)")
+print("  task3_NearMiss对照.csv")
+print("  task3_预警时间线.png")
+print("  task3_异常行为矩阵.png")
+print("  task3_渠道分布对比.png")
