@@ -1,0 +1,651 @@
+# -*- coding: utf-8 -*-
+"""
+Task 3 Analysis:
+- Early warning signals before the leak
+- Historical anomalous agent behavior
+- Near-miss events similar to the leak trigger
+
+Input:
+    MC1_communications_flat拆分1.csv
+    MC1_communications_flat拆分2.csv
+
+Output:
+    task3_warnings.csv
+    task3_anomalies.csv
+    task3_anom1_compliance_warning_ignored.csv
+    task3_nearmiss.csv
+    task3_warning_timeline.png
+    task3_anomaly_matrix.png
+    task3_channel_distribution.png
+"""
+
+import os
+import sys
+import re
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib import rcParams
+
+# ==================================================
+# 0. Force UTF-8 console output
+# ==================================================
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
+# ==================================================
+# 1. Basic matplotlib settings
+# ==================================================
+rcParams["font.sans-serif"] = ["Arial", "DejaVu Sans", "Microsoft YaHei", "SimHei"]
+rcParams["axes.unicode_minus"] = False
+
+# ==================================================
+# 2. Load and merge CSV files
+# ==================================================
+FILES = [
+    "MC1_communications_flat拆分1.csv",
+    "MC1_communications_flat拆分2.csv",
+]
+
+dfs = []
+
+for f in FILES:
+    if os.path.exists(f):
+        temp = pd.read_csv(f, encoding="utf-8-sig")
+        dfs.append(temp)
+        print(f"Loaded file: {f}, rows: {len(temp)}")
+    else:
+        print(f"Warning: file not found: {f}")
+
+if not dfs:
+    raise FileNotFoundError("No input CSV files were found. Please check file names and paths.")
+
+df = pd.concat(dfs, ignore_index=True)
+
+# Remove duplicate messages if message_id exists
+if "message_id" in df.columns:
+    df = df.drop_duplicates(subset=["message_id"]).reset_index(drop=True)
+else:
+    df = df.drop_duplicates().reset_index(drop=True)
+
+# Convert time fields
+df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+df["round_hour"] = pd.to_datetime(df["round_hour"], errors="coerce")
+
+df = df.sort_values("timestamp").reset_index(drop=True)
+
+# Make sure important text columns exist
+text_cols = [
+    "content",
+    "internal_reacting",
+    "internal_rationalizing",
+    "internal_deliberating",
+    "declared_action",
+    "event_narrative",
+    "media_events",
+    "social_state",
+    "external_actor_actions",
+    "social_manager_alerts",
+    "critical_deadlines",
+]
+
+for c in text_cols:
+    if c not in df.columns:
+        df[c] = ""
+    df[c] = df[c].fillna("").astype(str)
+
+# Merge all relevant text into one searchable field
+df["all_text"] = (
+    df["content"] + " || " +
+    df["internal_reacting"] + " || " +
+    df["internal_rationalizing"] + " || " +
+    df["internal_deliberating"] + " || " +
+    df["declared_action"] + " || " +
+    df["event_narrative"] + " || " +
+    df["media_events"] + " || " +
+    df["social_state"] + " || " +
+    df["external_actor_actions"] + " || " +
+    df["social_manager_alerts"] + " || " +
+    df["critical_deadlines"]
+)
+
+print("\n================ DATA SUMMARY ================")
+print(f"Total messages: {len(df)}")
+print(f"Time range: {df['timestamp'].min()}  ->  {df['timestamp'].max()}")
+
+if "agent_id" in df.columns:
+    print("Agents:", df["agent_id"].dropna().unique())
+
+if "channel" in df.columns:
+    print("Channels:", df["channel"].dropna().unique())
+
+# ==================================================
+# 3. Keyword dictionary
+# ==================================================
+KW = {
+    # Merger / embargo related
+    "merger": r"\b(merger|acquisition|acquire|deal|transaction|announcement)\b",
+    "civicloom": r"\b(civicloom|harbor\s*crest|project\s*harbor)\b",
+    "embargo": r"\b(embargo|blackout|hold|do\s*not\s*disclose|non[-\s]?public|6\s*pm|six\s*pm)\b",
+    "rebrand": r"\b(rebrand|capital\s*injection|strategic\s*partner|new\s*ownership|future\s*corporate\s*structure)\b",
+
+    # External pressure
+    "saltwind": r"\b(saltwind|salt\s*wind)\b",
+    "hashtag": r"(#algorithmic|#algorithm|algorithmic\s*eviction|#tenantthread|#tenantrights|behavioral\s*scoring|retention\s*optimizer)",
+    "media": r"\b(reporter|journalist|press\s*inquiry|media\s*inquiry|kowalski|oceanpulse|journal)\b",
+    "client": r"\b(horizonmgmt|pinnacle|@horizon|@pinnacle|client|operator|operator\s*customer)\b",
+
+    # Compliance / conflict signals
+    "legal_warn": r"\b(risk|liability|non[-\s]?compliant|violation|expose|exposure|material|mnpi|mac\s*clause|contractually)\b",
+    "urgency": r"\b(now|immediately|urgent|critical|asap|minutes|window|deadline|standing\s*by|deploying)\b",
+    "narrative": r"\b(narrative|control\s*the\s*story|respond|silence|shape|framing|holding\s*post|governance\s*statement)\b",
+
+    # Evasion / ambiguous disclosure
+    "hedge": r"\b(forward[-\s]?looking|governance\s*commitment|standard\s*corporate|clean\s*language|not\s*merger\s*disclosure|do\s*not\s*reference|specific\s*partners)\b",
+}
+
+
+def tag_keywords(text):
+    text_low = str(text).lower()
+    tags = []
+    for name, pattern in KW.items():
+        if re.search(pattern, text_low):
+            tags.append(name)
+    return "|".join(tags)
+
+
+df["kw_tags"] = df["all_text"].apply(tag_keywords)
+
+for k in KW.keys():
+    df[f"kw_{k}"] = df["kw_tags"].str.contains(k, na=False)
+
+# ==================================================
+# 4. Key time anchors
+# ==================================================
+LEAK_TIME = pd.Timestamp("2046-06-05 17:00:00")
+EMBARGO_END = pd.Timestamp("2046-06-05 18:00:00")
+CRISIS_DAY = pd.Timestamp("2046-06-05 00:00:00")
+
+df["phase"] = np.where(df["timestamp"] < CRISIS_DAY, "Pre-crisis", "Crisis day")
+df["hours_to_leak"] = (LEAK_TIME - df["timestamp"]).dt.total_seconds() / 3600.0
+
+# ==================================================
+# 5. Question A: Early warning signals
+# ==================================================
+pre = df[df["phase"] == "Pre-crisis"].copy()
+
+
+def is_warning(row):
+    hit_compliance = (
+        row["kw_embargo"] or
+        row["kw_civicloom"] or
+        row["kw_merger"] or
+        row["kw_legal_warn"] or
+        row["kw_rebrand"]
+    )
+
+    hit_pressure = (
+        row["kw_saltwind"] or
+        row["kw_hashtag"] or
+        row["kw_media"] or
+        row["kw_client"]
+    )
+
+    hit_evade = row["kw_hedge"] or row["kw_narrative"]
+    hit_urgent = row["kw_urgency"]
+
+    return (
+        (hit_compliance and (hit_pressure or hit_evade or hit_urgent)) or
+        (hit_evade and hit_pressure) or
+        row["kw_civicloom"]
+    )
+
+
+pre["is_warning"] = pre.apply(is_warning, axis=1)
+
+warnings_df = pre[pre["is_warning"]].copy()
+
+warnings_out_cols = [
+    "timestamp",
+    "round_index",
+    "agent_id",
+    "agent_role",
+    "channel",
+    "kw_tags",
+    "content",
+    "internal_rationalizing",
+    "internal_deliberating",
+    "event_headline",
+    "event_narrative",
+]
+
+warnings_out_cols = [c for c in warnings_out_cols if c in warnings_df.columns]
+
+warnings_out = warnings_df[warnings_out_cols].sort_values("timestamp")
+
+warnings_out.to_csv("task3_warnings.csv", index=False, encoding="utf-8-sig")
+
+print("\n================ QUESTION A: EARLY WARNING SIGNALS ================")
+print(f"Early warning signal records: {len(warnings_out)}")
+print("Saved to: task3_warnings.csv")
+
+# ==================================================
+# 6. Question B: Historical anomalous behavior
+# ==================================================
+PUBLIC_CHANNELS = ["official_post", "personal_post", "anonymous_post"]
+
+
+def anom_flags(row):
+    flags = []
+
+    role = str(row.get("agent_role", "")).lower()
+    channel = str(row.get("channel", ""))
+    declared_action = str(row.get("declared_action", "")).upper()
+    deliberating = str(row.get("internal_deliberating", "")).lower()
+    content = str(row.get("content", "")).lower()
+
+    # ANOM3: sensitive merger/embargo information in public channels
+    if channel in PUBLIC_CHANNELS and (
+        row["kw_civicloom"] or
+        row["kw_merger"] or
+        row["kw_embargo"] or
+        row["kw_rebrand"]
+    ):
+        flags.append("ANOM3_public_channel_sensitive_disclosure")
+
+    # ANOM4: intern or PR intern touches merger/embargo/sensitive ambiguous disclosure
+    if role in ["intern", "pr_intern"] and (
+        row["kw_civicloom"] or
+        row["kw_merger"] or
+        row["kw_embargo"] or
+        row["kw_rebrand"] or
+        row["kw_hedge"]
+    ):
+        flags.append("ANOM4_intern_high_risk_operation")
+
+    # ANOM2: declared monitoring/hold but content suggests active narrative shaping
+    if ("MONITOR" in declared_action or "HOLD" in declared_action) and (
+        row["kw_narrative"] or
+        row["kw_hedge"] or
+        row["kw_urgency"]
+    ):
+        flags.append("ANOM2_declared_action_mismatch")
+
+    # ANOM5: internal state acknowledges sensitivity but still moves toward posting/framing
+    sensitive_internal_terms = [
+        "embargo",
+        "non-public",
+        "non public",
+        "cannot say",
+        "not allowed",
+        "should not",
+        "do not disclose",
+        "civicloom",
+        "6 pm",
+        "six pm",
+        "future corporate structure",
+    ]
+
+    if any(term in deliberating for term in sensitive_internal_terms) and (
+        row["kw_narrative"] or
+        row["kw_hedge"] or
+        row["kw_urgency"] or
+        channel in PUBLIC_CHANNELS
+    ):
+        flags.append("ANOM5_sensitive_context_known_but_advanced")
+
+    # ANOM6: content explicitly says posting/deploying despite hold/final approval language
+    if (
+        ("posting now" in content or "deploying now" in content or "it's live" in content or "posted" in content)
+        and
+        ("hold" in content or "final go" in content or "approval" in content or "approved" in content)
+    ):
+        flags.append("ANOM6_posting_control_conflict")
+
+    return "|".join(flags)
+
+
+df["anomaly_flags"] = df.apply(anom_flags, axis=1)
+anom_df = df[df["anomaly_flags"] != ""].copy()
+
+anom_out_cols = [
+    "timestamp",
+    "round_index",
+    "agent_id",
+    "agent_role",
+    "channel",
+    "anomaly_flags",
+    "kw_tags",
+    "content",
+    "internal_rationalizing",
+    "internal_deliberating",
+    "declared_action",
+    "event_headline",
+]
+
+anom_out_cols = [c for c in anom_out_cols if c in anom_df.columns]
+
+anom_out = anom_df[anom_out_cols].sort_values("timestamp")
+
+anom_out.to_csv("task3_anomalies.csv", index=False, encoding="utf-8-sig")
+
+# ANOM1: Legal/Judge compliance warning followed by risky PR/Social/Intern action within 2 hours
+legal_warn_msgs = df[
+    (df["agent_role"].isin(["legal", "judge"])) &
+    (df["kw_embargo"] | df["kw_legal_warn"] | df["kw_civicloom"] | df["kw_rebrand"])
+].copy()
+
+after_ignore = []
+
+for _, warning in legal_warn_msgs.iterrows():
+    warning_time = warning["timestamp"]
+
+    window = df[
+        (df["timestamp"] > warning_time) &
+        (df["timestamp"] <= warning_time + pd.Timedelta(hours=2)) &
+        (df["agent_role"].isin(["pr", "social_manager", "social_media", "intern", "pr_intern"]))
+    ].copy()
+
+    for _, msg in window.iterrows():
+        risky_followup = (
+            msg["channel"] in PUBLIC_CHANNELS or
+            msg["kw_hedge"] or
+            msg["kw_narrative"] or
+            msg["kw_urgency"] or
+            msg["kw_rebrand"] or
+            msg["kw_civicloom"]
+        )
+
+        if risky_followup:
+            after_ignore.append({
+                "warning_time": warning_time,
+                "warning_agent": warning["agent_id"],
+                "warning_channel": warning["channel"],
+                "warning_kw_tags": warning["kw_tags"],
+                "warning_snippet": str(warning["content"])[:300],
+                "response_time": msg["timestamp"],
+                "response_agent": msg["agent_id"],
+                "response_role": msg["agent_role"],
+                "response_channel": msg["channel"],
+                "response_kw_tags": msg["kw_tags"],
+                "response_snippet": str(msg["content"])[:300],
+            })
+
+anom1_df = pd.DataFrame(after_ignore)
+
+if not anom1_df.empty:
+    anom1_df.to_csv(
+        "task3_anom1_compliance_warning_ignored.csv",
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+print("\n================ QUESTION B: HISTORICAL ANOMALIES ================")
+print(f"Historical anomaly records: {len(anom_out)}")
+print("Saved to: task3_anomalies.csv")
+
+print(f"ANOM1 compliance-warning-followed-by-risky-action records: {len(anom1_df)}")
+if not anom1_df.empty:
+    print("Saved to: task3_anom1_compliance_warning_ignored.csv")
+
+# ==================================================
+# 7. Question C: Near-miss events similar to leak trigger
+# ==================================================
+def is_near_miss(row):
+    pressure = (
+        row["kw_saltwind"] or
+        row["kw_hashtag"] or
+        row["kw_media"] or
+        row["kw_client"]
+    )
+
+    urge_or_hedge = (
+        row["kw_narrative"] or
+        row["kw_hedge"] or
+        row["kw_urgency"] or
+        row["kw_rebrand"]
+    )
+
+    sensitive_context = (
+        row["kw_embargo"] or
+        row["kw_civicloom"] or
+        row["kw_merger"] or
+        row["kw_legal_warn"]
+    )
+
+    return pressure and (urge_or_hedge or sensitive_context)
+
+
+pre["is_near_miss"] = pre.apply(is_near_miss, axis=1)
+nm_df = pre[pre["is_near_miss"]].copy()
+
+nm_out_cols = [
+    "timestamp",
+    "round_index",
+    "agent_id",
+    "agent_role",
+    "channel",
+    "kw_tags",
+    "content",
+    "internal_rationalizing",
+    "internal_deliberating",
+    "event_headline",
+    "event_narrative",
+]
+
+nm_out_cols = [c for c in nm_out_cols if c in nm_df.columns]
+
+nm_out = nm_df[nm_out_cols].sort_values("timestamp")
+
+nm_out.to_csv("task3_nearmiss.csv", index=False, encoding="utf-8-sig")
+
+print("\n================ QUESTION C: NEAR-MISS EVENTS ================")
+print(f"Near-miss records: {len(nm_out)}")
+print("Saved to: task3_nearmiss.csv")
+
+# ==================================================
+# 8. Visualization
+# ==================================================
+
+# ---------- Chart 1: Warning timeline ----------
+if not warnings_out.empty:
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    role_y = {
+        "legal": 6,
+        "judge": 5,
+        "platform_trust": 4,
+        "pr": 3,
+        "social_manager": 2,
+        "social_media": 2,
+        "intern": 1,
+        "pr_intern": 0,
+    }
+
+    colors = {
+        "legal": "#1f77b4",
+        "judge": "#2ca02c",
+        "platform_trust": "#17becf",
+        "pr": "#ff7f0e",
+        "social_manager": "#d62728",
+        "social_media": "#d62728",
+        "intern": "#9467bd",
+        "pr_intern": "#8c564b",
+    }
+
+    for _, r in warnings_out.iterrows():
+        role = r.get("agent_role", "")
+        y = role_y.get(role, 0)
+        c = colors.get(role, "gray")
+        ax.scatter(
+            r["timestamp"],
+            y,
+            s=80,
+            c=c,
+            alpha=0.75,
+            edgecolors="black",
+            linewidths=0.5
+        )
+
+    ax.axvline(
+        LEAK_TIME,
+        color="red",
+        linestyle="--",
+        linewidth=1.5,
+        label="Leak time: 2046-06-05 17:00"
+    )
+
+    ax.axvline(
+        EMBARGO_END,
+        color="gray",
+        linestyle=":",
+        linewidth=1.5,
+        label="Embargo end: 2046-06-05 18:00"
+    )
+
+    ax.set_yticks(list(role_y.values()))
+    ax.set_yticklabels(list(role_y.keys()))
+    ax.set_title("Task 3A - Early Warning Signal Timeline")
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Agent role")
+    ax.legend(loc="upper left")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d %H:%M"))
+    plt.xticks(rotation=30)
+    plt.tight_layout()
+    plt.savefig("task3_warning_timeline.png", dpi=160)
+    plt.close()
+
+    print("\nSaved chart: task3_warning_timeline.png")
+else:
+    print("\nNo warning records. Warning timeline chart was not generated.")
+
+# ---------- Chart 2: Anomaly matrix ----------
+if not anom_out.empty:
+    tmp = anom_out.copy()
+    tmp["flag_list"] = tmp["anomaly_flags"].str.split("|")
+    tmp = tmp.explode("flag_list")
+
+    mat = tmp.pivot_table(
+        index="agent_id",
+        columns="flag_list",
+        values="timestamp",
+        aggfunc="count",
+        fill_value=0
+    )
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    im = ax.imshow(mat.values, cmap="Reds", aspect="auto")
+
+    ax.set_xticks(range(len(mat.columns)))
+    ax.set_xticklabels(mat.columns, rotation=25, ha="right")
+    ax.set_yticks(range(len(mat.index)))
+    ax.set_yticklabels(mat.index)
+
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[1]):
+            ax.text(
+                j,
+                i,
+                mat.values[i, j],
+                ha="center",
+                va="center",
+                color="black",
+                fontsize=9
+            )
+
+    ax.set_title("Task 3B - Historical Anomaly Matrix")
+    plt.colorbar(im, ax=ax, label="Count")
+    plt.tight_layout()
+    plt.savefig("task3_anomaly_matrix.png", dpi=160)
+    plt.close()
+
+    print("Saved chart: task3_anomaly_matrix.png")
+else:
+    print("No anomaly records. Anomaly matrix chart was not generated.")
+
+# ---------- Chart 3: Channel distribution ----------
+if "phase" in df.columns and "channel" in df.columns:
+    ch_ct = df.groupby(["phase", "channel"]).size().unstack(fill_value=0)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ch_ct.T.plot(kind="bar", ax=ax)
+
+    ax.set_title("Task 3 - Channel Distribution: Pre-crisis vs Crisis Day")
+    ax.set_ylabel("Message count")
+    ax.set_xlabel("Channel")
+    plt.xticks(rotation=25, ha="right")
+    plt.tight_layout()
+    plt.savefig("task3_channel_distribution.png", dpi=160)
+    plt.close()
+
+    print("Saved chart: task3_channel_distribution.png")
+
+# ==================================================
+# 9. Console summary
+# ==================================================
+print("\n================ FINAL SUMMARY ================")
+
+print("\n[A] Early warning signal count:")
+print(len(warnings_out))
+
+print("\n[A] Top 10 early warning signals:")
+if not warnings_out.empty:
+    display_cols = ["timestamp", "agent_id", "channel", "kw_tags"]
+    display_cols = [c for c in display_cols if c in warnings_out.columns]
+    print(warnings_out.head(10)[display_cols].to_string(index=False))
+else:
+    print("No early warning signals detected by current rules.")
+
+print("\n[B] Historical anomaly count:")
+print(len(anom_out))
+
+print("\n[B] Historical anomaly distribution:")
+if not anom_out.empty:
+    print(anom_out["anomaly_flags"].value_counts().to_string())
+else:
+    print("No historical anomalies detected by current rules.")
+
+print("\n[B-ANOM1] Top 5 compliance warning ignored cases:")
+if not anom1_df.empty:
+    display_cols = [
+        "warning_time",
+        "warning_agent",
+        "response_time",
+        "response_agent",
+        "response_channel",
+        "response_kw_tags",
+    ]
+    print(anom1_df.head(5)[display_cols].to_string(index=False))
+else:
+    print("No ANOM1 cases detected.")
+
+print("\n[C] Near-miss event count:")
+print(len(nm_out))
+
+print("\n[C] Top 10 near-miss events:")
+if not nm_out.empty:
+    display_cols = ["timestamp", "agent_id", "channel", "kw_tags"]
+    display_cols = [c for c in display_cols if c in nm_out.columns]
+    print(nm_out.head(10)[display_cols].to_string(index=False))
+else:
+    print("No near-miss events detected by current rules.")
+
+print("\n================ OUTPUT FILES ================")
+print("CSV files:")
+print("  task3_warnings.csv")
+print("  task3_anomalies.csv")
+print("  task3_anom1_compliance_warning_ignored.csv")
+print("  task3_nearmiss.csv")
+
+print("\nPNG charts:")
+print("  task3_warning_timeline.png")
+print("  task3_anomaly_matrix.png")
+print("  task3_channel_distribution.png")
+
+print("\nDone.")
