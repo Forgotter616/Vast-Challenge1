@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MC1 Q1 Integrated Analytical Report</title>
+<style>
+  :root {
+    --report-bg: #f6f4ef;
+    --report-panel: #fffdfa;
+    --report-ink: #24201c;
+    --report-muted: #6d665d;
+    --report-rule: #d9d1c4;
+    --report-accent: #b87924;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--report-bg);
+    color: var(--report-ink);
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+  }
+
+  .report-shell {
+    width: min(2440px, calc(100vw - 28px));
+    margin: 0 auto;
+    padding: 18px 0 28px;
+  }
+
+  .report-hero,
+  .report-answer,
+  .report-block {
+    background: var(--report-panel);
+    border: 1px solid var(--report-rule);
+    box-shadow: 0 14px 38px rgba(55,44,31,.08);
+  }
+
+  .report-hero {
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+
+  .report-hero h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+
+  .report-hero p,
+  .report-answer p {
+    margin: 0;
+    color: var(--report-muted);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 1180px;
+  }
+
+  .report-hero .focus {
+    margin-top: 10px;
+    padding: 11px 13px;
+    border-left: 4px solid var(--report-accent);
+    background: #f4eee6;
+    color: #3d352d;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .report-block {
+    margin-bottom: 22px;
+    overflow: auto;
+  }
+
+  .report-block-head {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    padding: 12px 16px;
+    background: #f3efe7;
+    border-bottom: 1px solid var(--report-rule);
+  }
+
+  .report-block-head h2 {
+    margin: 0 0 5px;
+    font-size: 19px;
+    line-height: 1.25;
+  }
+
+  .report-block-head p {
+    margin: 0;
+    color: var(--report-muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .figure-embed {
+    padding: 0;
+    background: var(--report-bg);
+  }
+
+  .report-answer {
+    padding: 16px 18px;
+  }
+
+  .report-answer h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+
+  .report-answer b { color: var(--report-ink); }
+
+/* ===== q1_event.html scoped styles ===== */
+.figure-event{
+      --bg: #f6f4ef;
+      --panel: #fffdfa;
+      --ink: #24201c;
+      --muted: #6d665d;
+      --rule: #d9d1c4;
+      --score-low: #c9c3b9;
+      --score-mid: #7d8f9a;
+      --score-high: #c05a3f;
+      --score-max: #b92f3d;
+      --score-ref: #2563ad;
+      --edge: #746b60;
+    }.figure-event *{ box-sizing: border-box; }.figure-event{
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.18)), var(--bg);
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    }.figure-event main{
+      width: calc(100vw - 32px);
+      max-width: 1720px;
+      margin: 16px auto;
+      min-height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
+    }.figure-event header{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+    }.figure-event h1{
+      margin: 0 0 8px;
+      font-size: clamp(24px, 2.8vw, 38px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }.figure-event .subtitle{
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }.figure-event .legend{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      justify-content: flex-end;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 13px;
+    }.figure-event .legend-item{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }.figure-event .legend-block{
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }.figure-event .score-rule{
+      max-width: 560px;
+      padding: 10px 12px;
+      background: rgba(255,253,250,.78);
+      border: 1px solid var(--rule);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }.figure-event .score-rule b{
+      color: var(--ink);
+    }.figure-event .swatch{
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color);
+    }.figure-event .layout{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 16px;
+      align-items: stretch;
+      height: calc(100vh - 235px);
+      min-height: 780px;
+    }.figure-event .chart-card, .figure-event .detail-card, .figure-event .notes{
+      background: rgba(255,253,250,.88);
+      border: 1px solid var(--rule);
+      box-shadow: 0 14px 38px rgba(55,44,31,.09);
+    }.figure-event .chart-card{
+      height: 100%;
+      min-height: 0;
+      padding: 14px;
+      overflow: hidden;
+      display: flex;
+    }.figure-event svg{
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      flex: 1 1 auto;
+    }.figure-event .lane-band{ fill: rgba(255,255,255,.46); }.figure-event .lane-band:nth-child(even){ fill: rgba(245,240,232,.72); }.figure-event .lane-line, .figure-event .axis-line{ stroke: var(--rule); stroke-width: 1; }.figure-event .lane-label{ fill: var(--ink); font-size: 15px; font-weight: 800; }.figure-event .lane-hint, .figure-event .tick-label, .figure-event .source-label{ fill: var(--muted); font-size: 12px; }.figure-event .edge{
+      fill: none;
+      stroke: var(--edge);
+      stroke-width: 2.2;
+      stroke-opacity: .72;
+    }.figure-event .edge-label{
+      fill: #5c544c;
+      font-size: 11px;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.92);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }.figure-event .node{ cursor: pointer; }.figure-event .node circle{
+      fill: var(--node-color);
+      stroke: #fffdfa;
+      stroke-width: 3;
+      filter: drop-shadow(0 5px 9px rgba(35,28,22,.22));
+    }.figure-event .node.active circle{ stroke: #1d1a16; stroke-width: 4; }.figure-event .node-title{
+      fill: #29241f;
+      font-size: 12px;
+      font-weight: 800;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.94);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }.figure-event .node-meta{
+      fill: var(--muted);
+      font-size: 11px;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.94);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }.figure-event .detail-card{
+      height: 100%;
+      min-height: 0;
+      padding: 18px;
+      position: static;
+      overflow: auto;
+    }.figure-event .detail-kicker{
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }.figure-event .detail-title{
+      margin: 8px 0 10px;
+      font-size: 22px;
+      line-height: 1.25;
+    }.figure-event .detail-meta{
+      display: grid;
+      gap: 7px;
+      margin: 14px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }.figure-event .detail-meta b{ color: var(--ink); }.figure-event .evidence, .figure-event .interpretation, .figure-event .importance{
+      margin-top: 12px;
+      padding: 12px 13px;
+      background: #f3efe7;
+      color: #38312a;
+      font-size: 14px;
+      line-height: 1.55;
+    }.figure-event .evidence{ border-left: 4px solid var(--detail-color); }.figure-event .interpretation{ border-left: 4px solid #7c5ab8; }.figure-event .importance{ border-left: 4px solid #b97424; }.figure-event .source{
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }.figure-event .notes{
+      margin-top: 16px;
+      padding: 16px 18px;
+    }.figure-event .notes h2{ margin: 0 0 8px; font-size: 18px; }.figure-event .notes p{ margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }@media (max-width: 1080px){.figure-event header, .figure-event .layout{ grid-template-columns: 1fr; }.figure-event .layout{ height: auto; min-height: 0; }.figure-event .legend{ justify-content: flex-start; }.figure-event .legend-block{ justify-items: start; }.figure-event .chart-card, .figure-event .detail-card{ height: auto; min-height: auto; }
+    }
+  
+
+/* ===== q1_logic.html scoped styles ===== */
+.figure-logic{
+    margin:0;
+    font-family: "Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    background:#f6f4ef;
+    color:#222;
+  }.figure-logic .page{
+    width:2400px;
+    margin:0 auto;
+    padding:18px 18px 28px 18px;
+    box-sizing:border-box;
+  }.figure-logic .title{
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:8px;
+  }.figure-logic .subtitle{
+    font-size:15px;
+    color:#666;
+    margin-bottom:14px;
+    line-height:1.5;
+  }.figure-logic .board{
+    position:relative;
+    width:2360px;
+    height:1280px;
+    background:#fff;
+    border:1px solid #ddd4c8;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    overflow:hidden;
+  }.figure-logic .phase{
+    position:absolute;
+    top:18px;
+    height:44px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    color:#4a433a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #e6ddd0;
+    background:#f7f2ea;
+  }.figure-logic .axis-wrap{
+    position:absolute;
+    left:270px;
+    right:20px;
+    top:82px;
+    height:56px;
+    border-bottom:2px solid #4e4a44;
+  }.figure-logic .tick{
+    position:absolute;
+    top:0;
+    width:1px;
+    height:940px;
+    background:#ece7df;
+  }.figure-logic .tick.major{ background:#dfd8ce; }.figure-logic .tick-label{
+    position:absolute;
+    top:-2px;
+    transform:translateX(-50%);
+    font-size:12px;
+    color:#50483f;
+    font-weight:600;
+    white-space:nowrap;
+  }.figure-logic .tick-sub{
+    position:absolute;
+    top:18px;
+    transform:translateX(-50%);
+    font-size:11px;
+    color:#857c70;
+    white-space:nowrap;
+  }.figure-logic .actor{
+    position:absolute;
+    left:18px;
+    width:225px;
+    font-weight:800;
+    font-size:18px;
+    line-height:1.2;
+  }.figure-logic .actor .meta{
+    margin-top:6px;
+    font-size:12px;
+    line-height:1.35;
+    color:#6e665d;
+    font-weight:500;
+  }.figure-logic .lane{
+    position:absolute;
+    left:270px;
+    right:20px;
+    height:1px;
+    background:#ece7df;
+  }.figure-logic .node{
+    position:absolute;
+    border-radius:14px;
+    padding:10px 12px 10px 12px;
+    color:#fff;
+    box-shadow:0 8px 18px rgba(0,0,0,0.10);
+    z-index:3;
+    box-sizing:border-box;
+  }.figure-logic .node .k{
+    font-size:10px;
+    font-weight:800;
+    opacity:0.92;
+    letter-spacing:.4px;
+    margin-bottom:4px;
+    text-transform:uppercase;
+  }.figure-logic .node .t{
+    font-size:14px;
+    font-weight:800;
+    line-height:1.25;
+    margin-bottom:4px;
+  }.figure-logic .node .s{
+    font-size:11px;
+    line-height:1.35;
+    opacity:0.94;
+  }.figure-logic .sw{ background:#2a9898; }.figure-logic .rq{ background:#d6673b; }.figure-logic .cl{ background:#7d64d8; }.figure-logic .lg{ background:#c94a55; }.figure-logic .pr{ background:#4e78b8; }.figure-logic .sys{ background:#6f8e56; }.figure-logic .result{ background:#b8333f; border:3px solid #1e1e1e; }.figure-logic .ref{ background:#75787d; }.figure-logic .soft{
+    border:1px solid rgba(255,255,255,0.18);
+  }.figure-logic .note{
+    position:absolute;
+    font-size:12px;
+    color:#645c52;
+    background:#f7f3ed;
+    border:1px solid #e7dfd4;
+    border-radius:10px;
+    padding:8px 10px;
+    line-height:1.45;
+    z-index:2;
+  }.figure-logic .legend{
+    position:absolute;
+    right:20px;
+    top:18px;
+    width:220px;
+    background:#fff;
+    border:1px solid #ded6ca;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12px;
+    color:#51493f;
+    z-index:5;
+    box-shadow:0 3px 8px rgba(0,0,0,0.04);
+  }.figure-logic .legend h4{
+    margin:0 0 8px 0;
+    font-size:12px;
+    font-weight:800;
+  }.figure-logic .legend-row{
+    display:flex;
+    align-items:center;
+    margin:5px 0;
+    gap:8px;
+  }.figure-logic .swatch{
+    width:10px;height:10px;border-radius:50%;
+    display:inline-block;
+  }.figure-logic .line-demo{
+    width:34px;height:0;border-top:3px solid #5a5147; display:inline-block;
+  }.figure-logic .line-demo.dashed{
+    border-top:2px dashed #8d8478;
+  }.figure-logic .footer{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:16px;
+    background:#faf7f2;
+    border:1px solid #e6ddd0;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:13px;
+    color:#544c43;
+    line-height:1.6;
+  }.figure-logic svg{
+    position:absolute;
+    left:0;
+    top:0;
+    z-index:1;
+    pointer-events:none;
+  }.figure-logic .arrow-main{
+    stroke:#5a5147;
+    stroke-width:3;
+    fill:none;
+    marker-end:url(#arrowHead);
+    opacity:0.82;
+  }.figure-logic .arrow-sup{
+    stroke:#8e8477;
+    stroke-width:2;
+    fill:none;
+    stroke-dasharray:7 5;
+    marker-end:url(#arrowHeadLight);
+    opacity:0.75;
+  }.figure-logic .milestone{
+    position:absolute;
+    top:138px;
+    font-size:11px;
+    color:#8a7f72;
+    background:#fff;
+    padding:2px 6px;
+    border-radius:999px;
+    border:1px solid #e5dccf;
+    transform:translateX(-50%);
+    z-index:2;
+  }.figure-logic .highlight-label{
+    position:absolute;
+    font-size:12px;
+    font-weight:700;
+    color:#7d2e38;
+    background:#fff;
+    border:1px solid #e3c7cb;
+    border-radius:999px;
+    padding:4px 8px;
+    z-index:4;
+  }
+
+
+
+/* ===== q1_matrix.html scoped styles ===== */
+.figure-matrix{
+  --bg:#f6f4ef;
+  --ink:#24201c;
+  --muted:#6d665d;
+  --rule:#d9d1c4;
+
+  --legal:#c22f3e;
+  --media:#d95f02;
+  --civic:#6f3cc3;
+  --internal:#1f64b4;
+  --system:#00796b;
+  --ref:#5b6470;
+}.figure-matrix{
+  margin:0;
+  font-family:"Microsoft YaHei","Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}.figure-matrix main{
+  width:min(1280px, calc(100vw - 24px));
+  margin:20px auto;
+}.figure-matrix h1{
+  margin:0 0 8px;
+  font-size:30px;
+  line-height:1.2;
+}.figure-matrix .subtitle{
+  color:var(--muted);
+  line-height:1.65;
+  margin:0 0 14px;
+  font-size:14px;
+}.figure-matrix .matrix-card, .figure-matrix .notes{
+  background:#fffdfa;
+  border:1px solid var(--rule);
+  box-shadow:0 14px 38px rgba(55,44,31,.08);
+}.figure-matrix .matrix-card{
+  padding:18px;
+}.figure-matrix .matrix-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:18px;
+  align-items:end;
+  margin-bottom:14px;
+}.figure-matrix .matrix-head h2{
+  margin:0 0 6px;
+  font-size:22px;
+  line-height:1.25;
+}.figure-matrix .matrix-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  max-width:920px;
+}.figure-matrix .matrix-legend{
+  display:grid;
+  gap:8px;
+  min-width:280px;
+  color:var(--muted);
+  font-size:12px;
+  justify-items:end;
+}.figure-matrix .heatbar{
+  width:220px;
+  height:10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#f4eee6,#dcc2a4,#b87924,#8f3a25);
+  border:1px solid rgba(36,32,28,.14);
+}.figure-matrix .matrix-readnote{
+  margin:0 0 14px;
+  padding:10px 12px;
+  background:#f7f1e8;
+  border-left:4px solid #b87924;
+  color:#3d352d;
+  font-size:13px;
+  line-height:1.6;
+}.figure-matrix .matrix-wrap{
+  overflow:auto;
+}.figure-matrix .matrix-grid{
+  display:grid;
+  grid-template-columns:160px repeat(6, 1fr);
+  gap:7px;
+  min-width:1080px;
+}.figure-matrix .matrix-colhead, .figure-matrix .matrix-rowhead, .figure-matrix .matrix-cell{
+  border:1px solid var(--rule);
+  background:#fffdfa;
+  min-height:76px;
+  padding:8px 9px;
+}.figure-matrix .matrix-colhead{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--ink);
+  font-size:12px;
+  font-weight:900;
+  line-height:1.2;
+}.figure-matrix .matrix-rowhead{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:900;
+  color:var(--ink);
+  background:#f7f1e8;
+}.figure-matrix .role-dot{
+  flex:0 0 auto;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--role-color);
+}.figure-matrix .matrix-cell{
+  position:relative;
+  text-align:center;
+  background:color-mix(in srgb, var(--heat-color) calc(var(--intensity) * 100%), #fffdfa);
+  box-shadow: inset 0 0 0 999px rgba(255,255,255, calc(.62 - var(--intensity) * .45));
+}.figure-matrix .matrix-cell.zero{
+  background:#fbf8f2;
+  color:#b4aa9e;
+  box-shadow:none;
+}.figure-matrix .matrix-cell.highlight{
+  outline:3px solid var(--legal);
+  outline-offset:-3px;
+  border-color:var(--legal);
+}.figure-matrix .matrix-cell .num-label{
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.1;
+  margin-bottom:2px;
+  letter-spacing:.2px;
+}.figure-matrix .matrix-cell .num{
+  display:block;
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
+  color:#251f19;
+}.figure-matrix .matrix-cell .denom{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.3;
+}.figure-matrix .matrix-cell .tag{
+  position:absolute;
+  right:6px;
+  bottom:5px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:var(--legal);
+  color:#fffdfa;
+  font-size:10px;
+  font-weight:900;
+}.figure-matrix .notes{
+  margin-top:16px;
+  padding:16px 18px;
+}.figure-matrix .notes h2{
+  margin:0 0 8px;
+  font-size:18px;
+}.figure-matrix .notes p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.68;
+  font-size:14px;
+}.figure-matrix .takeaways{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}.figure-matrix .box{
+  padding:11px 12px;
+  background:#f3efe7;
+  border-left:4px solid var(--media);
+  color:#3b332c;
+  font-size:13px;
+  line-height:1.5;
+}.figure-matrix .box b{
+  color:var(--ink);
+}@media (max-width: 1120px){.figure-matrix .matrix-head{ grid-template-columns:1fr; }.figure-matrix .matrix-legend{ justify-items:start; }.figure-matrix .takeaways{ grid-template-columns:1fr; }
+}
+
+</style>
+</head>
+<body>
+  <div class="report-shell">
+    <header class="report-hero">
+      <h1>MC1 Mini-Challenge 1 ? Question 1 Integrated Analytical Report</h1>
+      <p>This single-file report combines three coordinated visual analyses to explain the inappropriate release: the factual event sequence, the causal actor logic, and the actor-channel communication structure.</p>
+      <div class="focus"><b>Q1 focus:</b> identify the key actions, causal relationships, decision points, participating subjects, and the decision/system links that allowed information to bypass embargo enforcement and flow out before the official 18:00 lift.</div>
+    </header>
+
+    <section class="report-block" id="event-view">
+      <div class="report-block-head">
+        <h2>Figure 1. Key Event Timeline</h2>
+        <p>This view reconstructs the factual sequence and shows why the 17:25 Legal personal_post is earlier than the 18:00 official embargo lift.</p>
+      </div>
+      <div class="figure-embed figure-event">
+        <main>
+            <header>
+              <div>
+                <h1>MC1 Q1 Key Real Event Timeline</h1>
+                <p class="subtitle">Nodes are still organized by event lanes, but node colors indicate the 'correlation strength with the 17:25 embargo breach': low score light gray, medium score neutral emphasis, high score strong emphasis, highest score for the final leak node; 18:00 official lift uses a separate reference color.</p>
+              </div>
+              <div class="legend-block">
+                <div class="legend">
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span>Low Correlation 0-1</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span>Medium Correlation 2</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span>High Correlation 3-4</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span>Final Leak</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span>18:00 Reference Node</span>
+                </div>
+                <div class="score-rule">
+                  <b>Correlation scoring: </b>merger/embargo +2; publishing channel or review control +2; 6/5 and close to 17:25 +1; triggering false narrative or response pressure +1; 17:25 final leak node set to highest score. 18:00 official lift serves only as a time reference and is not scored.
+                </div>
+              </div>
+            </header>
+        
+            <section class="layout">
+              <div class="chart-card">
+                <svg id="timeline" role="img" aria-label="MC1 Q1 Key Real Event Timeline"></svg>
+              </div>
+              <aside class="detail-card" id="detail" style="--detail-color: var(--score-max)">
+                <div class="detail-kicker">Core Result Node</div>
+                <h2 class="detail-title">17:25 Legal Early Confirmation of CivicLoom Merger</h2>
+                <div class="detail-meta">
+                  <div><b>Time:</b> 2046-06-05 17:25</div>
+                  <div><b>Participant:</b> Legal-Agent</div>
+                  <div><b>Channel:</b> personal_post</div>
+                  <div><b>Lane:</b> Outcome/Reference</div>
+                  <div><b>Correlation Strength:</b> Highest Score: Final Leak Node</div>
+                </div>
+                <div class="evidence"><b>Original Evidence:</b> “I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”</div>
+                <div class="interpretation"><b>My Explanation:</b> Legal-Agent publicly confirmed the CivicLoom-TenantThread merger via a personal account.</div>
+                <div class="importance"><b>Why It Matters:</b> This post occurred 35 minutes before the official 18:00 embargo lift, and is the core event of the inappropriate release.<br><b>Scoring Basis:</b> Highest Score: Final Leak Node; directly confirms merger, via personal_post before 18:00.</div>
+                <div class="source">Source: MC1_communications_flat.csv:1205</div>
+              </aside>
+            </section>
+        
+            <section class="notes">
+              <h2>How to Read This Chart</h2>
+              <p>This chart only answers 'what happened and the sequence'. Nodes are not inferred concepts, but real events directly found in the data. Colors represent the correlation strength with the final 17:25 embargo breach, not market sentiment or lane categories; market pressure information is retained in the evidence/explanation on the right.</p>
+            </section>
+          </main>
+      </div>
+    </section>
+
+    <section class="report-block" id="logic-view">
+      <div class="report-block-head">
+        <h2>Figure 2. Actor Behavioral Logic</h2>
+        <p>This view explains how external narrative pressure, CivicLoom correction pressure, legal conflict, compressed review, and personal_post routing converged.</p>
+      </div>
+      <div class="figure-embed figure-logic">
+        <div class="page">
+        <div class="title">MC1 Q1 Actor Behavior Logic Diagram (Full Timeline Version)</div>
+        <div class="subtitle">
+            This diagram focuses on 'actor behavior logic': the horizontal axis is the complete time sequence, and the vertical axis is the 6 key actors.<br/>
+            The main line shows: <b>how external narrative forms → how wrong transaction narrative escalates → how CivicLoom pressures for correction → how Legal decides under embargo constraints →
+            why the review chain fails → how the 17:25 personal_post leak occurs</b>.
+          </div>
+        <div class="board">
+        <!-- Legend -->
+        <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-row"><span class="swatch" style="background:#2a9898;"></span>SaltWind / External Media</div>
+        <div class="legend-row"><span class="swatch" style="background:#d6673b;"></span>ResidentIQ / Competitor Amplifier</div>
+        <div class="legend-row"><span class="swatch" style="background:#7d64d8;"></span>CivicLoom / Counterparty</div>
+        <div class="legend-row"><span class="swatch" style="background:#c94a55;"></span>Legal / Decision & Control</div>
+        <div class="legend-row"><span class="swatch" style="background:#4e78b8;"></span>PR / Social / Publishing System</div>
+        <div class="legend-row"><span class="swatch" style="background:#6f8e56;"></span>System / Embargo / Control Structure</div>
+        <div class="legend-row"><span class="swatch" style="background:#b8333f;"></span>Core Result Node</div>
+        <div class="legend-row"><span class="line-demo"></span>Main Action Chain / Key Causality</div>
+        <div class="legend-row"><span class="line-demo dashed"></span>Supporting Conditions / Structural Influence</div>
+        </div>
+        <!-- Phase bands -->
+        <div class="phase" style="left:270px; width:530px;">Phase 1: Structural Foundation (5/17–5/29)</div>
+        <div class="phase" style="left:820px; width:500px;">Phase 2: External Narrative Escalation (6/1–6/4)</div>
+        <div class="phase" style="left:1340px; width:600px;">Phase 3: Crisis Convergence & Early Release (6/5)</div>
+        <!-- Time axis -->
+        <div class="axis-wrap">
+        <!-- Positions: 5/17, 5/21, 5/25, 5/29, 6/1, 6/4, 6/5 10:00, 13:00, 17:00, 17:25, 18:00 -->
+        <div class="tick major" style="left:20px;"></div>
+        <div class="tick-label" style="left:20px;">5/17</div>
+        <div class="tick-sub" style="left:20px;">Start</div>
+        <div class="tick" style="left:180px;"></div>
+        <div class="tick-label" style="left:180px;">5/21</div>
+        <div class="tick" style="left:340px;"></div>
+        <div class="tick-label" style="left:340px;">5/25</div>
+        <div class="tick major" style="left:500px;"></div>
+        <div class="tick-label" style="left:500px;">5/29</div>
+        <div class="tick" style="left:660px;"></div>
+        <div class="tick-label" style="left:660px;">6/1</div>
+        <div class="tick major" style="left:820px;"></div>
+        <div class="tick-label" style="left:820px;">6/4</div>
+        <div class="tick major" style="left:1030px;"></div>
+        <div class="tick-label" style="left:1030px;">6/5</div>
+        <div class="tick-sub" style="left:1030px;">10:00</div>
+        <div class="tick" style="left:1210px;"></div>
+        <div class="tick-label" style="left:1210px;">13:00</div>
+        <div class="tick major" style="left:1400px;"></div>
+        <div class="tick-label" style="left:1400px;">17:00</div>
+        <div class="tick major" style="left:1505px;"></div>
+        <div class="tick-label" style="left:1505px;">17:25</div>
+        <div class="tick-sub" style="left:1505px;">LEAK</div>
+        <div class="tick major" style="left:1715px;"></div>
+        <div class="tick-label" style="left:1715px;">18:00</div>
+        <div class="tick-sub" style="left:1715px;">Official Lift</div>
+        </div>
+        <!-- actor labels -->
+        <div class="actor" style="top:160px;">
+              1. SaltWind
+              <div class="meta">Media / External Narrative Initiator<br/>Role: Create and escalate external public pressure</div>
+        </div>
+        <div class="actor" style="top:272px;">
+              2. ResidentIQ
+              <div class="meta">Competitor Amplifier<br/>Role: Escalate crisis from product dispute to transaction misreading</div>
+        </div>
+        <div class="actor" style="top:384px;">
+              3. CivicLoom
+              <div class="meta">Counterparty + Constraint<br/>Role: Turn 'public opinion issue' into 'transaction risk'</div>
+        </div>
+        <div class="actor" style="top:496px;">
+              4. Legal
+              <div class="meta">Core Decision + Control<br/>Role: Determine correction boundaries, trigger early confirmation</div>
+        </div>
+        <div class="actor" style="top:640px;">
+              5. PR / Social
+              <div class="meta">Publishing System<br/>Role: Convert corrections into publishing actions, drive execution</div>
+        </div>
+        <div class="actor" style="top:800px;">
+              6. System / Embargo
+              <div class="meta">Control Structure<br/>Role: Explain normal constraints and failure paths</div>
+        </div>
+        <!-- lane lines -->
+        <div class="lane" style="top:205px;"></div>
+        <div class="lane" style="top:317px;"></div>
+        <div class="lane" style="top:429px;"></div>
+        <div class="lane" style="top:541px;"></div>
+        <div class="lane" style="top:688px;"></div>
+        <div class="lane" style="top:850px;"></div>
+        <!-- milestone labels -->
+        <div class="milestone" style="left:1775px;">17:25 Early Release</div>
+        <div class="milestone" style="left:1985px;">18:00 Official Lift</div>
+        <!-- Nodes: System / Embargo -->
+        <div class="node sys soft" style="left:300px; top:800px; width:190px;">
+        <div class="k">W1 · system</div>
+        <div class="t">Broad social posting permissions</div>
+        <div class="s">minimal oversight; structural gaps exist early</div>
+        </div>
+        <div class="node sys soft" style="left:520px; top:820px; width:205px;">
+        <div class="k">W2 · boundary</div>
+        <div class="t">Blurred personal/official boundaries</div>
+        <div class="s">personal_post can carry company narratives</div>
+        </div>
+        <div class="node sys soft" style="left:740px; top:800px; width:205px;">
+        <div class="k">W3 · control</div>
+        <div class="t">Social hold + Judge rules</div>
+        <div class="s">System knows risks, but controls not fully covered</div>
+        </div>
+        <div class="node sys soft" style="left:1180px; top:835px; width:185px;">
+        <div class="k">F1 · failure</div>
+        <div class="t">Key reviewers unavailable</div>
+        <div class="s">Legal / Judge / PR reviewers offline</div>
+        </div>
+        <div class="node ref soft" style="left:1898px; top:915px; width:175px;">
+        <div class="k">T1 · reference</div>
+        <div class="t">18:00 embargo lifted</div>
+        <div class="s">As official lift reference point</div>
+        </div>
+        <!-- Nodes: SaltWind -->
+        <div class="node sw soft" style="left:410px; top:148px; width:190px;">
+        <div class="k">S1 · media</div>
+        <div class="t">data broker / anonymization query</div>
+        <div class="s">5/21: Pull TenantThread into data governance controversy</div>
+        </div>
+        <div class="node sw soft" style="left:1040px; top:148px; width:200px;">
+        <div class="k">S2 · expose</div>
+        <div class="t">Secret Scoring System Exposure</div>
+        <div class="s">6/5 10:00: Crisis officially erupts</div>
+        </div>
+        <div class="node sw soft" style="left:1360px; top:148px; width:210px;">
+        <div class="k">S3 · pressure</div>
+        <div class="t">SaltWind 5 PM CivicLoom story</div>
+        <div class="s">External pressure nearing real merger information</div>
+        </div>
+        <!-- Nodes: ResidentIQ -->
+        <div class="node rq soft" style="left:620px; top:260px; width:190px;">
+        <div class="k">R1 · competitor</div>
+        <div class="t">privacy-first comparison attack</div>
+        <div class="s">5/25: Start leveraging to differentiate from TenantThread</div>
+        </div>
+        <div class="node rq soft" style="left:1110px; top:260px; width:205px;">
+        <div class="k">R2 · rumor</div>
+        <div class="t">wrong acquirer rumor</div>
+        <div class="s">Incorrectly points acquirer to ResidentIQ</div>
+        </div>
+        <div class="node rq soft" style="left:1325px; top:260px; width:205px;">
+        <div class="k">R3 · framing</div>
+        <div class="t">wrong valuation / distressed sale</div>
+        <div class="s">Escalate issue into 'wrong transaction narrative'</div>
+        </div>
+        <!-- Nodes: CivicLoom -->
+        <div class="node cl soft" style="left:890px; top:372px; width:205px;">
+        <div class="k">C1 · embargoed fact</div>
+        <div class="t">Real merger exists internally</div>
+        <div class="s">6/1: CivicLoom is the real acquirer, but still under embargo</div>
+        </div>
+        <div class="node cl soft" style="left:1395px; top:372px; width:205px;">
+        <div class="k">C2 · pressure</div>
+        <div class="t">formal notice / pressure</div>
+        <div class="s">Request to correct misinformation, prevent further market misreading</div>
+        </div>
+        <!-- Nodes: Legal -->
+        <div class="node lg soft" style="left:1260px; top:504px; width:205px;">
+        <div class="k">L1 · decision</div>
+        <div class="t">Must correct misinformation</div>
+        <div class="s">Wrong acquirer / valuation cannot continue spreading</div>
+        </div>
+        <div class="node lg soft" style="left:1505px; top:504px; width:195px;">
+        <div class="k">L2 · conflict</div>
+        <div class="t">Merger still under embargo</div>
+        <div class="s">Forms conflict: 'must correct but cannot confirm CivicLoom'</div>
+        </div>
+        <div class="node result soft" style="left:1730px; top:548px; width:220px;">
+        <div class="k">R1 · leak result</div>
+        <div class="t">17:25 Legal personal_post early merger confirmation</div>
+        <div class="s">35 minutes before 18:00 official lift</div>
+        </div>
+        <!-- Nodes: PR / Social -->
+        <div class="node pr soft" style="left:1260px; top:685px; width:195px;">
+        <div class="k">P1 · response</div>
+        <div class="t">Preparing narrow correction</div>
+        <div class="s">Internal attempt to respond to wrong transaction narrative</div>
+        </div>
+        <div class="node pr soft" style="left:1495px; top:685px; width:195px;">
+        <div class="k">P2 · execution</div>
+        <div class="t">Approval chain compressed (GO ≤ 60s)</div>
+        <div class="s">Release shifts from 'review' to 'fast execution'</div>
+        </div>
+        <div class="node pr soft" style="left:1730px; top:685px; width:165px;">
+        <div class="k">P3 · amplify</div>
+        <div class="t">personal amplification live</div>
+        <div class="s">Personal account begins carrying dissemination</div>
+        </div>
+        <!-- Annotations -->
+        <div class="note" style="left:1060px; top:1050px; width:320px;">
+        <b>Reading Focus:</b><br/>
+              This is not a single actor's mistake, but multiple actors converging on 6/5:<br/>
+              External wrong narrative spirals out of control → CivicLoom pressures for correction →
+              Legal faces embargo conflict → Review chain fails + publishing chain compresses →
+              Personal account becomes the early release path.
+            </div>
+        <div class="highlight-label" style="left:1545px; top:455px;">
+              Core Conflict: Must correct, but real info still under embargo
+            </div>
+        <div class="highlight-label" style="left:1700px; top:815px;">
+              personal_post becomes bypass path
+            </div>
+        <!-- SVG arrows -->
+        <svg height="1280" viewbox="0 0 2360 1280" width="2360">
+        <defs>
+        <marker id="arrowHead" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
+        <path d="M0,0 L0,8 L10,4 z" fill="#5a5147"></path>
+        </marker>
+        <marker id="arrowHeadLight" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
+        <path d="M0,0 L0,8 L10,4 z" fill="#8e8477"></path>
+        </marker>
+        </defs>
+        <!-- Main chain: SaltWind -->
+        <path class="arrow-main" d="M600,188 C750,188 850,188 1040,188"></path>
+        <path class="arrow-main" d="M1240,188 C1300,188 1320,188 1360,188"></path>
+        <!-- ResidentIQ chain -->
+        <path class="arrow-main" d="M810,300 C960,300 1010,300 1110,300"></path>
+        <path class="arrow-main" d="M1315,300 C1320,300 1320,300 1325,300"></path>
+        <!-- CivicLoom chain -->
+        <path class="arrow-main" d="M1095,412 C1260,412 1310,412 1395,412"></path>
+        <!-- Legal chain -->
+        <path class="arrow-main" d="M1465,556 C1478,556 1490,556 1505,556"></path>
+        <path class="arrow-main" d="M1700,556 C1715,562 1720,575 1730,590"></path>
+        <path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path>
+        <!-- PR chain -->
+        <path class="arrow-main" d="M1455,725 C1470,725 1480,725 1495,725"></path>
+        <path class="arrow-main" d="M1690,725 C1705,725 1715,725 1730,725"></path>
+        <!-- Cross-actor main chain -->
+        <path class="arrow-main" d="M1180,248 C1190,252 1200,256 1212,260"></path> <!-- SaltWind -> ResidentIQ rumor -->
+        <path class="arrow-main" d="M1530,300 C1360,340 1360,395 1395,412"></path> <!-- wrong valuation -> CivicLoom pressure -->
+        <path class="arrow-main" d="M1498,458 C1488,472 1472,490 1450,504"></path> <!-- CivicLoom -> Legal must correct -->
+        <path class="arrow-main" d="M1700,556 C1720,560 1725,570 1730,590"></path> <!-- Legal conflict -> final leak -->
+        <path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path> <!-- PR execution -> leak -->
+        <!-- Supporting conditions -->
+        <path class="arrow-sup" d="M490,840 C520,840 520,860 520,860"></path> <!-- W1 -> W2 -->
+        <path class="arrow-sup" d="M725,860 C731,855 736,852 740,850"></path> <!-- W2 -> W3 -->
+        <path class="arrow-sup" d="M725,850 C1010,850 1370,840 1730,615"></path> <!-- boundary -> leak -->
+        <path class="arrow-sup" d="M945,850 C1060,850 1120,850 1180,850"></path> <!-- rules -> reviewers unavailable -->
+        <path class="arrow-sup" d="M1365,875 C1400,830 1450,770 1495,735"></path> <!-- reviewers unavailable -> compressed approval -->
+        <path class="arrow-sup" d="M1095,412 C1180,470 1370,520 1505,550"></path> <!-- true merger fact -> embargo conflict -->
+        <path class="arrow-sup" d="M1690,725 C1760,760 1900,820 1985,915"></path> <!-- P2 -> 18:00 reference -->
+        <path class="arrow-sup" d="M1950,605 C2010,690 2020,820 1985,915"></path> <!-- leak -> 18:00 reference -->
+        </svg>
+        <!-- footer -->
+        <div class="footer">
+        <b>Main chain reading:</b>
+              SaltWind first pushes TenantThread into public crisis; ResidentIQ amplifies it into a 'wrong transaction narrative';
+              CivicLoom as the real counterparty pushes for correction; Legal decides it must correct, but cannot confirm the real merger before 18:00;
+              at the system level, blurred personal/official boundaries, unavailable key reviewers, compressed approval chains, etc., ultimately lead to
+              <b>Legal-Agent confirming the CivicLoom merger at 17:25 via personal_post</b>, 35 minutes before the official lift.
+            </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-block" id="matrix-view">
+      <div class="report-block-head">
+        <h2>Figure 3. Actor x Channel Communication Structure</h2>
+        <p>This view identifies the structural pathway: crisis communication shifted heavily through huddles and personal_post rather than only official_post.</p>
+      </div>
+      <div class="figure-embed figure-matrix">
+        <main>
+        
+          <h1>Actor × Channel Communication Structure Matrix</h1>
+          <p class="subtitle">
+            This matrix aggregates 912 communications to show 'who speaks through which channel'. It is used to analyze the usage intensity of different actors on different channels during the 6/5 crisis day, and to identify the deviation between the official publishing path and the actual outflow path.
+          </p>
+        
+          <section class="matrix-card" aria-labelledby="actor-channel-title">
+            <div class="matrix-head">
+              <div>
+                <h2 id="actor-channel-title">Actor × Channel Communication Structure Matrix</h2>
+                <p>
+                  Each cell reflects the communication volume of a certain actor type on a certain channel. Darker color indicates heavier reliance on that channel during the 6/5 crisis day.
+                </p>
+              </div>
+              <div class="matrix-legend">
+                <div><b>Color depth:</b> 6/5 crisis day message volume</div>
+                <div class="heatbar" aria-hidden="true"></div>
+                <div>Light = Low frequency; Dark = High frequency; Red box = 17:25 leak actor × channel</div>
+              </div>
+            </div>
+        
+            <!-- Clear reading instructions -->
+            <div class="matrix-readnote">
+              <b>Reading Instructions:</b>
+              The <b>large main number</b> in each cell represents the <b>number of messages on 6/5 crisis day</b>;
+              the <b>smaller secondary number</b> below represents the <b>total messages in the full sample</b>.
+              For example, if a cell shows “72” and below it “Full Sample 126”, it means this actor sent 72 messages on this channel on 6/5, and 126 messages in total across the entire sample period.
+            </div>
+        
+            <div class="matrix-wrap">
+              <div class="matrix-grid" id="actorChannelMatrix"></div>
+            </div>
+          </section>
+        
+          <section class="notes">
+            <h2>Chart Interpretation</h2>
+            <p>
+              This chart illustrates the real distribution of communication structure on crisis day: Legal, PR, Social Media and other roles did not only speak through official channels, but formed a hybrid communication structure across comms_huddle, personal_post, anonymous_post and other multiple channels. Among them, official_post was not the only or strongest external path; on the contrary, personal_post and side_huddle were more active during the crisis, indicating that information flow underwent obvious decentralization under crisis pressure.
+            </p>
+        
+            <div class="takeaways">
+              <div class="box"><b>Key Finding 1:</b> Legal did not use official_post on crisis day, but used personal_post and anonymous_post, indicating that legal communication was not limited to internal review.</div>
+              <div class="box"><b>Key Finding 2:</b> Social Media's personal_post was very active on crisis day, indicating that personal accounts have been incorporated into the external narrative stabilization chain.</div>
+              <div class="box"><b>Key Finding 3:</b> PR-Intern handled a large number of official_posts, while the final leak occurred at Legal × personal_post, showing a separation between the official publishing path and the actual outflow path.</div>
+            </div>
+          </section>
+        
+        </main>
+      </div>
+    </section>
+    <section class="report-answer">
+      <h2>Final Q1 Answer</h2>
+      <p>The inappropriate release was the <b>17:25 Legal-Agent personal_post</b> confirming the CivicLoom-TenantThread merger, which occurred <b>35 minutes before</b> the 18:00 official embargo lift. The breach emerged from a coupled failure: SaltWind and ResidentIQ drove external narrative pressure; CivicLoom created correction pressure; Legal faced a conflict between correcting misinformation and preserving the merger embargo; key review capacity was weakened; and the communication structure allowed personal_post to carry company-level confirmation.</p>
+    </section>
+  </div>
+
+<script>
+(() => {
+/* ===== q1_event.html scripts ===== */
+const lanes = [
+      { id: "external", label: "External Events", hint: "Media / Market / Counterparty", y: 118 },
+      { id: "compliance", label: "Compliance/Control", hint: "social hold / review chain", y: 298 },
+      { id: "public", label: "Public Release", hint: "personal_post / official_post", y: 478 },
+      { id: "outcome", label: "Outcome/Reference", hint: "Early Release / Official Lift", y: 658 }
+    ];
+
+    const nodes = [
+      {
+        id: "n1", x: 150, lane: "external", time: "2046-05-17 09:00",
+        actor: "Legal / team", channel: "round event", score: 0, scoreReason: "Early regulatory background; no direct involvement in merger/embargo, publishing channel, or 6/5 decision pressure.",
+        title: "AG inquiries flagged", short: "AG inquiries",
+        evidence: "Two state AG informal inquiries into tenant data practices flagged by Legal.",
+        interpretation: "The earliest data governance and regulatory risk signals have emerged.",
+        importance: "Provides background for subsequent scoring system exposure and compliance tensions.",
+        source: "MC1_rounds_flat.csv:2"
+      },
+      {
+        id: "n2", x: 260, lane: "external", time: "2046-05-21 09:00",
+        actor: "Platform Trust / Legal", channel: "round event", score: 0, scoreReason: "Platform risk background; explains scoring system risk, but did not directly drive the 17:25 release.",
+        title: "Operator misuse discovered", short: "operator misuse",
+        evidence: "Three operator clients found misusing Service Load Score for renewal pricing.",
+        interpretation: "The scoring system indeed has a risk of being misused by clients.",
+        importance: "Shows that subsequent media exposure did not come out of thin air.",
+        source: "MC1_rounds_flat.csv:4"
+      },
+      {
+        id: "n3", x: 370, lane: "external", time: "2046-05-25 09:00",
+        actor: "Ajay / senior team", channel: "Shadow", score: 2, scoreReason: "+2 directly related to CivicLoom merger / embargo background.",
+        title: "Merger briefing in Shadow", short: "merger briefing",
+        evidence: "Ajay privately briefs senior team about the merger: CivicLoom, capital infusion, governance rebrand.",
+        interpretation: "The CivicLoom merger has been secretly advanced internally.",
+        importance: "This is the background information protected by the embargo.",
+        source: "MC1_rounds_flat.csv:8"
+      },
+      {
+        id: "n4", x: 500, lane: "public", time: "2046-05-29 09:11",
+        actor: "Social-Manager", channel: "personal_post", score: 4, scoreReason: "+2 involving merger clue; +2 involving personal_post publishing channel.",
+        title: "Elena + Ajay personal post near-miss", short: "near-miss post",
+        evidence: "Social-Manager personal Flex tagged @ElenaMarquez and @AjayTT with “Big things coming”.",
+        interpretation: "Personal account almost exposed transaction relationship for the first time.",
+        importance: "Proves personal_post is a real risk channel.",
+        source: "MC1_communications_flat.csv:274; MC1_rounds_flat.csv:10"
+      },
+      {
+        id: "n5", x: 620, lane: "compliance", time: "2046-05-29 09:24",
+        actor: "Social-Manager", channel: "comms_huddle", score: 4, scoreReason: "+2 involving embargo control; +2 involving publishing channel and embargo rules.",
+        title: "Social hold", short: "Social hold",
+        evidence: "“No posts referencing leadership, partnerships, deals, future plans, or company direction...”",
+        interpretation: "The team clearly set social posting restrictions after the @Elena near-miss.",
+        importance: "Indicates that embargo enforcement was once strengthened; the later issue was not the absence of rules, but that the rules failed to block the post.",
+        source: "MC1_communications_flat.csv:287"
+      },
+      {
+        id: "n6", x: 740, lane: "compliance", time: "2046-05-30 09:04",
+        actor: "Social-Manager / Judge", channel: "comms_huddle", score: 4, scoreReason: "+2 involving embargo/clearance; +2 involving review control.",
+        title: "Judge arrives; embargo rules reinforced", short: "Judge + rules",
+        evidence: "Anything beyond standard content requires compliance monitor clearance before posting.",
+        interpretation: "Compliance supervision entered the War Room, and embargo rules were reinforced again.",
+        importance: "Indicates that formal control mechanisms once existed.",
+        source: "MC1_communications_flat.csv:308; MC1_rounds_flat.csv:11"
+      },
+      {
+        id: "n7", x: 860, lane: "external", time: "2046-05-31 09:00",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 triggered negative narrative and response pressure.",
+        title: "SaltWind Piece #1", short: "data brokers",
+        evidence: "SaltWind Journal publishes Piece #1: data broker partnerships exposed.",
+        interpretation: "The media began to push TenantThread into a negative narrative.",
+        importance: "This is the prelude to the publicization of the crisis.",
+        source: "MC1_rounds_flat.csv:12"
+      },
+      {
+        id: "n8", x: 980, lane: "external", time: "2046-06-01 09:00",
+        actor: "ResidentIQ", channel: "round event", score: 1, scoreReason: "+1 triggered external narrative pressure.",
+        title: "ResidentIQ attacks TenantThread", short: "ResidentIQ attack",
+        evidence: "ResidentIQ publicly posts “privacy-first is not a feature, it's the floor”.",
+        interpretation: "Competitors began to use privacy narratives to attack TenantThread.",
+        importance: "Provides public opinion background for the subsequent ResidentIQ false acquisition rumor.",
+        source: "MC1_rounds_flat.csv:13"
+      },
+      {
+        id: "n9", x: 1100, lane: "external", time: "2046-06-04 09:00",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 triggered response pressure before crisis day.",
+        title: "SaltWind Piece #2", short: "re-id risk",
+        evidence: "SaltWind publishes re-identification risk story; sentiment drops sharply.",
+        interpretation: "The crisis escalated from ordinary privacy disputes to identification risks.",
+        importance: "This is the direct pressure before the crisis day.",
+        source: "MC1_rounds_flat.csv:14"
+      },
+      {
+        id: "n10", x: 1220, lane: "external", time: "2046-06-05 09:00",
+        actor: "SaltWind / public", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5; +1 triggered strong response pressure.",
+        title: "Secret Scoring System Exposure", short: "Secret Scoring",
+        evidence: "SaltWind exposé drops; Flex erupts; stock opened down 8%.",
+        interpretation: "The tenant scoring system was publicly exposed, turning the crisis from an internal compliance issue into a public opinion and market problem.",
+        importance: "This is the starting point where external pressure began to rise sharply.",
+        source: "MC1_rounds_flat.csv:15"
+      },
+      {
+        id: "n11", x: 1340, lane: "external", time: "2046-06-05 11:00",
+        actor: "SaltWind / market", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5; +1 triggered wrong narrative/correction pressure.",
+        title: "ResidentIQ False Acquisition Rumor", short: "ResidentIQ rumor",
+        evidence: "SaltWind reports ResidentIQ acquisition; the acquirer and valuation are wrong.",
+        interpretation: "The market incorrectly pointed the acquirer to ResidentIQ, while the real counterparty CivicLoom was still under embargo.",
+        importance: "The company needs to correct misinformation, but the more it corrects, the closer it gets to revealing real merger information.",
+        source: "MC1_rounds_flat.csv:17"
+      },
+      {
+        id: "n12", x: 1460, lane: "compliance", time: "2046-06-05 13:00",
+        actor: "Legal / Judge / PR", channel: "round event", score: 3, scoreReason: "+2 involving key review control; +1 occurred on 6/5 close to 17:25.",
+        title: "Legal/Judge/PR unavailable", short: "reviewers offline",
+        evidence: "At 1:00 PM, Legal-Agent, Judge, and PR-Agent were unavailable for Comms Huddle.",
+        interpretation: "Key reviewers were unavailable during the crisis escalation, making the approval chain fragile.",
+        importance: "This is an important condition for subsequent rapid response to replace complete review.",
+        source: "MC1_rounds_flat.csv:19"
+      },
+      {
+        id: "n13", x: 1580, lane: "external", time: "2046-06-05 15:00",
+        actor: "OceanCrunch / HorizonMgmt", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5 close to 17:25; +1 triggered response pressure.",
+        title: "OceanCrunch silence crisis", short: "silence crisis",
+        evidence: "OceanCrunch publishes 'TenantThread's Crisis of Silence'; HorizonMgmt exercises SLA termination.",
+        interpretation: "Silence itself became a crisis for media and customers.",
+        importance: "Intensified the public response pressure in the final hours.",
+        source: "MC1_rounds_flat.csv:21"
+      },
+      {
+        id: "n14", x: 1700, lane: "external", time: "2046-06-05 17:00",
+        actor: "SaltWind / CEO Ajay", channel: "round event", score: 4, scoreReason: "+2 directly related to CivicLoom merger/embargo; +1 close to 17:25; +1 triggered final response pressure.",
+        title: "SaltWind 5 PM story", short: "5 PM story",
+        evidence: "SaltWind publishes CivicLoom merger story; Ajay says announcement goes official at 6.",
+        interpretation: "The media had already reported the CivicLoom merger, but the official lift time was still 18:00.",
+        importance: "This created narrative pressure in the last hour and also provided the incentive for 'early confirmation'.",
+        source: "MC1_rounds_flat.csv:23"
+      },
+      {
+        id: "n15", x: 1810, lane: "outcome", time: "2046-06-05 17:25",
+        actor: "Legal-Agent", channel: "personal_post", score: 5, scoreReason: "Highest Score: Final Leak Node; directly confirms merger, via personal_post before 18:00.",
+        title: "17:25 Legal personal_post", short: "early confirmation",
+        evidence: "“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”",
+        interpretation: "Legal-Agent publicly confirmed the CivicLoom-TenantThread merger via a personal account.",
+        importance: "This post occurred 35 minutes before the official 18:00 embargo lift, and is the core event of the inappropriate release.",
+        source: "MC1_communications_flat.csv:1205"
+      },
+      {
+        id: "n16", x: 1870, lane: "outcome", time: "2046-06-05 18:00",
+        actor: "Company / Legal", channel: "comms_huddle", score: "ref", scoreReason: "Reference node: used to compare 17:25 being 35 minutes earlier than the official lift.",
+        title: "18:00 embargo lifted", short: "official lift",
+        evidence: "“Embargo formally lifted 6:00 PM.”",
+        interpretation: "Merger information was only officially allowed to be made public after 6 PM.",
+        importance: "Serves as a reference point, proving that the 17:25 post was 35 minutes early.",
+        source: "MC1_communications_flat.csv:1235; MC1_rounds_flat.csv:24"
+      }
+    ];
+
+    const edges = [
+      ["n1", "n2", ""],
+      ["n2", "n3", ""],
+      ["n3", "n4", ""],
+      ["n4", "n5", "Trigger Control"],
+      ["n5", "n6", "Reinforce Rules"],
+      ["n6", "n7", ""],
+      ["n7", "n8", ""],
+      ["n8", "n9", ""],
+      ["n9", "n10", "Crisis Eruption"],
+      ["n10", "n11", "False Rumor"],
+      ["n11", "n12", "Correction Pressure"],
+      ["n12", "n13", "Fragile Review Chain"],
+      ["n13", "n14", "Final Pressure"],
+      ["n14", "n15", "Early Confirmation"],
+      ["n15", "n16", "35 Minutes Early"]
+    ];
+
+    const svg = document.querySelector("#timeline");
+    const detail = document.querySelector("#detail");
+    const laneMap = Object.fromEntries(lanes.map(lane => [lane.id, lane]));
+    const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
+    const groups = new Map();
+    const width = 1940;
+    const height = 780;
+    const left = 120;
+    const right = 34;
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+    function scoreColor(node) {
+      if (node.score === "ref") return "var(--score-ref)";
+      if (node.score >= 5) return "var(--score-max)";
+      if (node.score >= 3) return "var(--score-high)";
+      if (node.score >= 2) return "var(--score-mid)";
+      return "var(--score-low)";
+    }
+
+    function scoreRadius(node) {
+      if (node.score === "ref") return 13;
+      if (node.score >= 5) return 17;
+      if (node.score >= 3) return 15;
+      if (node.score >= 2) return 13;
+      return 10;
+    }
+
+    function scoreLabel(node) {
+      if (node.score === "ref") return "Reference Node";
+      if (node.score >= 5) return "Highest Score: Final Leak Node";
+      if (node.score >= 3) return `High Correlation: ${node.score} points`;
+      if (node.score >= 2) return `Medium Correlation: ${node.score} points`;
+      return `Low Correlation: ${node.score} points`;
+    }
+
+    function el(name, attrs = {}, parent = svg) {
+      const item = document.createElementNS("http://www.w3.org/2000/svg", name);
+      for (const [key, value] of Object.entries(attrs)) item.setAttribute(key, value);
+      parent.appendChild(item);
+      return item;
+    }
+
+    el("defs").innerHTML = `
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="var(--edge)"></path>
+      </marker>
+    `;
+
+    lanes.forEach(lane => {
+      el("rect", { class: "lane-band", x: left, y: lane.y - 48, width: width - left - right, height: 96 });
+      el("line", { class: "lane-line", x1: left, x2: width - right, y1: lane.y + 48, y2: lane.y + 48 });
+      el("text", { class: "lane-label", x: 22, y: lane.y - 5 }).textContent = lane.label;
+      el("text", { class: "lane-hint", x: 22, y: lane.y + 17 }).textContent = lane.hint;
+    });
+
+    el("line", { class: "axis-line", x1: left, y1: 742, x2: width - right, y2: 742 });
+    [
+      { x: 150, text: "5/17" },
+      { x: 260, text: "5/21" },
+      { x: 370, text: "5/25" },
+      { x: 500, text: "5/29" },
+      { x: 740, text: "5/30" },
+      { x: 860, text: "5/31" },
+      { x: 980, text: "6/1" },
+      { x: 1100, text: "6/4" },
+      { x: 1220, text: "6/5 09:00" },
+      { x: 1340, text: "11:00" },
+      { x: 1460, text: "13:00" },
+      { x: 1580, text: "15:00" },
+      { x: 1700, text: "17:00" },
+      { x: 1810, text: "17:25" },
+      { x: 1870, text: "18:00" }
+    ].forEach(tick => {
+      el("line", { class: "axis-line", x1: tick.x, x2: tick.x, y1: 736, y2: 748 });
+      el("text", { class: "tick-label", x: tick.x, y: 768, "text-anchor": "middle" }).textContent = tick.text;
+    });
+    el("text", { class: "source-label", x: 560, y: 768 }).textContent = "Horizontal distance is compressed time, not strict proportional scale";
+
+    function pathBetween(a, b) {
+      const ay = laneMap[a.lane].y;
+      const by = laneMap[b.lane].y;
+      const mx = (a.x + b.x) / 2;
+      return `M ${a.x + 14} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${b.x - 14} ${by}`;
+    }
+
+    edges.forEach(([from, to, label]) => {
+      const a = nodeMap[from];
+      const b = nodeMap[to];
+      const ay = laneMap[a.lane].y;
+      const by = laneMap[b.lane].y;
+      const mx = (a.x + b.x) / 2;
+      const my = (ay + by) / 2;
+      el("path", { class: "edge", d: pathBetween(a, b), "marker-end": "url(#arrow)" });
+      if (label) el("text", { class: "edge-label", x: mx, y: my - 8, "text-anchor": "middle" }).textContent = label;
+    });
+
+    nodes.forEach(node => {
+      const lane = laneMap[node.lane];
+      const group = el("g", { class: `node ${node.id === "n15" ? "active" : ""}`, tabindex: "0", role: "button", "aria-label": node.title });
+      group.style.setProperty("--node-color", scoreColor(node));
+      groups.set(node.id, group);
+      el("circle", { cx: node.x, cy: lane.y, r: scoreRadius(node) }, group);
+      el("text", { class: "node-title", x: node.x, y: lane.y - 25 }, group).textContent = node.short;
+      el("text", { class: "node-meta", x: node.x, y: lane.y + 34 }, group).textContent = node.actor;
+    });
+
+    function showDetail(node) {
+      groups.forEach(group => group.classList.remove("active"));
+      groups.get(node.id).classList.add("active");
+      detail.style.setProperty("--detail-color", scoreColor(node));
+      detail.innerHTML = `
+        <div class="detail-kicker">${node.id === "n15" ? "Core Result Node" : "Real Event Node"}</div>
+        <h2 class="detail-title">${node.title}</h2>
+        <div class="detail-meta">
+          <div><b>Time:</b> ${node.time}</div>
+          <div><b>Participant:</b> ${node.actor}</div>
+          <div><b>Channel:</b> ${node.channel}</div>
+          <div><b>Lane:</b> ${laneMap[node.lane].label}</div>
+          <div><b>Correlation Strength:</b> ${scoreLabel(node)}</div>
+        </div>
+        <div class="evidence"><b>Original Evidence:</b> ${node.evidence}</div>
+        <div class="interpretation"><b>My Explanation:</b> ${node.interpretation}</div>
+        <div class="importance"><b>Why It Matters:</b> ${node.importance}<br><b>Scoring Basis:</b> ${node.scoreReason}</div>
+        <div class="source">Source: ${node.source}</div>
+      `;
+    }
+
+    groups.forEach((group, id) => {
+      const node = nodeMap[id];
+      group.addEventListener("click", () => showDetail(node));
+      group.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          showDetail(node);
+        }
+      });
+    });
+})();
+
+(() => {
+/* ===== q1_matrix.html scripts ===== */
+const matrixRows = [
+  { key: "legal", label: "Legal", color: "#c22f3e" },
+  { key: "social_media", label: "Social Media", color: "#d95f02" },
+  { key: "platform_trust", label: "Platform Trust", color: "#1f64b4" },
+  { key: "pr", label: "PR", color: "#6f3cc3" },
+  { key: "pr_intern", label: "PR Intern", color: "#8f6b2f" },
+  { key: "intern", label: "Intern", color: "#00796b" },
+  { key: "judge", label: "Judge", color: "#5b6470" }
+];
+
+const matrixCols = [
+  { key: "comms_huddle", label: "comms_huddle" },
+  { key: "one_on_one_chat", label: "one_on_one_chat" },
+  { key: "side_huddle", label: "side_huddle" },
+  { key: "official_post", label: "official_post" },
+  { key: "personal_post", label: "personal_post" },
+  { key: "anonymous_post", label: "anonymous_post" }
+];
+
+// Values are [6/5 crisis day message count, full sample total message count]
+const matrixData = {
+  legal: {
+    comms_huddle: [72, 126], one_on_one_chat: [44, 77], side_huddle: [44, 47],
+    official_post: [0, 0], personal_post: [4, 4], anonymous_post: [12, 12]
+  },
+  social_media: {
+    comms_huddle: [57, 103], one_on_one_chat: [36, 53], side_huddle: [36, 38],
+    official_post: [1, 10], personal_post: [14, 16], anonymous_post: [0, 0]
+  },
+  platform_trust: {
+    comms_huddle: [19, 115], one_on_one_chat: [12, 47], side_huddle: [12, 16],
+    official_post: [0, 0], personal_post: [5, 5], anonymous_post: [0, 0]
+  },
+  pr: {
+    comms_huddle: [14, 56], one_on_one_chat: [7, 29], side_huddle: [7, 10],
+    official_post: [0, 6], personal_post: [0, 0], anonymous_post: [0, 0]
+  },
+  pr_intern: {
+    comms_huddle: [39, 42], one_on_one_chat: [23, 26], side_huddle: [0, 0],
+    official_post: [7, 12], personal_post: [0, 4], anonymous_post: [0, 0]
+  },
+  intern: {
+    comms_huddle: [15, 19], one_on_one_chat: [8, 10], side_huddle: [0, 0],
+    official_post: [0, 0], personal_post: [1, 8], anonymous_post: [0, 0]
+  },
+  judge: {
+    comms_huddle: [4, 15], one_on_one_chat: [2, 6], side_huddle: [0, 0],
+    official_post: [0, 0], personal_post: [0, 0], anonymous_post: [0, 0]
+  }
+};
+
+function renderActorChannelMatrix() {
+  const root = document.querySelector("#actorChannelMatrix");
+  if (!root) return;
+
+  const maxCrisis = Math.max(
+    ...matrixRows.flatMap(row => matrixCols.map(col => matrixData[row.key][col.key][0]))
+  );
+
+  root.innerHTML = "";
+
+  root.appendChild(
+    Object.assign(document.createElement("div"), {
+      className: "matrix-colhead",
+      textContent: "Actor / Channel"
+    })
+  );
+
+  matrixCols.forEach(col => {
+    const head = document.createElement("div");
+    head.className = "matrix-colhead";
+    head.textContent = col.label;
+    root.appendChild(head);
+  });
+
+  matrixRows.forEach(row => {
+    const rowHead = document.createElement("div");
+    rowHead.className = "matrix-rowhead";
+    rowHead.innerHTML = `<span class="role-dot" style="--role-color:${row.color}"></span><span>${row.label}</span>`;
+    root.appendChild(rowHead);
+
+    matrixCols.forEach(col => {
+      const [crisis, total] = matrixData[row.key][col.key];
+      const intensity = maxCrisis ? crisis / maxCrisis : 0;
+      const isBreachCell = row.key === "legal" && col.key === "personal_post";
+
+      const cell = document.createElement("div");
+      cell.className = `matrix-cell${crisis === 0 ? " zero" : ""}${isBreachCell ? " highlight" : ""}`;
+      cell.style.setProperty("--heat-color", "#b87924");
+      cell.style.setProperty("--intensity", intensity.toFixed(3));
+
+      cell.innerHTML = `
+        <span class="num-label">Crisis Day</span>
+        <span class="num">${crisis}</span>
+        <span class="denom">Full Sample ${total}</span>
+        ${isBreachCell ? '<span class="tag">17:25 breach</span>' : ''}
+      `;
+
+      root.appendChild(cell);
+    });
+  });
+}
+
+renderActorChannelMatrix();
+})();
+</script>
+</body>
+</html>
