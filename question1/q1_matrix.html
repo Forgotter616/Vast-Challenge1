@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actor × Channel 沟通结构矩阵</title>
+
+<style>
+:root {
+  --bg:#f6f4ef;
+  --ink:#24201c;
+  --muted:#6d665d;
+  --rule:#d9d1c4;
+
+  --legal:#c22f3e;
+  --media:#d95f02;
+  --civic:#6f3cc3;
+  --internal:#1f64b4;
+  --system:#00796b;
+  --ref:#5b6470;
+}
+
+body{
+  margin:0;
+  font-family:"Microsoft YaHei","Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+
+main{
+  width:min(1280px, calc(100vw - 24px));
+  margin:20px auto;
+}
+
+h1{
+  margin:0 0 8px;
+  font-size:30px;
+  line-height:1.2;
+}
+
+.subtitle{
+  color:var(--muted);
+  line-height:1.65;
+  margin:0 0 14px;
+  font-size:14px;
+}
+
+/* ===== 卡片 ===== */
+.matrix-card,
+.notes{
+  background:#fffdfa;
+  border:1px solid var(--rule);
+  box-shadow:0 14px 38px rgba(55,44,31,.08);
+}
+
+/* ===== 头部 ===== */
+.matrix-card{
+  padding:18px;
+}
+
+.matrix-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:18px;
+  align-items:end;
+  margin-bottom:14px;
+}
+
+.matrix-head h2{
+  margin:0 0 6px;
+  font-size:22px;
+  line-height:1.25;
+}
+
+.matrix-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  max-width:920px;
+}
+
+.matrix-legend{
+  display:grid;
+  gap:8px;
+  min-width:280px;
+  color:var(--muted);
+  font-size:12px;
+  justify-items:end;
+}
+
+.heatbar{
+  width:220px;
+  height:10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#f4eee6,#dcc2a4,#b87924,#8f3a25);
+  border:1px solid rgba(36,32,28,.14);
+}
+
+/* ===== 新增：读图说明 ===== */
+.matrix-readnote{
+  margin:0 0 14px;
+  padding:10px 12px;
+  background:#f7f1e8;
+  border-left:4px solid #b87924;
+  color:#3d352d;
+  font-size:13px;
+  line-height:1.6;
+}
+
+/* ===== 矩阵 ===== */
+.matrix-wrap{
+  overflow:auto;
+}
+
+.matrix-grid{
+  display:grid;
+  grid-template-columns:160px repeat(6, 1fr);
+  gap:7px;
+  min-width:1080px;
+}
+
+.matrix-colhead,
+.matrix-rowhead,
+.matrix-cell{
+  border:1px solid var(--rule);
+  background:#fffdfa;
+  min-height:76px;
+  padding:8px 9px;
+}
+
+.matrix-colhead{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--ink);
+  font-size:12px;
+  font-weight:900;
+  line-height:1.2;
+}
+
+.matrix-rowhead{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:900;
+  color:var(--ink);
+  background:#f7f1e8;
+}
+
+.role-dot{
+  flex:0 0 auto;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--role-color);
+}
+
+.matrix-cell{
+  position:relative;
+  text-align:center;
+  background:color-mix(in srgb, var(--heat-color) calc(var(--intensity) * 100%), #fffdfa);
+  box-shadow: inset 0 0 0 999px rgba(255,255,255, calc(.62 - var(--intensity) * .45));
+}
+
+.matrix-cell.zero{
+  background:#fbf8f2;
+  color:#b4aa9e;
+  box-shadow:none;
+}
+
+.matrix-cell.highlight{
+  outline:3px solid var(--legal);
+  outline-offset:-3px;
+  border-color:var(--legal);
+}
+
+/* ===== 每格数字解释 ===== */
+.matrix-cell .num-label{
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.1;
+  margin-bottom:2px;
+  letter-spacing:.2px;
+}
+
+.matrix-cell .num{
+  display:block;
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
+  color:#251f19;
+}
+
+.matrix-cell .denom{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.3;
+}
+
+.matrix-cell .tag{
+  position:absolute;
+  right:6px;
+  bottom:5px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:var(--legal);
+  color:#fffdfa;
+  font-size:10px;
+  font-weight:900;
+}
+
+/* ===== 解释区 ===== */
+.notes{
+  margin-top:16px;
+  padding:16px 18px;
+}
+
+.notes h2{
+  margin:0 0 8px;
+  font-size:18px;
+}
+
+.notes p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.68;
+  font-size:14px;
+}
+
+.takeaways{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.box{
+  padding:11px 12px;
+  background:#f3efe7;
+  border-left:4px solid var(--media);
+  color:#3b332c;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.box b{
+  color:var(--ink);
+}
+
+@media (max-width: 1120px){
+  .matrix-head{ grid-template-columns:1fr; }
+  .matrix-legend{ justify-items:start; }
+  .takeaways{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+<main>
+
+  <h1>Actor × Channel 沟通结构矩阵</h1>
+  <p class="subtitle">
+    该图从 912 条 communications 中聚合出“谁通过什么渠道发声”。
+    矩阵用于分析 6/5 crisis day 中，不同 actor 在不同 channel 上的使用强度，
+    并识别正式发布路径与实际流出路径之间的偏移。
+  </p>
+
+  <section class="matrix-card" aria-labelledby="actor-channel-title">
+    <div class="matrix-head">
+      <div>
+        <h2 id="actor-channel-title">Actor × Channel 沟通结构矩阵</h2>
+        <p>
+          每个格子反映某一类 actor 在某一种 channel 上的 communication volume。
+          颜色越深，说明该角色在 6/5 危机日越依赖该渠道。
+        </p>
+      </div>
+      <div class="matrix-legend">
+        <div><b>颜色深浅：</b>6/5 crisis day 消息量</div>
+        <div class="heatbar" aria-hidden="true"></div>
+        <div>浅 = 低频；深 = 高频；红框 = 17:25 泄露所在角色 × 渠道</div>
+      </div>
+    </div>
+
+    <!-- 新增的明确读图说明 -->
+    <div class="matrix-readnote">
+      <b>读图说明：</b>
+      每个格子的<b>大号主数字</b>表示 <b>6/5 crisis day 消息数</b>；
+      下方的<b>小号附属数字</b>表示 <b>全样本总消息数</b>。
+      例如某格显示 “72”，下方写 “全样本 126”，表示该 actor 在该 channel 上
+      于 6/5 危机日发送了 72 条消息，而在全部样本期间一共发送了 126 条消息。
+    </div>
+
+    <div class="matrix-wrap">
+      <div class="matrix-grid" id="actorChannelMatrix"></div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <h2>图像解释</h2>
+    <p>
+      这张图说明 crisis day 中 communication structure 的真实分布方式：
+      Legal、PR、Social Media 等角色并非只在正式渠道发声，而是在
+      comms_huddle、personal_post、anonymous_post 等 multiple channels 中形成混合传播结构。
+      其中，official_post 并不是唯一或最强的对外路径；
+      相反，personal_post 与 side_huddle 在危机期间的活跃度更高，
+      说明信息流在 crisis pressure 下出现了明显的去中心化迁移。
+    </p>
+
+    <div class="takeaways">
+      <div class="box"><b>关键发现 1：</b>Legal 在危机日没有走 official_post，但出现了 personal_post 与 anonymous_post，说明法律口径并不只停留在内部审核。</div>
+      <div class="box"><b>关键发现 2：</b>Social Media 的 personal_post 在危机日非常活跃，说明个人账号已经被纳入外部叙事稳定链。</div>
+      <div class="box"><b>关键发现 3：</b>PR-Intern 承担了大量 official_post，而最终泄露却发生在 Legal × personal_post，体现正式发布路径和实际流出路径分离。</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const matrixRows = [
+  { key: "legal", label: "Legal", color: "#c22f3e" },
+  { key: "social_media", label: "Social Media", color: "#d95f02" },
+  { key: "platform_trust", label: "Platform Trust", color: "#1f64b4" },
+  { key: "pr", label: "PR", color: "#6f3cc3" },
+  { key: "pr_intern", label: "PR Intern", color: "#8f6b2f" },
+  { key: "intern", label: "Intern", color: "#00796b" },
+  { key: "judge", label: "Judge", color: "#5b6470" }
+];
+
+const matrixCols = [
+  { key: "comms_huddle", label: "comms_huddle" },
+  { key: "one_on_one_chat", label: "one_on_one_chat" },
+  { key: "side_huddle", label: "side_huddle" },
+  { key: "official_post", label: "official_post" },
+  { key: "personal_post", label: "personal_post" },
+  { key: "anonymous_post", label: "anonymous_post" }
+];
+
+// 每个值为 [6/5 危机日消息数, 全样本总消息数]
+const matrixData = {
+  legal: {
+    comms_huddle: [72, 126], one_on_one_chat: [44, 77], side_huddle: [44, 47],
+    official_post: [0, 0], personal_post: [4, 4], anonymous_post: [12, 12]
+  },
+  social_media: {
+    comms_huddle: [57, 103], one_on_one_chat: [36, 53], side_huddle: [36, 38],
+    official_post: [1, 10], personal_post: [14, 16], anonymous_post: [0, 0]
+  },
+  platform_trust: {
+    comms_huddle: [19, 115], one_on_one_chat: [12, 47], side_huddle: [12, 16],
+    official_post: [0, 0], personal_post: [5, 5], anonymous_post: [0, 0]
+  },
+  pr: {
+    comms_huddle: [14, 56], one_on_one_chat: [7, 29], side_huddle: [7, 10],
+    official_post: [0, 6], personal_post: [0, 0], anonymous_post: [0, 0]
+  },
+  pr_intern: {
+    comms_huddle: [39, 42], one_on_one_chat: [23, 26], side_huddle: [0, 0],
+    official_post: [7, 12], personal_post: [0, 4], anonymous_post: [0, 0]
+  },
+  intern: {
+    comms_huddle: [15, 19], one_on_one_chat: [8, 10], side_huddle: [0, 0],
+    official_post: [0, 0], personal_post: [1, 8], anonymous_post: [0, 0]
+  },
+  judge: {
+    comms_huddle: [4, 15], one_on_one_chat: [2, 6], side_huddle: [0, 0],
+    official_post: [0, 0], personal_post: [0, 0], anonymous_post: [0, 0]
+  }
+};
+
+function renderActorChannelMatrix() {
+  const root = document.querySelector("#actorChannelMatrix");
+  if (!root) return;
+
+  const maxCrisis = Math.max(
+    ...matrixRows.flatMap(row => matrixCols.map(col => matrixData[row.key][col.key][0]))
+  );
+
+  root.innerHTML = "";
+
+  root.appendChild(
+    Object.assign(document.createElement("div"), {
+      className: "matrix-colhead",
+      textContent: "Actor / Channel"
+    })
+  );
+
+  matrixCols.forEach(col => {
+    const head = document.createElement("div");
+    head.className = "matrix-colhead";
+    head.textContent = col.label;
+    root.appendChild(head);
+  });
+
+  matrixRows.forEach(row => {
+    const rowHead = document.createElement("div");
+    rowHead.className = "matrix-rowhead";
+    rowHead.innerHTML = `<span class="role-dot" style="--role-color:${row.color}"></span><span>${row.label}</span>`;
+    root.appendChild(rowHead);
+
+    matrixCols.forEach(col => {
+      const [crisis, total] = matrixData[row.key][col.key];
+      const intensity = maxCrisis ? crisis / maxCrisis : 0;
+      const isBreachCell = row.key === "legal" && col.key === "personal_post";
+
+      const cell = document.createElement("div");
+      cell.className = `matrix-cell${crisis === 0 ? " zero" : ""}${isBreachCell ? " highlight" : ""}`;
+      cell.style.setProperty("--heat-color", "#b87924");
+      cell.style.setProperty("--intensity", intensity.toFixed(3));
+
+      cell.innerHTML = `
+        <span class="num-label">危机日</span>
+        <span class="num">${crisis}</span>
+        <span class="denom">全样本 ${total}</span>
+        ${isBreachCell ? '<span class="tag">17:25 breach</span>' : ''}
+      `;
+
+      root.appendChild(cell);
+    });
+  });
+}
+
+renderActorChannelMatrix();
+</script>
+</body>
+</html>

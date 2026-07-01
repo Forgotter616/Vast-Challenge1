@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>MC1 Q1 主体行为逻辑图（完整全时间版本）</title>
+<style>
+  body{
+    margin:0;
+    font-family: "Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    background:#f6f4ef;
+    color:#222;
+  }
+  .page{
+    width:2400px;
+    margin:0 auto;
+    padding:18px 18px 28px 18px;
+    box-sizing:border-box;
+  }
+  .title{
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+  .subtitle{
+    font-size:15px;
+    color:#666;
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+
+  .board{
+    position:relative;
+    width:2360px;
+    height:1280px;
+    background:#fff;
+    border:1px solid #ddd4c8;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    overflow:hidden;
+  }
+
+  /* 顶部阶段带 */
+  .phase{
+    position:absolute;
+    top:18px;
+    height:44px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    color:#4a433a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #e6ddd0;
+    background:#f7f2ea;
+  }
+
+  /* 时间轴 */
+  .axis-wrap{
+    position:absolute;
+    left:270px;
+    right:20px;
+    top:82px;
+    height:56px;
+    border-bottom:2px solid #4e4a44;
+  }
+  .tick{
+    position:absolute;
+    top:0;
+    width:1px;
+    height:940px;
+    background:#ece7df;
+  }
+  .tick.major{ background:#dfd8ce; }
+  .tick-label{
+    position:absolute;
+    top:-2px;
+    transform:translateX(-50%);
+    font-size:12px;
+    color:#50483f;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .tick-sub{
+    position:absolute;
+    top:18px;
+    transform:translateX(-50%);
+    font-size:11px;
+    color:#857c70;
+    white-space:nowrap;
+  }
+
+  /* actor labels */
+  .actor{
+    position:absolute;
+    left:18px;
+    width:225px;
+    font-weight:800;
+    font-size:18px;
+    line-height:1.2;
+  }
+  .actor .meta{
+    margin-top:6px;
+    font-size:12px;
+    line-height:1.35;
+    color:#6e665d;
+    font-weight:500;
+  }
+
+  .lane{
+    position:absolute;
+    left:270px;
+    right:20px;
+    height:1px;
+    background:#ece7df;
+  }
+
+  /* 节点卡片 */
+  .node{
+    position:absolute;
+    border-radius:14px;
+    padding:10px 12px 10px 12px;
+    color:#fff;
+    box-shadow:0 8px 18px rgba(0,0,0,0.10);
+    z-index:3;
+    box-sizing:border-box;
+  }
+  .node .k{
+    font-size:10px;
+    font-weight:800;
+    opacity:0.92;
+    letter-spacing:.4px;
+    margin-bottom:4px;
+    text-transform:uppercase;
+  }
+  .node .t{
+    font-size:14px;
+    font-weight:800;
+    line-height:1.25;
+    margin-bottom:4px;
+  }
+  .node .s{
+    font-size:11px;
+    line-height:1.35;
+    opacity:0.94;
+  }
+
+  .sw{ background:#2a9898; }         /* SaltWind / 外部媒体 */
+  .rq{ background:#d6673b; }         /* ResidentIQ */
+  .cl{ background:#7d64d8; }         /* CivicLoom */
+  .lg{ background:#c94a55; }         /* Legal */
+  .pr{ background:#4e78b8; }         /* PR / Social */
+  .sys{ background:#6f8e56; }        /* System / Embargo */
+  .result{ background:#b8333f; border:3px solid #1e1e1e; }
+  .ref{ background:#75787d; }
+
+  .soft{
+    border:1px solid rgba(255,255,255,0.18);
+  }
+
+  /* 注释 */
+  .note{
+    position:absolute;
+    font-size:12px;
+    color:#645c52;
+    background:#f7f3ed;
+    border:1px solid #e7dfd4;
+    border-radius:10px;
+    padding:8px 10px;
+    line-height:1.45;
+    z-index:2;
+  }
+
+  /* 图例 */
+  .legend{
+    position:absolute;
+    right:20px;
+    top:18px;
+    width:220px;
+    background:#fff;
+    border:1px solid #ded6ca;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12px;
+    color:#51493f;
+    z-index:5;
+    box-shadow:0 3px 8px rgba(0,0,0,0.04);
+  }
+  .legend h4{
+    margin:0 0 8px 0;
+    font-size:12px;
+    font-weight:800;
+  }
+  .legend-row{
+    display:flex;
+    align-items:center;
+    margin:5px 0;
+    gap:8px;
+  }
+  .swatch{
+    width:10px;height:10px;border-radius:50%;
+    display:inline-block;
+  }
+  .line-demo{
+    width:34px;height:0;border-top:3px solid #5a5147; display:inline-block;
+  }
+  .line-demo.dashed{
+    border-top:2px dashed #8d8478;
+  }
+
+  /* 底部说明 */
+  .footer{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:16px;
+    background:#faf7f2;
+    border:1px solid #e6ddd0;
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:13px;
+    color:#544c43;
+    line-height:1.6;
+  }
+
+  /* SVG */
+  svg{
+    position:absolute;
+    left:0;
+    top:0;
+    z-index:1;
+    pointer-events:none;
+  }
+  .arrow-main{
+    stroke:#5a5147;
+    stroke-width:3;
+    fill:none;
+    marker-end:url(#arrowHead);
+    opacity:0.82;
+  }
+  .arrow-sup{
+    stroke:#8e8477;
+    stroke-width:2;
+    fill:none;
+    stroke-dasharray:7 5;
+    marker-end:url(#arrowHeadLight);
+    opacity:0.75;
+  }
+
+  .milestone{
+    position:absolute;
+    top:138px;
+    font-size:11px;
+    color:#8a7f72;
+    background:#fff;
+    padding:2px 6px;
+    border-radius:999px;
+    border:1px solid #e5dccf;
+    transform:translateX(-50%);
+    z-index:2;
+  }
+
+  .highlight-label{
+    position:absolute;
+    font-size:12px;
+    font-weight:700;
+    color:#7d2e38;
+    background:#fff;
+    border:1px solid #e3c7cb;
+    border-radius:999px;
+    padding:4px 8px;
+    z-index:4;
+  }
+
+</style>
+</head>
+<body>
+<div class="page">
+<div class="title">MC1 Q1 主体行为逻辑图（完整全时间版本）</div>
+<div class="subtitle">
+    这张图以“主体行为逻辑”为中心：横轴是完整时间顺序，纵轴是 6 个关键主体。<br/>
+    主线展示：<b>外部叙事如何形成 → 错误交易叙事如何升级 → CivicLoom 如何施压纠错 → Legal 如何在 embargo 约束下决策 →
+    审核链为什么失效 → 17:25 personal_post 泄露如何发生</b>。
+  </div>
+<div class="board">
+<!-- 图例 -->
+<div class="legend">
+<h4>图例</h4>
+<div class="legend-row"><span class="swatch" style="background:#2a9898;"></span>SaltWind / 外部媒体</div>
+<div class="legend-row"><span class="swatch" style="background:#d6673b;"></span>ResidentIQ / 竞品放大器</div>
+<div class="legend-row"><span class="swatch" style="background:#7d64d8;"></span>CivicLoom / 交易对手</div>
+<div class="legend-row"><span class="swatch" style="background:#c94a55;"></span>Legal / 决策与控制</div>
+<div class="legend-row"><span class="swatch" style="background:#4e78b8;"></span>PR / Social / 发布系统</div>
+<div class="legend-row"><span class="swatch" style="background:#6f8e56;"></span>System / Embargo / 控制结构</div>
+<div class="legend-row"><span class="swatch" style="background:#b8333f;"></span>核心结果节点</div>
+<div class="legend-row"><span class="line-demo"></span>主行为链 / 关键因果</div>
+<div class="legend-row"><span class="line-demo dashed"></span>支撑条件 / 结构性影响</div>
+</div>
+<!-- 阶段带 -->
+<div class="phase" style="left:270px; width:530px;">阶段一：结构性埋点（5/17–5/29）</div>
+<div class="phase" style="left:820px; width:500px;">阶段二：外部叙事升级（6/1–6/4）</div>
+<div class="phase" style="left:1340px; width:600px;">阶段三：危机收敛与提前发布（6/5）</div>
+<!-- 时间轴 -->
+<div class="axis-wrap">
+<!-- 位置：5/17, 5/21, 5/25, 5/29, 6/1, 6/4, 6/5 10:00, 13:00, 17:00, 17:25, 18:00 -->
+<div class="tick major" style="left:20px;"></div>
+<div class="tick-label" style="left:20px;">5/17</div>
+<div class="tick-sub" style="left:20px;">起点</div>
+<div class="tick" style="left:180px;"></div>
+<div class="tick-label" style="left:180px;">5/21</div>
+<div class="tick" style="left:340px;"></div>
+<div class="tick-label" style="left:340px;">5/25</div>
+<div class="tick major" style="left:500px;"></div>
+<div class="tick-label" style="left:500px;">5/29</div>
+<div class="tick" style="left:660px;"></div>
+<div class="tick-label" style="left:660px;">6/1</div>
+<div class="tick major" style="left:820px;"></div>
+<div class="tick-label" style="left:820px;">6/4</div>
+<div class="tick major" style="left:1030px;"></div>
+<div class="tick-label" style="left:1030px;">6/5</div>
+<div class="tick-sub" style="left:1030px;">10:00</div>
+<div class="tick" style="left:1210px;"></div>
+<div class="tick-label" style="left:1210px;">13:00</div>
+<div class="tick major" style="left:1400px;"></div>
+<div class="tick-label" style="left:1400px;">17:00</div>
+<div class="tick major" style="left:1505px;"></div>
+<div class="tick-label" style="left:1505px;">17:25</div>
+<div class="tick-sub" style="left:1505px;">LEAK</div>
+<div class="tick major" style="left:1715px;"></div>
+<div class="tick-label" style="left:1715px;">18:00</div>
+<div class="tick-sub" style="left:1715px;">官方解禁</div>
+</div>
+<!-- actor labels -->
+<div class="actor" style="top:160px;">
+      1. SaltWind
+      <div class="meta">媒体 / 外部叙事发动者<br/>作用：制造并持续升级外部舆论压力</div>
+</div>
+<div class="actor" style="top:272px;">
+      2. ResidentIQ
+      <div class="meta">竞品放大器<br/>作用：把危机从产品争议升级为交易误读</div>
+</div>
+<div class="actor" style="top:384px;">
+      3. CivicLoom
+      <div class="meta">交易对手 + 约束方<br/>作用：把“舆论问题”变成“交易风险”</div>
+</div>
+<div class="actor" style="top:496px;">
+      4. Legal
+      <div class="meta">核心决策 + 控制<br/>作用：决定纠错边界，并最终触发提前确认</div>
+</div>
+<div class="actor" style="top:640px;">
+      5. PR / Social
+      <div class="meta">发布系统<br/>作用：把纠错转化为发布动作，推动执行</div>
+</div>
+<div class="actor" style="top:800px;">
+      6. System / Embargo
+      <div class="meta">控制结构<br/>作用：解释正常约束与失效路径</div>
+</div>
+<!-- lane lines -->
+<div class="lane" style="top:205px;"></div>
+<div class="lane" style="top:317px;"></div>
+<div class="lane" style="top:429px;"></div>
+<div class="lane" style="top:541px;"></div>
+<div class="lane" style="top:688px;"></div>
+<div class="lane" style="top:850px;"></div>
+<!-- milestone labels -->
+<div class="milestone" style="left:1775px;">17:25 提前发布</div>
+<div class="milestone" style="left:1985px;">18:00 正式解禁</div>
+<!-- 节点：System / Embargo -->
+<div class="node sys soft" style="left:300px; top:800px; width:190px;">
+<div class="k">W1 · system</div>
+<div class="t">社交发布权限较宽</div>
+<div class="s">minimal oversight；早期就存在结构性缺口</div>
+</div>
+<div class="node sys soft" style="left:520px; top:820px; width:205px;">
+<div class="k">W2 · boundary</div>
+<div class="t">个人 / 官方边界模糊</div>
+<div class="s">personal_post 可承载公司叙事</div>
+</div>
+<div class="node sys soft" style="left:740px; top:800px; width:205px;">
+<div class="k">W3 · control</div>
+<div class="t">Social hold + Judge 规则</div>
+<div class="s">说明系统知道有风险，但控制未完全覆盖</div>
+</div>
+<div class="node sys soft" style="left:1180px; top:835px; width:185px;">
+<div class="k">F1 · failure</div>
+<div class="t">关键审核不可用</div>
+<div class="s">Legal / Judge / PR reviewers offline</div>
+</div>
+<div class="node ref soft" style="left:1898px; top:915px; width:175px;">
+<div class="k">T1 · reference</div>
+<div class="t">18:00 embargo lifted</div>
+<div class="s">作为正式解禁参照点</div>
+</div>
+<!-- 节点：SaltWind -->
+<div class="node sw soft" style="left:410px; top:148px; width:190px;">
+<div class="k">S1 · media</div>
+<div class="t">data broker / 匿名化质疑</div>
+<div class="s">5/21：把 TenantThread 拉入数据治理争议</div>
+</div>
+<div class="node sw soft" style="left:1040px; top:148px; width:200px;">
+<div class="k">S2 · expose</div>
+<div class="t">Secret Scoring System 曝光</div>
+<div class="s">6/5 10:00：危机正式爆发</div>
+</div>
+<div class="node sw soft" style="left:1360px; top:148px; width:210px;">
+<div class="k">S3 · pressure</div>
+<div class="t">SaltWind 5 PM CivicLoom story</div>
+<div class="s">外部逼近真实 merger 信息</div>
+</div>
+<!-- 节点：ResidentIQ -->
+<div class="node rq soft" style="left:620px; top:260px; width:190px;">
+<div class="k">R1 · competitor</div>
+<div class="t">privacy-first 对比攻击</div>
+<div class="s">5/25：开始借势区隔自己与 TenantThread</div>
+</div>
+<div class="node rq soft" style="left:1110px; top:260px; width:205px;">
+<div class="k">R2 · rumor</div>
+<div class="t">wrong acquirer rumor</div>
+<div class="s">错误把交易方指向 ResidentIQ</div>
+</div>
+<div class="node rq soft" style="left:1325px; top:260px; width:205px;">
+<div class="k">R3 · framing</div>
+<div class="t">wrong valuation / distressed sale</div>
+<div class="s">把问题升级成“错误交易叙事”</div>
+</div>
+<!-- 节点：CivicLoom -->
+<div class="node cl soft" style="left:890px; top:372px; width:205px;">
+<div class="k">C1 · embargoed fact</div>
+<div class="t">真实 merger 内部存在</div>
+<div class="s">6/1：CivicLoom 才是真正 acquirer，但仍被 embargo</div>
+</div>
+<div class="node cl soft" style="left:1395px; top:372px; width:205px;">
+<div class="k">C2 · pressure</div>
+<div class="t">formal notice / pressure</div>
+<div class="s">要求纠正错误信息，避免市场继续误读</div>
+</div>
+<!-- 节点：Legal -->
+<div class="node lg soft" style="left:1260px; top:504px; width:205px;">
+<div class="k">L1 · decision</div>
+<div class="t">必须纠正错误信息</div>
+<div class="s">错误 acquirer / valuation 不能继续扩散</div>
+</div>
+<div class="node lg soft" style="left:1505px; top:504px; width:195px;">
+<div class="k">L2 · conflict</div>
+<div class="t">merger 仍在 embargo 中</div>
+<div class="s">形成“要纠错但不能确认 CivicLoom”的冲突</div>
+</div>
+<div class="node result soft" style="left:1730px; top:548px; width:220px;">
+<div class="k">R1 · leak result</div>
+<div class="t">17:25 Legal personal_post 提前确认 merger</div>
+<div class="s">比 18:00 正式解禁早 35 分钟</div>
+</div>
+<!-- 节点：PR / Social -->
+<div class="node pr soft" style="left:1260px; top:685px; width:195px;">
+<div class="k">P1 · response</div>
+<div class="t">准备 narrow correction</div>
+<div class="s">内部尝试回应错误交易叙事</div>
+</div>
+<div class="node pr soft" style="left:1495px; top:685px; width:195px;">
+<div class="k">P2 · execution</div>
+<div class="t">审批链被压缩（GO ≤ 60s）</div>
+<div class="s">发布从“审查”转为“快速执行”</div>
+</div>
+<div class="node pr soft" style="left:1730px; top:685px; width:165px;">
+<div class="k">P3 · amplify</div>
+<div class="t">personal amplification live</div>
+<div class="s">个人账号开始承载传播</div>
+</div>
+<!-- 注释 -->
+<div class="note" style="left:1060px; top:1050px; width:320px;">
+<b>读图重点：</b><br/>
+      这不是单一主体失误，而是多个主体行为在 6/5 汇合：<br/>
+      外部错误叙事失控 → CivicLoom 施压纠错 → Legal 面临 embargo 冲突 →
+      审核链失效 + 发布链压缩 → 个人账号成为提前发布路径。
+    </div>
+<div class="highlight-label" style="left:1545px; top:455px;">
+      核心冲突：必须纠错，但真正信息仍被 embargo
+    </div>
+<div class="highlight-label" style="left:1700px; top:815px;">
+      personal_post 成为绕过路径
+    </div>
+<!-- SVG arrows -->
+<svg height="1280" viewbox="0 0 2360 1280" width="2360">
+<defs>
+<marker id="arrowHead" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
+<path d="M0,0 L0,8 L10,4 z" fill="#5a5147"></path>
+</marker>
+<marker id="arrowHeadLight" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
+<path d="M0,0 L0,8 L10,4 z" fill="#8e8477"></path>
+</marker>
+</defs>
+<!-- 主链：SaltWind -->
+<path class="arrow-main" d="M600,188 C750,188 850,188 1040,188"></path>
+<path class="arrow-main" d="M1240,188 C1300,188 1320,188 1360,188"></path>
+<!-- ResidentIQ链 -->
+<path class="arrow-main" d="M810,300 C960,300 1010,300 1110,300"></path>
+<path class="arrow-main" d="M1315,300 C1320,300 1320,300 1325,300"></path>
+<!-- CivicLoom链 -->
+<path class="arrow-main" d="M1095,412 C1260,412 1310,412 1395,412"></path>
+<!-- Legal链 -->
+<path class="arrow-main" d="M1465,556 C1478,556 1490,556 1505,556"></path>
+<path class="arrow-main" d="M1700,556 C1715,562 1720,575 1730,590"></path>
+<path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path>
+<!-- PR链 -->
+<path class="arrow-main" d="M1455,725 C1470,725 1480,725 1495,725"></path>
+<path class="arrow-main" d="M1690,725 C1705,725 1715,725 1730,725"></path>
+<!-- 跨主体主链 -->
+<path class="arrow-main" d="M1180,248 C1190,252 1200,256 1212,260"></path> <!-- SaltWind -> ResidentIQ rumor -->
+<path class="arrow-main" d="M1530,300 C1360,340 1360,395 1395,412"></path> <!-- wrong valuation -> CivicLoom pressure -->
+<path class="arrow-main" d="M1498,458 C1488,472 1472,490 1450,504"></path> <!-- CivicLoom -> Legal must correct -->
+<path class="arrow-main" d="M1700,556 C1720,560 1725,570 1730,590"></path> <!-- Legal conflict -> final leak -->
+<path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path> <!-- PR execution -> leak -->
+<!-- 支撑条件 -->
+<path class="arrow-sup" d="M490,840 C520,840 520,860 520,860"></path> <!-- W1 -> W2 -->
+<path class="arrow-sup" d="M725,860 C731,855 736,852 740,850"></path> <!-- W2 -> W3 -->
+<path class="arrow-sup" d="M725,850 C1010,850 1370,840 1730,615"></path> <!-- boundary -> leak -->
+<path class="arrow-sup" d="M945,850 C1060,850 1120,850 1180,850"></path> <!-- rules -> reviewers unavailable -->
+<path class="arrow-sup" d="M1365,875 C1400,830 1450,770 1495,735"></path> <!-- reviewers unavailable -> compressed approval -->
+<path class="arrow-sup" d="M1095,412 C1180,470 1370,520 1505,550"></path> <!-- true merger fact -> embargo conflict -->
+<path class="arrow-sup" d="M1690,725 C1760,760 1900,820 1985,915"></path> <!-- P2 -> 18:00 reference -->
+<path class="arrow-sup" d="M1950,605 C2010,690 2020,820 1985,915"></path> <!-- leak -> 18:00 reference -->
+</svg>
+<!-- footer -->
+<div class="footer">
+<b>主链读法：</b>
+      SaltWind 先把 TenantThread 推入公开危机；ResidentIQ 又把危机从“产品/治理争议”放大成“错误交易叙事”；
+      CivicLoom 作为真实交易对手因此施压要求纠错；Legal 判断必须纠错，但又不能在 18:00 前确认真实 merger；
+      同时系统层面存在个人/官方边界模糊、关键审核不可用、审批链被压缩等问题，最终
+      <b>Legal-Agent 在 17:25 通过 personal_post 提前确认 CivicLoom merger</b>，比正式解禁早 35 分钟。
+    </div>
+</div>
+</div>
+</body>
+</html>

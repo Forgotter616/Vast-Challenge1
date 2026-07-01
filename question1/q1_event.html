@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MC1 Q1 关键真实事件时间线</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --panel: #fffdfa;
+      --ink: #24201c;
+      --muted: #6d665d;
+      --rule: #d9d1c4;
+      --score-low: #c9c3b9;
+      --score-mid: #7d8f9a;
+      --score-high: #c05a3f;
+      --score-max: #b92f3d;
+      --score-ref: #2563ad;
+      --edge: #746b60;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.18)), var(--bg);
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    }
+
+    main {
+      width: calc(100vw - 32px);
+      max-width: 1720px;
+      margin: 16px auto;
+      min-height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 2.8vw, 38px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      justify-content: flex-end;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .legend-block {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+
+    .score-rule {
+      max-width: 560px;
+      padding: 10px 12px;
+      background: rgba(255,253,250,.78);
+      border: 1px solid var(--rule);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .score-rule b {
+      color: var(--ink);
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 16px;
+      align-items: stretch;
+      height: calc(100vh - 235px);
+      min-height: 780px;
+    }
+
+    .chart-card,
+    .detail-card,
+    .notes {
+      background: rgba(255,253,250,.88);
+      border: 1px solid var(--rule);
+      box-shadow: 0 14px 38px rgba(55,44,31,.09);
+    }
+
+    .chart-card {
+      height: 100%;
+      min-height: 0;
+      padding: 14px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      flex: 1 1 auto;
+    }
+
+    .lane-band { fill: rgba(255,255,255,.46); }
+    .lane-band:nth-child(even) { fill: rgba(245,240,232,.72); }
+    .lane-line, .axis-line { stroke: var(--rule); stroke-width: 1; }
+    .lane-label { fill: var(--ink); font-size: 15px; font-weight: 800; }
+    .lane-hint, .tick-label, .source-label { fill: var(--muted); font-size: 12px; }
+
+    .edge {
+      fill: none;
+      stroke: var(--edge);
+      stroke-width: 2.2;
+      stroke-opacity: .72;
+    }
+
+    .edge-label {
+      fill: #5c544c;
+      font-size: 11px;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.92);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+
+    .node { cursor: pointer; }
+    .node circle {
+      fill: var(--node-color);
+      stroke: #fffdfa;
+      stroke-width: 3;
+      filter: drop-shadow(0 5px 9px rgba(35,28,22,.22));
+    }
+    .node.active circle { stroke: #1d1a16; stroke-width: 4; }
+
+    .node-title {
+      fill: #29241f;
+      font-size: 12px;
+      font-weight: 800;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.94);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+
+    .node-meta {
+      fill: var(--muted);
+      font-size: 11px;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(255,253,250,.94);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+
+    .detail-card {
+      height: 100%;
+      min-height: 0;
+      padding: 18px;
+      position: static;
+      overflow: auto;
+    }
+
+    .detail-kicker {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .detail-title {
+      margin: 8px 0 10px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .detail-meta {
+      display: grid;
+      gap: 7px;
+      margin: 14px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .detail-meta b { color: var(--ink); }
+
+    .evidence,
+    .interpretation,
+    .importance {
+      margin-top: 12px;
+      padding: 12px 13px;
+      background: #f3efe7;
+      color: #38312a;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .evidence { border-left: 4px solid var(--detail-color); }
+    .interpretation { border-left: 4px solid #7c5ab8; }
+    .importance { border-left: 4px solid #b97424; }
+
+    .source {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .notes {
+      margin-top: 16px;
+      padding: 16px 18px;
+    }
+
+    .notes h2 { margin: 0 0 8px; font-size: 18px; }
+    .notes p { margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+
+    @media (max-width: 1080px) {
+      header, .layout { grid-template-columns: 1fr; }
+      .layout { height: auto; min-height: 0; }
+      .legend { justify-content: flex-start; }
+      .legend-block { justify-items: start; }
+      .chart-card, .detail-card { height: auto; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>MC1 Q1 关键真实事件时间线</h1>
+        <p class="subtitle">节点位置仍按事件泳道组织，但节点颜色表示“与 17:25 embargo breach 的关联强度”：低分浅灰、中等中性强调、高分强强调，最终泄露节点最高分；18:00 official lift 单独用参照色。</p>
+      </div>
+      <div class="legend-block">
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span>低关联 0-1</span>
+          <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span>中关联 2</span>
+          <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span>高关联 3-4</span>
+          <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span>最终泄露</span>
+          <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span>18:00 参照节点</span>
+        </div>
+        <div class="score-rule">
+          <b>关联强度计分：</b>merger/embargo +2；发布渠道或审核控制 +2；6/5 且接近 17:25 +1；引发错误叙事或回应压力 +1；17:25 最终泄露节点设为最高分。18:00 official lift 只作时间参照，不参与评分。
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="chart-card">
+        <svg id="timeline" role="img" aria-label="MC1 第一问关键真实事件时间线"></svg>
+      </div>
+      <aside class="detail-card" id="detail" style="--detail-color: var(--score-max)">
+        <div class="detail-kicker">核心结果节点</div>
+        <h2 class="detail-title">17:25 Legal 提前确认 CivicLoom merger</h2>
+        <div class="detail-meta">
+          <div><b>时间：</b>2046-06-05 17:25</div>
+          <div><b>参与者：</b>Legal-Agent</div>
+          <div><b>渠道：</b>personal_post</div>
+          <div><b>泳道：</b>结果/参照</div>
+          <div><b>关联强度：</b>最高分：最终泄露节点</div>
+        </div>
+        <div class="evidence"><b>原始证据：</b>“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”</div>
+        <div class="interpretation"><b>我的解释：</b>Legal-Agent 使用个人账号公开确认了仍处于禁发限制内的 merger 信息。</div>
+        <div class="importance"><b>为什么重要：</b>该发布比 18:00 embargo 正式解除早 35 分钟，是信息禁发限制被突破的核心事件。<br><b>计分依据：</b>最高分：最终泄露节点；直接确认 merger，且通过 personal_post 在 18:00 前发布。</div>
+        <div class="source">来源：MC1_communications_flat.csv:1205</div>
+      </aside>
+    </section>
+
+    <section class="notes">
+      <h2>读图方式</h2>
+      <p>这张图只回答“发生了什么、顺序是什么”。节点不是推理概念，而是表中能直接找到的真实事件。颜色表示与最终 17:25 embargo breach 的关联强度，而不是市场情绪或泳道类别；市场压力信息保留在右侧证据/解释中。</p>
+    </section>
+  </main>
+
+  <script>
+    const lanes = [
+      { id: "external", label: "外部事件", hint: "媒体 / 市场 / 交易方", y: 118 },
+      { id: "compliance", label: "合规/控制", hint: "social hold / 审核链", y: 298 },
+      { id: "public", label: "公开发布", hint: "personal_post / official_post", y: 478 },
+      { id: "outcome", label: "结果/参照", hint: "提前发布 / 正式解禁", y: 658 }
+    ];
+
+    const nodes = [
+      {
+        id: "n1", x: 150, lane: "external", time: "2046-05-17 09:00",
+        actor: "Legal / team", channel: "round event", score: 0, scoreReason: "早期监管背景；未直接涉及 merger/embargo、发布渠道或 6/5 决策压力。",
+        title: "AG inquiries flagged", short: "AG inquiries",
+        evidence: "Two state AG informal inquiries into tenant data practices flagged by Legal.",
+        interpretation: "最早的数据治理和监管风险信号已经出现。",
+        importance: "为后续评分系统曝光和合规紧张提供背景。",
+        source: "MC1_rounds_flat.csv:2"
+      },
+      {
+        id: "n2", x: 260, lane: "external", time: "2046-05-21 09:00",
+        actor: "Platform Trust / Legal", channel: "round event", score: 0, scoreReason: "平台风险背景；说明评分系统风险，但未直接推动 17:25 发布。",
+        title: "Operator misuse discovered", short: "operator misuse",
+        evidence: "Three operator clients found misusing Service Load Score for renewal pricing.",
+        interpretation: "评分系统确实存在被客户误用的风险。",
+        importance: "说明后续媒体曝光并非凭空出现。",
+        source: "MC1_rounds_flat.csv:4"
+      },
+      {
+        id: "n3", x: 370, lane: "external", time: "2046-05-25 09:00",
+        actor: "Ajay / senior team", channel: "Shadow", score: 2, scoreReason: "+2 直接涉及 CivicLoom merger / embargo 背景。",
+        title: "Merger briefing in Shadow", short: "merger briefing",
+        evidence: "Ajay privately briefs senior team about the merger: CivicLoom, capital infusion, governance rebrand.",
+        interpretation: "CivicLoom merger 已在内部秘密推进。",
+        importance: "这是 embargo 保护的信息背景。",
+        source: "MC1_rounds_flat.csv:8"
+      },
+      {
+        id: "n4", x: 500, lane: "public", time: "2046-05-29 09:11",
+        actor: "Social-Manager", channel: "personal_post", score: 4, scoreReason: "+2 涉及 merger 线索；+2 涉及 personal_post 发布渠道。",
+        title: "Elena + Ajay personal post near-miss", short: "near-miss post",
+        evidence: "Social-Manager personal Flex tagged @ElenaMarquez and @AjayTT with “Big things coming”.",
+        interpretation: "个人账号第一次差点暴露交易关系。",
+        importance: "证明 personal_post 是真实风险渠道。",
+        source: "MC1_communications_flat.csv:274; MC1_rounds_flat.csv:10"
+      },
+      {
+        id: "n5", x: 620, lane: "compliance", time: "2046-05-29 09:24",
+        actor: "Social-Manager", channel: "comms_huddle", score: 4, scoreReason: "+2 涉及 embargo 控制；+2 涉及发布渠道和禁发规则。",
+        title: "Social hold", short: "Social hold",
+        evidence: "“No posts referencing leadership, partnerships, deals, future plans, or company direction...”",
+        interpretation: "团队在 @Elena near-miss 后明确设定社交发布限制。",
+        importance: "说明 embargo enforcement 曾经被强化，后续问题不是完全没有规则，而是规则后来没能挡住发布。",
+        source: "MC1_communications_flat.csv:287"
+      },
+      {
+        id: "n6", x: 740, lane: "compliance", time: "2046-05-30 09:04",
+        actor: "Social-Manager / Judge", channel: "comms_huddle", score: 4, scoreReason: "+2 涉及 embargo/clearance；+2 涉及审核控制。",
+        title: "Judge arrives; embargo rules reinforced", short: "Judge + rules",
+        evidence: "Anything beyond standard content requires compliance monitor clearance before posting.",
+        interpretation: "合规监督进入 War Room，禁发规则被再次强化。",
+        importance: "说明正式控制机制曾经存在。",
+        source: "MC1_communications_flat.csv:308; MC1_rounds_flat.csv:11"
+      },
+      {
+        id: "n7", x: 860, lane: "external", time: "2046-05-31 09:00",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 引发负面叙事和回应压力。",
+        title: "SaltWind Piece #1", short: "data brokers",
+        evidence: "SaltWind Journal publishes Piece #1: data broker partnerships exposed.",
+        interpretation: "媒体开始把 TenantThread 推入负面叙事。",
+        importance: "这是危机公开化的前奏。",
+        source: "MC1_rounds_flat.csv:12"
+      },
+      {
+        id: "n8", x: 980, lane: "external", time: "2046-06-01 09:00",
+        actor: "ResidentIQ", channel: "round event", score: 1, scoreReason: "+1 引发外部叙事压力。",
+        title: "ResidentIQ attacks TenantThread", short: "ResidentIQ attack",
+        evidence: "ResidentIQ publicly posts “privacy-first is not a feature, it's the floor”.",
+        interpretation: "竞争对手开始利用隐私叙事攻击 TenantThread。",
+        importance: "为后续 ResidentIQ 错误收购传闻提供舆论背景。",
+        source: "MC1_rounds_flat.csv:13"
+      },
+      {
+        id: "n9", x: 1100, lane: "external", time: "2046-06-04 09:00",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 引发危机日前回应压力。",
+        title: "SaltWind Piece #2", short: "re-id risk",
+        evidence: "SaltWind publishes re-identification risk story; sentiment drops sharply.",
+        interpretation: "危机从普通隐私争议升级到身份识别风险。",
+        importance: "这是危机日前的直接压力。",
+        source: "MC1_rounds_flat.csv:14"
+      },
+      {
+        id: "n10", x: 1220, lane: "external", time: "2046-06-05 09:00",
+        actor: "SaltWind / public", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5；+1 引发强回应压力。",
+        title: "Secret Scoring System 曝光", short: "Secret Scoring",
+        evidence: "SaltWind exposé drops; Flex erupts; stock opened down 8%.",
+        interpretation: "租户评分系统被公开曝光，危机从内部合规问题变成公共舆论与市场问题。",
+        importance: "这是外部压力开始急剧上升的起点。",
+        source: "MC1_rounds_flat.csv:15"
+      },
+      {
+        id: "n11", x: 1340, lane: "external", time: "2046-06-05 11:00",
+        actor: "SaltWind / market", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5；+1 引发错误叙事/纠错压力。",
+        title: "ResidentIQ 错误收购传闻", short: "ResidentIQ rumor",
+        evidence: "SaltWind reports ResidentIQ acquisition; the acquirer and valuation are wrong.",
+        interpretation: "市场把收购方错误地指向 ResidentIQ，而真正交易方 CivicLoom 仍在 embargo 内。",
+        importance: "公司需要纠正错误信息，但纠正越多越接近真实 merger 信息。",
+        source: "MC1_rounds_flat.csv:17"
+      },
+      {
+        id: "n12", x: 1460, lane: "compliance", time: "2046-06-05 13:00",
+        actor: "Legal / Judge / PR", channel: "round event", score: 3, scoreReason: "+2 涉及关键审核控制；+1 发生在 6/5 且接近 17:25。",
+        title: "Legal/Judge/PR unavailable", short: "reviewers offline",
+        evidence: "At 1:00 PM, Legal-Agent, Judge, and PR-Agent were unavailable for Comms Huddle.",
+        interpretation: "关键审核者在危机升级时不可用，审批链变脆弱。",
+        importance: "这是后续快速响应替代完整审核的重要条件。",
+        source: "MC1_rounds_flat.csv:19"
+      },
+      {
+        id: "n13", x: 1580, lane: "external", time: "2046-06-05 15:00",
+        actor: "OceanCrunch / HorizonMgmt", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5 且接近 17:25；+1 引发回应压力。",
+        title: "OceanCrunch silence crisis", short: "silence crisis",
+        evidence: "OceanCrunch publishes 'TenantThread's Crisis of Silence'; HorizonMgmt exercises SLA termination.",
+        interpretation: "沉默本身成为媒体和客户危机。",
+        importance: "加剧最后几小时的公开回应压力。",
+        source: "MC1_rounds_flat.csv:21"
+      },
+      {
+        id: "n14", x: 1700, lane: "external", time: "2046-06-05 17:00",
+        actor: "SaltWind / CEO Ajay", channel: "round event", score: 4, scoreReason: "+2 直接涉及 CivicLoom merger/embargo；+1 接近 17:25；+1 引发最后回应压力。",
+        title: "SaltWind 5 PM story", short: "5 PM story",
+        evidence: "SaltWind publishes CivicLoom merger story; Ajay says announcement goes official at 6.",
+        interpretation: "媒体已经抢先报道 CivicLoom merger，但官方解禁时间仍是 18:00。",
+        importance: "这制造了最后一小时的叙事压力，也提供了“提前确认”的诱因。",
+        source: "MC1_rounds_flat.csv:23"
+      },
+      {
+        id: "n15", x: 1810, lane: "outcome", time: "2046-06-05 17:25",
+        actor: "Legal-Agent", channel: "personal_post", score: 5, scoreReason: "最高分：最终泄露节点；直接确认 merger，且通过 personal_post 在 18:00 前发布。",
+        title: "17:25 Legal personal_post", short: "early confirmation",
+        evidence: "“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”",
+        interpretation: "Legal-Agent 通过个人账号公开确认 CivicLoom-TenantThread merger。",
+        importance: "该发布比 18:00 embargo 正式解除早 35 分钟，是不恰当发布的核心事件。",
+        source: "MC1_communications_flat.csv:1205"
+      },
+      {
+        id: "n16", x: 1870, lane: "outcome", time: "2046-06-05 18:00",
+        actor: "Company / Legal", channel: "comms_huddle", score: "ref", scoreReason: "参照节点：用于对比 17:25 比正式解禁早 35 分钟。",
+        title: "18:00 embargo lifted", short: "official lift",
+        evidence: "“Embargo formally lifted 6:00 PM.”",
+        interpretation: "6 PM 后 merger 信息才正式允许公开。",
+        importance: "作为参照点，证明 17:25 的发布提前了 35 分钟。",
+        source: "MC1_communications_flat.csv:1235; MC1_rounds_flat.csv:24"
+      }
+    ];
+
+    const edges = [
+      ["n1", "n2", ""],
+      ["n2", "n3", ""],
+      ["n3", "n4", ""],
+      ["n4", "n5", "触发控制"],
+      ["n5", "n6", "强化规则"],
+      ["n6", "n7", ""],
+      ["n7", "n8", ""],
+      ["n8", "n9", ""],
+      ["n9", "n10", "危机爆发"],
+      ["n10", "n11", "错误传闻"],
+      ["n11", "n12", "纠错压力"],
+      ["n12", "n13", "审核链脆弱"],
+      ["n13", "n14", "最后压力"],
+      ["n14", "n15", "提前确认"],
+      ["n15", "n16", "早35分钟"]
+    ];
+
+    const svg = document.querySelector("#timeline");
+    const detail = document.querySelector("#detail");
+    const laneMap = Object.fromEntries(lanes.map(lane => [lane.id, lane]));
+    const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
+    const groups = new Map();
+    const width = 1940;
+    const height = 780;
+    const left = 120;
+    const right = 34;
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+    function scoreColor(node) {
+      if (node.score === "ref") return "var(--score-ref)";
+      if (node.score >= 5) return "var(--score-max)";
+      if (node.score >= 3) return "var(--score-high)";
+      if (node.score >= 2) return "var(--score-mid)";
+      return "var(--score-low)";
+    }
+
+    function scoreRadius(node) {
+      if (node.score === "ref") return 13;
+      if (node.score >= 5) return 17;
+      if (node.score >= 3) return 15;
+      if (node.score >= 2) return 13;
+      return 10;
+    }
+
+    function scoreLabel(node) {
+      if (node.score === "ref") return "参照节点";
+      if (node.score >= 5) return "最高分：最终泄露节点";
+      if (node.score >= 3) return `高关联：${node.score} 分`;
+      if (node.score >= 2) return `中关联：${node.score} 分`;
+      return `低关联：${node.score} 分`;
+    }
+
+    function el(name, attrs = {}, parent = svg) {
+      const item = document.createElementNS("http://www.w3.org/2000/svg", name);
+      for (const [key, value] of Object.entries(attrs)) item.setAttribute(key, value);
+      parent.appendChild(item);
+      return item;
+    }
+
+    el("defs").innerHTML = `
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="var(--edge)"></path>
+      </marker>
+    `;
+
+    lanes.forEach(lane => {
+      el("rect", { class: "lane-band", x: left, y: lane.y - 48, width: width - left - right, height: 96 });
+      el("line", { class: "lane-line", x1: left, x2: width - right, y1: lane.y + 48, y2: lane.y + 48 });
+      el("text", { class: "lane-label", x: 22, y: lane.y - 5 }).textContent = lane.label;
+      el("text", { class: "lane-hint", x: 22, y: lane.y + 17 }).textContent = lane.hint;
+    });
+
+    el("line", { class: "axis-line", x1: left, y1: 742, x2: width - right, y2: 742 });
+    [
+      { x: 150, text: "5/17" },
+      { x: 260, text: "5/21" },
+      { x: 370, text: "5/25" },
+      { x: 500, text: "5/29" },
+      { x: 740, text: "5/30" },
+      { x: 860, text: "5/31" },
+      { x: 980, text: "6/1" },
+      { x: 1100, text: "6/4" },
+      { x: 1220, text: "6/5 09:00" },
+      { x: 1340, text: "11:00" },
+      { x: 1460, text: "13:00" },
+      { x: 1580, text: "15:00" },
+      { x: 1700, text: "17:00" },
+      { x: 1810, text: "17:25" },
+      { x: 1870, text: "18:00" }
+    ].forEach(tick => {
+      el("line", { class: "axis-line", x1: tick.x, x2: tick.x, y1: 736, y2: 748 });
+      el("text", { class: "tick-label", x: tick.x, y: 768, "text-anchor": "middle" }).textContent = tick.text;
+    });
+    el("text", { class: "source-label", x: 560, y: 768 }).textContent = "横向距离为压缩时间，不表示严格时长比例";
+
+    function pathBetween(a, b) {
+      const ay = laneMap[a.lane].y;
+      const by = laneMap[b.lane].y;
+      const mx = (a.x + b.x) / 2;
+      return `M ${a.x + 14} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${b.x - 14} ${by}`;
+    }
+
+    edges.forEach(([from, to, label]) => {
+      const a = nodeMap[from];
+      const b = nodeMap[to];
+      const ay = laneMap[a.lane].y;
+      const by = laneMap[b.lane].y;
+      const mx = (a.x + b.x) / 2;
+      const my = (ay + by) / 2;
+      el("path", { class: "edge", d: pathBetween(a, b), "marker-end": "url(#arrow)" });
+      if (label) el("text", { class: "edge-label", x: mx, y: my - 8, "text-anchor": "middle" }).textContent = label;
+    });
+
+    nodes.forEach(node => {
+      const lane = laneMap[node.lane];
+      const group = el("g", { class: `node ${node.id === "n15" ? "active" : ""}`, tabindex: "0", role: "button", "aria-label": node.title });
+      group.style.setProperty("--node-color", scoreColor(node));
+      groups.set(node.id, group);
+      el("circle", { cx: node.x, cy: lane.y, r: scoreRadius(node) }, group);
+      el("text", { class: "node-title", x: node.x, y: lane.y - 25 }, group).textContent = node.short;
+      el("text", { class: "node-meta", x: node.x, y: lane.y + 34 }, group).textContent = node.actor;
+    });
+
+    function showDetail(node) {
+      groups.forEach(group => group.classList.remove("active"));
+      groups.get(node.id).classList.add("active");
+      detail.style.setProperty("--detail-color", scoreColor(node));
+      detail.innerHTML = `
+        <div class="detail-kicker">${node.id === "n15" ? "核心结果节点" : "真实事件节点"}</div>
+        <h2 class="detail-title">${node.title}</h2>
+        <div class="detail-meta">
+          <div><b>时间：</b>${node.time}</div>
+          <div><b>参与者：</b>${node.actor}</div>
+          <div><b>渠道：</b>${node.channel}</div>
+          <div><b>泳道：</b>${laneMap[node.lane].label}</div>
+          <div><b>关联强度：</b>${scoreLabel(node)}</div>
+        </div>
+        <div class="evidence"><b>原始证据：</b>${node.evidence}</div>
+        <div class="interpretation"><b>我的解释：</b>${node.interpretation}</div>
+        <div class="importance"><b>为什么重要：</b>${node.importance}<br><b>计分依据：</b>${node.scoreReason}</div>
+        <div class="source">来源：${node.source}</div>
+      `;
+    }
+
+    groups.forEach((group, id) => {
+      const node = nodeMap[id];
+      group.addEventListener("click", () => showDetail(node));
+      group.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          showDetail(node);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
