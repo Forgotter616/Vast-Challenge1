@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MC1 Q2 · Answer Sheet Overview</title>
+<style>
+  :root {
+    --paper: #f2eee6;
+    --panel: #fffdf8;
+    --soft: #f7f2e9;
+    --ink: #211f1b;
+    --muted: #706a61;
+    --rule: #d8d0c4;
+    --red: #ad3d35;
+    --red-dark: #7d2928;
+    --red-soft: #f0d5ce;
+    --blue: #416d78;
+    --blue-soft: #d7e2e1;
+    --gold-soft: #f1e2c6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html,
+  body {
+    width: 1600px;
+    height: 1200px;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  body {
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(255,255,255,.48) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.48) 1px, transparent 1px),
+      var(--paper);
+    background-size: 32px 32px;
+    font-family: "Aptos", "Microsoft YaHei", sans-serif;
+  }
+
+  .board {
+    width: 1540px;
+    height: 1140px;
+    margin: 30px;
+    display: grid;
+    grid-template-rows: 220px 540px 370px;
+    border: 1px solid var(--rule);
+    border-top: 8px solid var(--red);
+    background: var(--panel);
+    box-shadow: 0 18px 44px rgba(59,48,35,.11);
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 790px;
+    gap: 30px;
+    padding: 26px 32px 22px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .eyebrow {
+    color: var(--red-dark);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .16em;
+  }
+
+  h1 {
+    margin: 13px 0 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 53px;
+    line-height: .98;
+    letter-spacing: -.03em;
+  }
+
+  .deck {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    align-self: stretch;
+  }
+
+  .metric {
+    display: grid;
+    align-content: center;
+    padding: 14px;
+    border: 1px solid var(--rule);
+    background: var(--soft);
+  }
+
+  .metric-label {
+    min-height: 31px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.35;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .metric-value {
+    margin-top: 6px;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 35px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .metric-note {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: 1000px 1fr;
+    min-height: 0;
+  }
+
+  .fingerprint,
+  .findings,
+  .timeline {
+    min-width: 0;
+  }
+
+  .fingerprint {
+    padding: 22px 26px 12px;
+    border-right: 1px solid var(--rule);
+  }
+
+  .findings {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 16px;
+    padding: 22px 26px;
+    background: var(--soft);
+  }
+
+  .section-kicker {
+    color: var(--red-dark);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 6px 0 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 31px;
+    line-height: 1.05;
+  }
+
+  .section-deck {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  #heatmap {
+    width: 100%;
+    height: 430px;
+    display: block;
+  }
+
+  .finding-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .finding {
+    padding: 11px;
+    border: 1px solid #dca59d;
+    background: var(--red-soft);
+  }
+
+  .finding strong {
+    display: block;
+    color: var(--red-dark);
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 23px;
+  }
+
+  .finding span {
+    display: block;
+    margin-top: 5px;
+    color: #4f453d;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .chain {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) 22px minmax(0, 1fr);
+    gap: 5px;
+    align-items: stretch;
+  }
+
+  .node {
+    min-height: 96px;
+    display: grid;
+    align-content: center;
+    padding: 10px;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+  }
+
+  .node.silent {
+    border-style: dashed;
+    color: #8a837a;
+  }
+
+  .node.danger {
+    border-color: #c47368;
+    background: var(--red-soft);
+  }
+
+  .node strong {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .node span {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  .arrow {
+    display: grid;
+    place-items: center;
+    color: #a79d90;
+    font-size: 20px;
+  }
+
+  .answer {
+    align-self: end;
+    padding: 13px 14px;
+    border-left: 4px solid #b87822;
+    background: var(--gold-soft);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .timeline {
+    padding: 20px 28px 12px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .timeline-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: end;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot,
+  .ring,
+  .silent-dot {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 50%;
+    border: 1px solid var(--blue);
+    background: var(--blue-soft);
+  }
+
+  .ring {
+    border: 3px double var(--red);
+    background: var(--red);
+  }
+
+  .silent-dot {
+    border-style: dashed;
+    border-color: #aaa095;
+    background: transparent;
+  }
+
+  #timeline {
+    width: 100%;
+    height: 288px;
+    display: block;
+  }
+
+  .svg-label {
+    fill: var(--muted);
+    font-family: "Aptos", "Microsoft YaHei", sans-serif;
+    font-size: 10px;
+  }
+
+  .svg-label.strong {
+    fill: var(--ink);
+    font-weight: 750;
+  }
+</style>
+</head>
+<body>
+<main class="board">
+  <header>
+    <div>
+      <div class="eyebrow">VAST 2026 · MC1 · QUESTION 2</div>
+      <h1>When the reviewer became the publisher.</h1>
+      <p class="deck">The breach combined channel-boundary crossing, role substitution, and the absence of normal control actors.</p>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Legal public posts<br>historical baseline</div>
+        <div class="metric-value">0 / 90</div>
+        <div class="metric-note">all baseline activity internal</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Legal public posts<br>breach hour</div>
+        <div class="metric-value">4 / 28</div>
+        <div class="metric-note">14.3% of Legal messages</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Active actors<br>breach hour</div>
+        <div class="metric-value">3 / 7</div>
+        <div class="metric-note">four control actors silent</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Personal merger<br>confirmation</div>
+        <div class="metric-value">17:25</div>
+        <div class="metric-note">35 minutes before formal lift</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="analysis-grid">
+    <section class="fingerprint">
+      <div class="section-kicker">Compare · selected phase: breach hour</div>
+      <h2>Actor × channel behavior fingerprint</h2>
+      <p class="section-deck">Cell color and labels encode the share of each actor's messages sent through a channel. Dashed cells indicate an inactive actor.</p>
+      <svg id="heatmap" viewBox="0 0 950 430" role="img" aria-label="Breach-hour channel shares for seven actors"></svg>
+    </section>
+
+    <aside class="findings">
+      <div>
+        <div class="section-kicker">Explain · transparent differences</div>
+        <h2>Not just more activity</h2>
+      </div>
+      <div class="finding-list">
+        <div class="finding">
+          <strong>0 → 14.3%</strong>
+          <span>Legal public-channel share</span>
+        </div>
+        <div class="finding">
+          <strong>7 → 3</strong>
+          <span>active actors in the control system</span>
+        </div>
+        <div class="finding">
+          <strong>0 official</strong>
+          <span>posts during the breach hour</span>
+        </div>
+      </div>
+      <div class="chain">
+        <div class="node silent">
+          <strong>Judge / PR /<br>PR Intern / Trust</strong>
+          <span>0 messages; no visible control handoff</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node danger">
+          <strong>Legal<br>reviewer → publisher</strong>
+          <span>2 personal + 2 anonymous posts</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node danger">
+          <strong>Social Manager<br>personal amplification</strong>
+          <span>3 personal posts</span>
+        </div>
+      </div>
+      <div class="answer"><strong>Answer:</strong> typical behavior was role-specialized and predominantly internal. The breach rerouted disclosure around the official account, concentrated review and publication in Legal, and occurred while Judge, PR, PR Intern, and Platform Trust were silent.</div>
+    </aside>
+  </div>
+
+  <section class="timeline">
+    <div class="timeline-head">
+      <div>
+        <div class="section-kicker">Trace · rounds 1–23</div>
+        <h2>Behavioral drift before and during the release</h2>
+      </div>
+      <div class="legend">
+        <span><i class="dot"></i> total messages (area)</span>
+        <span><i class="ring"></i> one or more public posts</span>
+        <span><i class="silent-dot"></i> no activity</span>
+      </div>
+    </div>
+    <svg id="timeline" viewBox="0 0 1480 288" role="img" aria-label="Actor activity and public posting across 23 rounds"></svg>
+  </section>
+</main>
+
+<script src="q2_data.js"></script>
+<script>
+(() => {
+  "use strict";
+  const data = window.Q2_DATA;
+  const NS = "http://www.w3.org/2000/svg";
+  const phaseActor = Object.fromEntries(data.phase_actor.map(d => [`${d.phase}|${d.agent}`, d]));
+  const roundActor = Object.fromEntries(data.round_actor.map(d => [`${d.round}|${d.agent}`, d]));
+
+  function svgEl(name, attributes, parent) {
+    const node = document.createElementNS(NS, name);
+    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+    parent.appendChild(node);
+    return node;
+  }
+
+  function hexToRgb(hex) {
+    const value = hex.replace("#", "");
+    return [0, 2, 4].map(i => parseInt(value.slice(i, i + 2), 16));
+  }
+
+  function mix(a, b, t) {
+    const left = hexToRgb(a);
+    const right = hexToRgb(b);
+    const value = Math.max(0, Math.min(1, t));
+    return `rgb(${left.map((item, i) => Math.round(item + (right[i] - item) * value)).join(",")})`;
+  }
+
+  function shareColor(value) {
+    return mix("#f2eee6", "#9c352f", Math.min(value, 60) / 60);
+  }
+
+  function contrast(fill) {
+    const [r, g, b] = fill.match(/\d+/g).map(Number);
+    return .2126 * r + .7152 * g + .0722 * b < 145 ? "#fff" : "#211f1b";
+  }
+
+  function renderHeatmap() {
+    const svg = document.querySelector("#heatmap");
+    const margin = { top: 74, right: 12, bottom: 42, left: 150 };
+    const width = 950 - margin.left - margin.right;
+    const height = 430 - margin.top - margin.bottom;
+    const cellW = width / data.channels.length;
+    const cellH = height / data.agents.length;
+
+    for (let i = 0; i < 24; i += 1) {
+      const value = i / 23 * 60;
+      svgEl("rect", {
+        x: margin.left + i * 12,
+        y: 18,
+        width: 12.5,
+        height: 9,
+        fill: shareColor(value)
+      }, svg);
+    }
+    [["0%", margin.left, "start"], ["30%", margin.left + 144, "middle"], ["60%+", margin.left + 288, "end"]].forEach(([label, x, anchor]) => {
+      const node = svgEl("text", { x, y: 42, class: "svg-label", "text-anchor": anchor }, svg);
+      node.textContent = label;
+    });
+
+    data.channels.forEach((channel, column) => {
+      const x = margin.left + column * cellW + cellW / 2;
+      const label = svgEl("text", {
+        x,
+        y: margin.top - 20,
+        class: "svg-label strong",
+        "text-anchor": "middle"
+      }, svg);
+      const words = channel.label_en.split(" ");
+      words.forEach((word, line) => {
+        const span = svgEl("tspan", { x, dy: line ? 11 : 0 }, label);
+        span.textContent = word;
+      });
+      if (channel.group === "public") {
+        svgEl("line", {
+          x1: margin.left + column * cellW + 10,
+          x2: margin.left + (column + 1) * cellW - 10,
+          y1: margin.top - 5,
+          y2: margin.top - 5,
+          stroke: "#ad3d35",
+          "stroke-width": 3
+        }, svg);
+      }
+    });
+
+    data.agents.forEach((agent, row) => {
+      const y = margin.top + row * cellH;
+      if (agent.id === "legal_agent") {
+        svgEl("rect", {
+          x: 3,
+          y: y + 3,
+          width: 934,
+          height: cellH - 6,
+          rx: 7,
+          fill: "#f5e9df"
+        }, svg);
+      }
+      const actorLabel = svgEl("text", {
+        x: margin.left - 13,
+        y: y + cellH / 2 + 3,
+        class: "svg-label strong",
+        "text-anchor": "end"
+      }, svg);
+      actorLabel.textContent = agent.label_en;
+
+      const record = phaseActor[`breach|${agent.id}`];
+      data.channels.forEach((channel, column) => {
+        const value = record.channel_shares[channel.id];
+        const fill = record.active ? shareColor(value) : "#f5f1ea";
+        svgEl("rect", {
+          x: margin.left + column * cellW + 3,
+          y: y + 4,
+          width: cellW - 6,
+          height: cellH - 8,
+          rx: 6,
+          fill,
+          stroke: record.active ? "#fff" : "#c9c1b6",
+          "stroke-dasharray": record.active ? "0" : "4 3"
+        }, svg);
+        const valueLabel = svgEl("text", {
+          x: margin.left + column * cellW + cellW / 2,
+          y: y + cellH / 2 + 4,
+          "text-anchor": "middle",
+          fill: record.active ? contrast(fill) : "#8d857b",
+          "font-size": 10,
+          "font-weight": 750
+        }, svg);
+        valueLabel.textContent = record.active ? `${value.toFixed(1)}%` : "—";
+      });
+    });
+
+    const internal = svgEl("text", {
+      x: margin.left + cellW * 1.5,
+      y: 422,
+      class: "svg-label",
+      "text-anchor": "middle"
+    }, svg);
+    internal.textContent = "Internal channels";
+    const publicLabel = svgEl("text", {
+      x: margin.left + cellW * 4.5,
+      y: 422,
+      fill: "#ad3d35",
+      "font-size": 10,
+      "font-weight": 750,
+      "text-anchor": "middle"
+    }, svg);
+    publicLabel.textContent = "Public channels";
+  }
+
+  function renderTimeline() {
+    const svg = document.querySelector("#timeline");
+    const margin = { top: 55, right: 18, bottom: 25, left: 132 };
+    const width = 1480 - margin.left - margin.right;
+    const height = 288 - margin.top - margin.bottom;
+    const colW = width / 23;
+    const rowH = height / data.agents.length;
+    const bands = [
+      { id: "baseline", start: 1, end: 13, fill: "#e9e4da", label: "Historical baseline" },
+      { id: "crisis", start: 14, end: 21, fill: "#e4ecea", label: "Crisis build-up" },
+      { id: "breach", start: 22, end: 22, fill: "#f0d5ce", label: "Breach" },
+      { id: "post", start: 23, end: 23, fill: "#f1e2c6", label: "Post" }
+    ];
+
+    bands.forEach(band => {
+      const x = margin.left + (band.start - 1) * colW;
+      const bandWidth = (band.end - band.start + 1) * colW;
+      svgEl("rect", {
+        x,
+        y: 4,
+        width: bandWidth,
+        height: height + margin.top - 2,
+        fill: band.fill,
+        opacity: .7
+      }, svg);
+      const label = svgEl("text", {
+        x: x + bandWidth / 2,
+        y: 17,
+        class: "svg-label strong",
+        "text-anchor": "middle"
+      }, svg);
+      label.textContent = band.label;
+    });
+
+    svgEl("line", {
+      x1: margin.left + 21 * colW,
+      y1: 0,
+      x2: margin.left + 21 * colW,
+      y2: margin.top + height,
+      stroke: "#ad3d35",
+      "stroke-width": 2
+    }, svg);
+    const breachLabel = svgEl("text", {
+      x: margin.left + 21.5 * colW,
+      y: 34,
+      fill: "#7d2928",
+      "font-size": 9,
+      "font-weight": 800,
+      "text-anchor": "middle"
+    }, svg);
+    breachLabel.textContent = "17:25 breach";
+
+    data.rounds.forEach(round => {
+      const x = margin.left + (round.round - .5) * colW;
+      const tick = svgEl("text", {
+        x,
+        y: margin.top - 6,
+        class: "svg-label",
+        "text-anchor": "middle"
+      }, svg);
+      tick.textContent = round.round;
+    });
+
+    data.agents.forEach((agent, row) => {
+      const y = margin.top + row * rowH + rowH / 2;
+      svgEl("line", {
+        x1: margin.left,
+        x2: margin.left + width,
+        y1: y,
+        y2: y,
+        stroke: agent.id === "legal_agent" ? "#ad3d35" : "#d2cabf",
+        "stroke-width": agent.id === "legal_agent" ? 1.5 : 1
+      }, svg);
+      const label = svgEl("text", {
+        x: margin.left - 11,
+        y: y + 3,
+        class: "svg-label strong",
+        "text-anchor": "end"
+      }, svg);
+      label.textContent = agent.short;
+
+      for (let round = 1; round <= 23; round += 1) {
+        const record = roundActor[`${round}|${agent.id}`];
+        const x = margin.left + (round - .5) * colW;
+        if (!record.messages) {
+          svgEl("circle", {
+            cx: x,
+            cy: y,
+            r: 2.5,
+            fill: "none",
+            stroke: "#bdb4a8",
+            "stroke-dasharray": "2 2"
+          }, svg);
+          continue;
+        }
+        const radius = 3.5 + Math.sqrt(record.messages) * 1.4;
+        svgEl("circle", {
+          cx: x,
+          cy: y,
+          r: radius,
+          fill: record.public_count ? "#ad3d35" : "#7e9a9e",
+          "fill-opacity": record.public_count ? .88 : .62,
+          stroke: record.public_count ? "#fff" : "#416d78",
+          "stroke-width": record.public_count ? 2 : 1
+        }, svg);
+        if (record.public_count) {
+          svgEl("circle", {
+            cx: x,
+            cy: y,
+            r: radius + 2,
+            fill: "none",
+            stroke: "#ad3d35",
+            "stroke-width": 1
+          }, svg);
+        }
+      }
+    });
+  }
+
+  renderHeatmap();
+  renderTimeline();
+})();
+</script>
+</body>
+</html>

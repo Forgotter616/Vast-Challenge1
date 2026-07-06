@@ -1,0 +1,1905 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MC1 Q2 · Behavioral Deviation Analysis</title>
+<style>
+  :root {
+    --paper: #f2eee6;
+    --panel: #fffdf8;
+    --panel-soft: #f7f2e9;
+    --ink: #211f1b;
+    --muted: #706a61;
+    --rule: #d8d0c4;
+    --rule-dark: #b8ad9e;
+    --red: #ad3d35;
+    --red-dark: #7d2928;
+    --red-soft: #f0d5ce;
+    --blue: #416d78;
+    --blue-soft: #d7e2e1;
+    --gold: #b87822;
+    --gold-soft: #f1e2c6;
+    --green: #56745b;
+    --shadow: 0 18px 44px rgba(59, 48, 35, .09);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(255,255,255,.48) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.48) 1px, transparent 1px),
+      var(--paper);
+    background-size: 32px 32px;
+    font-family: "Aptos", "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  .page {
+    width: min(1500px, calc(100vw - 32px));
+    margin: 0 auto;
+    padding: 22px 0 20px;
+  }
+
+  .hero,
+  .section,
+  .answer {
+    border: 1px solid var(--rule);
+    background: rgba(255, 253, 248, .97);
+    box-shadow: var(--shadow);
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(24px, 4vw, 54px);
+    border-top: 7px solid var(--red);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    right: -120px;
+    top: -180px;
+    border: 52px solid rgba(173, 61, 53, .08);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .eyebrow {
+    color: var(--red-dark);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .lang-switch,
+  .mode-switch,
+  .phase-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .control-button {
+    appearance: none;
+    border: 1px solid var(--rule-dark);
+    border-radius: 999px;
+    padding: 7px 12px;
+    color: var(--muted);
+    background: var(--panel);
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+  }
+
+  .control-button:hover {
+    border-color: var(--red);
+    color: var(--red-dark);
+    transform: translateY(-1px);
+  }
+
+  .control-button[aria-pressed="true"] {
+    border-color: var(--ink);
+    color: #fff;
+    background: var(--ink);
+  }
+
+  .hero h1 {
+    max-width: 1050px;
+    margin: 0;
+    font-family: "Iowan Old Style", "Songti SC", "STSong", serif;
+    font-size: clamp(38px, 6vw, 82px);
+    font-weight: 700;
+    line-height: .98;
+    letter-spacing: -.035em;
+  }
+
+  .hero-deck {
+    max-width: 920px;
+    margin: 24px 0 0;
+    color: var(--muted);
+    font-size: clamp(16px, 1.5vw, 20px);
+    line-height: 1.65;
+  }
+
+  .hero-conclusion {
+    display: grid;
+    grid-template-columns: 7px minmax(0, 1fr);
+    gap: 16px;
+    max-width: 1160px;
+    margin-top: 28px;
+    padding: 18px 20px;
+    background: var(--panel-soft);
+    border: 1px solid var(--rule);
+  }
+
+  .hero-conclusion::before {
+    content: "";
+    display: block;
+    border-radius: 99px;
+    background: var(--red);
+  }
+
+  .hero-conclusion p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 26px;
+  }
+
+  .metric {
+    min-height: 128px;
+    padding: 18px;
+    border: 1px solid var(--rule);
+    background: rgba(255,255,255,.62);
+  }
+
+  .metric-label {
+    min-height: 38px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .metric-value {
+    margin-top: 6px;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: clamp(30px, 3vw, 48px);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .metric-note {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section {
+    margin-top: 22px;
+    overflow: hidden;
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: end;
+    padding: 24px 26px 20px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--panel-soft);
+  }
+
+  .section-kicker {
+    margin-bottom: 7px;
+    color: var(--red-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .section h2 {
+    margin: 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: clamp(27px, 3vw, 43px);
+    line-height: 1.05;
+  }
+
+  .section-intro {
+    max-width: 880px;
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .control-group {
+    display: grid;
+    gap: 9px;
+    justify-items: end;
+  }
+
+  .control-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .fingerprint-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    min-height: 620px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    min-width: 0;
+    padding: 22px 20px 24px;
+    overflow-x: auto;
+  }
+
+  .chart-wrap svg {
+    display: block;
+    min-width: 840px;
+    width: 100%;
+    height: auto;
+  }
+
+  .detail-panel {
+    padding: 24px;
+    border-left: 1px solid var(--rule);
+    background: #fbf7f0;
+  }
+
+  .detail-panel h3 {
+    margin: 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 28px;
+  }
+
+  .detail-role {
+    margin: 6px 0 18px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .detail-finding {
+    margin: 0 0 22px;
+    padding: 14px;
+    border-left: 4px solid var(--red);
+    background: var(--red-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .detail-bars {
+    display: grid;
+    gap: 14px;
+  }
+
+  .bar-row {
+    display: grid;
+    gap: 6px;
+  }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .bar-track {
+    position: relative;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #e8e1d7;
+  }
+
+  .bar-baseline,
+  .bar-current {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  .bar-baseline {
+    z-index: 1;
+    background: var(--blue);
+    opacity: .6;
+  }
+
+  .bar-current {
+    z-index: 2;
+    height: 4px;
+    top: 2.5px;
+    background: var(--red);
+  }
+
+  .mini-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .mini-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-line {
+    display: inline-block;
+    width: 22px;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--blue);
+    opacity: .6;
+  }
+
+  .legend-line.current {
+    height: 4px;
+    background: var(--red);
+    opacity: 1;
+  }
+
+  .method-note {
+    margin: 20px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .timeline-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 24px 0;
+  }
+
+  .timeline-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .timeline-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .sample-dot,
+  .sample-public,
+  .sample-silent {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--rule-dark);
+    background: #d9e2e1;
+    border-radius: 50%;
+  }
+
+  .sample-public {
+    width: 10px;
+    height: 10px;
+    border: 2px solid #fff;
+    outline: 2px solid var(--red);
+    background: var(--red);
+  }
+
+  .sample-silent {
+    border-style: dashed;
+    background: transparent;
+  }
+
+  .reset-button {
+    border: 0;
+    border-bottom: 1px solid var(--rule-dark);
+    padding: 3px 0;
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .reset-button:hover { color: var(--red-dark); }
+
+  .timeline-wrap {
+    padding: 10px 20px 18px;
+    overflow-x: auto;
+  }
+
+  #timeline-chart {
+    display: block;
+    min-width: 1160px;
+    width: 100%;
+    height: auto;
+  }
+
+  .timeline-detail {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    border-top: 1px solid var(--rule);
+  }
+
+  .evidence-list {
+    max-height: 430px;
+    overflow: auto;
+    border-right: 1px solid var(--rule);
+    background: var(--panel-soft);
+  }
+
+  .evidence-list-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 15px 16px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(247, 242, 233, .96);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .evidence-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px 16px;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    color: var(--ink);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .evidence-item:hover,
+  .evidence-item.active {
+    background: #fff;
+  }
+
+  .evidence-item.active {
+    box-shadow: inset 4px 0 0 var(--red);
+  }
+
+  .evidence-time {
+    color: var(--red-dark);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .evidence-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .evidence-channel {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .evidence-copy {
+    min-height: 300px;
+    padding: 24px 28px;
+  }
+
+  .evidence-copy-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 27px;
+    padding: 4px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--panel-soft);
+    font-size: 11px;
+  }
+
+  .tag.public {
+    border-color: #dba29a;
+    color: var(--red-dark);
+    background: var(--red-soft);
+  }
+
+  .evidence-copy blockquote {
+    margin: 0;
+    color: #38332c;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: clamp(18px, 2vw, 25px);
+    line-height: 1.55;
+  }
+
+  .evidence-copy-note {
+    margin: 20px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .chain-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .chain-card {
+    border: 1px solid var(--rule);
+    background: var(--panel-soft);
+  }
+
+  .chain-card.breach {
+    border-top: 5px solid var(--red);
+  }
+
+  .chain-card.baseline {
+    border-top: 5px solid var(--blue);
+  }
+
+  .chain-card-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .chain-card-head h3 {
+    margin: 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: 25px;
+  }
+
+  .chain-card-head p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .chain-flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr);
+    gap: 7px;
+    align-items: stretch;
+    padding: 20px;
+  }
+
+  .flow-node {
+    min-height: 120px;
+    display: grid;
+    align-content: center;
+    padding: 14px;
+    border: 1px solid var(--rule-dark);
+    background: var(--panel);
+  }
+
+  .flow-node strong {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .flow-node span {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .flow-node.danger {
+    border-color: #c47368;
+    background: var(--red-soft);
+  }
+
+  .flow-node.silent {
+    border-style: dashed;
+    color: #8a837a;
+    background: #f0ece5;
+  }
+
+  .flow-arrow {
+    display: grid;
+    place-items: center;
+    color: var(--rule-dark);
+    font-size: 26px;
+  }
+
+  .coverage {
+    padding: 0 20px 20px;
+  }
+
+  .coverage-title {
+    margin-bottom: 9px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .coverage-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .actor-chip {
+    padding: 6px 8px;
+    border: 1px solid var(--rule-dark);
+    border-radius: 999px;
+    color: var(--green);
+    background: #edf2ea;
+    font-size: 10px;
+    font-weight: 750;
+  }
+
+  .actor-chip.silent {
+    border-style: dashed;
+    color: #8d857c;
+    background: transparent;
+    text-decoration: line-through;
+  }
+
+  .chain-caption {
+    margin: 0 24px 24px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--gold);
+    background: var(--gold-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .answer {
+    margin-top: 22px;
+    padding: clamp(24px, 4vw, 48px);
+  }
+
+  .answer h2 {
+    margin: 0 0 14px;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: clamp(30px, 4vw, 50px);
+  }
+
+  .answer p {
+    max-width: 1120px;
+    margin: 0;
+    color: #3f3931;
+    font-size: 16px;
+    line-height: 1.78;
+  }
+
+  .answer-method {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .tooltip {
+    position: fixed;
+    z-index: 20;
+    max-width: 280px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule-dark);
+    color: var(--ink);
+    background: rgba(255, 253, 248, .98);
+    box-shadow: 0 10px 30px rgba(30, 25, 18, .18);
+    font-size: 11px;
+    line-height: 1.5;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+
+  .tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .error {
+    width: min(800px, calc(100vw - 40px));
+    margin: 80px auto;
+    padding: 24px;
+    border: 1px solid #d99b91;
+    background: #fff7f4;
+  }
+
+  .svg-label {
+    fill: var(--muted);
+    font-family: "Aptos", "Microsoft YaHei", sans-serif;
+    font-size: 12px;
+  }
+
+  .svg-label.strong {
+    fill: var(--ink);
+    font-weight: 750;
+  }
+
+  .heat-cell {
+    cursor: pointer;
+    transition: opacity .16s ease, stroke-width .16s ease;
+  }
+
+  .heat-cell:hover {
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .heat-row {
+    cursor: pointer;
+  }
+
+  .timeline-mark {
+    cursor: pointer;
+    transition: opacity .16s ease;
+  }
+
+  .timeline-mark:hover { opacity: .72; }
+
+  @media (max-width: 1080px) {
+    .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fingerprint-layout { grid-template-columns: 1fr; }
+    .detail-panel { border-top: 1px solid var(--rule); border-left: 0; }
+    .timeline-detail { grid-template-columns: 1fr; }
+    .evidence-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(190px, 1fr));
+      max-height: none;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .evidence-list-head { grid-column: 1 / -1; }
+    .chain-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 720px) {
+    .page { width: min(100% - 18px, 1500px); padding-top: 9px; }
+    .hero { padding: 22px 18px 26px; }
+    .hero-top { align-items: flex-start; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+    .metric { min-height: 112px; padding: 14px; }
+    .metric-label { min-height: 34px; font-size: 10px; }
+    .section-head { grid-template-columns: 1fr; padding: 20px 18px; }
+    .control-group { justify-items: start; }
+    .chart-wrap { padding-inline: 10px; }
+    .timeline-toolbar { padding-inline: 16px; }
+    .timeline-wrap { padding-inline: 8px; }
+    .chain-grid { padding: 14px; }
+    .chain-flow {
+      grid-template-columns: 1fr;
+    }
+    .flow-arrow { transform: rotate(90deg); min-height: 22px; }
+    .evidence-copy { padding: 20px 18px; }
+    .evidence-list { grid-template-columns: repeat(3, minmax(170px, 1fr)); }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { width: 100%; padding: 0; }
+    .hero, .section, .answer { box-shadow: none; break-inside: avoid; }
+    .lang-switch, .mode-switch, .phase-switch, .reset-button { display: none; }
+    .section { margin-top: 10px; }
+  }
+</style>
+</head>
+<body>
+<main id="app" class="page" hidden>
+  <header class="hero">
+    <div class="hero-top">
+      <div class="eyebrow">VAST 2026 · MINI-CHALLENGE 1 · QUESTION 2</div>
+      <div class="lang-switch" aria-label="Language">
+        <button class="control-button" data-lang="en" aria-pressed="true">English</button>
+        <button class="control-button" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+    </div>
+    <h1 data-i18n="heroTitle">When the reviewer became the publisher.</h1>
+    <p class="hero-deck" data-i18n="heroDeck">The release was not merely a rise in message volume. Legal crossed a channel boundary, assumed the publishing role, and acted while the normal control actors were silent.</p>
+    <div class="hero-conclusion">
+      <p data-i18n="heroConclusion"><strong>Finding:</strong> historical Legal behavior was entirely internal. During the breach hour, Legal coordinated the release and published through personal and anonymous accounts, while no official post or Judge/PR/Platform Trust activity appeared.</p>
+    </div>
+    <div class="metric-grid" aria-label="Key findings">
+      <article class="metric">
+        <div class="metric-label" data-i18n="metricBaseline">Legal public posts in the historical baseline</div>
+        <div id="metric-baseline" class="metric-value">0 / 90</div>
+        <div class="metric-note" data-i18n="metricBaselineNote">zero public-channel use</div>
+      </article>
+      <article class="metric">
+        <div class="metric-label" data-i18n="metricBreach">Legal public posts during the breach hour</div>
+        <div id="metric-breach" class="metric-value">4 / 28</div>
+        <div id="metric-breach-note" class="metric-note">14.3% of Legal messages</div>
+      </article>
+      <article class="metric">
+        <div class="metric-label" data-i18n="metricCoverage">Active actors during the breach hour</div>
+        <div id="metric-coverage" class="metric-value">3 / 7</div>
+        <div class="metric-note" data-i18n="metricCoverageNote">four control actors silent</div>
+      </article>
+      <article class="metric">
+        <div class="metric-label" data-i18n="metricTiming">Legal's merger confirmation</div>
+        <div class="metric-value">17:25</div>
+        <div class="metric-note" data-i18n="metricTimingNote">35 minutes before the formal lift</div>
+      </article>
+    </div>
+  </header>
+
+  <section class="section" id="fingerprint-section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker" data-i18n="view1Kicker">View 1 · Compare</div>
+        <h2 data-i18n="view1Title">Actor × channel behavior fingerprint</h2>
+        <p class="section-intro" data-i18n="view1Intro">Each cell is the share of an actor's messages sent through a channel. Switch to deviation mode to compare the selected phase with the historical baseline on a common, zero-centered scale.</p>
+      </div>
+      <div class="control-group">
+        <span class="control-label" data-i18n="phaseLabel">Comparison phase</span>
+        <div class="phase-switch" id="phase-switch"></div>
+        <span class="control-label" data-i18n="modeLabel">Encoding</span>
+        <div class="mode-switch">
+          <button class="control-button" data-mode="share" aria-pressed="true" data-i18n="modeShare">Share</button>
+          <button class="control-button" data-mode="delta" aria-pressed="false" data-i18n="modeDelta">Δ from baseline</button>
+        </div>
+      </div>
+    </div>
+    <div class="fingerprint-layout">
+      <div class="chart-wrap">
+        <svg id="heatmap" viewBox="0 0 970 570" role="img" aria-labelledby="heatmap-title heatmap-desc">
+          <title id="heatmap-title">Actor by channel behavior fingerprint</title>
+          <desc id="heatmap-desc">A matrix comparing message-channel shares for seven agents across six channels.</desc>
+        </svg>
+      </div>
+      <aside class="detail-panel" aria-live="polite">
+        <h3 id="detail-name">Legal Counsel</h3>
+        <p id="detail-role" class="detail-role"></p>
+        <p id="detail-finding" class="detail-finding"></p>
+        <div id="detail-bars" class="detail-bars"></div>
+        <div class="mini-legend">
+          <span><i class="legend-line"></i><span data-i18n="legendBaseline">Historical baseline</span></span>
+          <span><i class="legend-line current"></i><span data-i18n="legendSelected">Selected phase</span></span>
+        </div>
+        <p class="method-note" data-i18n="heatMethod">Denominator: all messages sent by that actor in the phase. A zero-message actor is shown as inactive rather than assigned a percentage.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" id="timeline-section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker" data-i18n="view2Kicker">View 2 · Trace</div>
+        <h2 data-i18n="view2Title">Twenty-three rounds of behavioral drift</h2>
+        <p class="section-intro" data-i18n="view2Intro">Position encodes time and actor; circle area encodes message count. A red ring marks public posting. Click a mark to filter the evidence panel and link the timeline back to the channel fingerprint.</p>
+      </div>
+    </div>
+    <div class="timeline-toolbar">
+      <div class="timeline-legend">
+        <span><i class="sample-dot"></i><span data-i18n="timelineTotal">total messages (area)</span></span>
+        <span><i class="sample-public"></i><span data-i18n="timelinePublic">one or more public posts</span></span>
+        <span><i class="sample-silent"></i><span data-i18n="timelineSilent">no activity</span></span>
+      </div>
+      <button id="reset-selection" class="reset-button" data-i18n="resetSelection">Reset linked selection</button>
+    </div>
+    <div class="timeline-wrap">
+      <svg id="timeline-chart" viewBox="0 0 1380 660" role="img" aria-labelledby="timeline-title timeline-desc">
+        <title id="timeline-title">Twenty-three-round actor activity timeline</title>
+        <desc id="timeline-desc">Seven actor lanes show total messages and public posting in each round, with the breach hour highlighted.</desc>
+      </svg>
+    </div>
+    <div class="timeline-detail">
+      <div id="evidence-list" class="evidence-list"></div>
+      <article class="evidence-copy">
+        <div id="evidence-copy-head" class="evidence-copy-head"></div>
+        <blockquote id="evidence-text"></blockquote>
+        <p id="evidence-note" class="evidence-copy-note"></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="chain-section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker" data-i18n="view3Kicker">View 3 · Explain</div>
+        <h2 data-i18n="view3Title">Role allocation versus release behavior</h2>
+        <p class="section-intro" data-i18n="view3Intro">The comparison separates an increase in workload from a structural change: who reviewed, who published, which channel reached the public, and which safeguards were present.</p>
+      </div>
+    </div>
+    <div class="chain-grid">
+      <article class="chain-card baseline">
+        <div class="chain-card-head">
+          <h3 data-i18n="chainBaselineTitle">Typical role allocation</h3>
+          <p data-i18n="chainBaselineSub">Role descriptions and observed historical channel use</p>
+        </div>
+        <div class="chain-flow">
+          <div class="flow-node">
+            <strong data-i18n="chainReview">Judge + Legal<br>review and guardrails</strong>
+            <span data-i18n="chainReviewNote">Legal: 90 baseline messages, all internal</span>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-node">
+            <strong data-i18n="chainPublish">PR + PR Intern<br>official publishing</strong>
+            <span data-i18n="chainPublishNote">PR Intern holds official Flex access</span>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-node">
+            <strong data-i18n="chainAmplify">Social Manager<br>amplification</strong>
+            <span data-i18n="chainAmplifyNote">social messaging follows publication</span>
+          </div>
+        </div>
+        <div class="coverage">
+          <div class="coverage-title" data-i18n="coverageBaseline">Actors observed during the baseline</div>
+          <div id="coverage-baseline" class="coverage-row"></div>
+        </div>
+      </article>
+      <article class="chain-card breach">
+        <div class="chain-card-head">
+          <h3 data-i18n="chainBreachTitle">Observed breach-hour allocation</h3>
+          <p data-i18n="chainBreachSub">Round 22 · 17:00-17:59 · before formal lift</p>
+        </div>
+        <div class="chain-flow">
+          <div class="flow-node silent">
+            <strong data-i18n="chainSilent">Judge / PR / PR Intern / Trust</strong>
+            <span data-i18n="chainSilentNote">0 messages; no visible control handoff</span>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-node danger">
+            <strong data-i18n="chainLegalShift">Legal<br>reviewer → coordinator + publisher</strong>
+            <span data-i18n="chainLegalShiftNote">2 personal + 2 anonymous public posts</span>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-node danger">
+            <strong data-i18n="chainSocialShift">Social Manager<br>personal amplification</strong>
+            <span data-i18n="chainSocialShiftNote">3 personal posts; 0 official posts overall</span>
+          </div>
+        </div>
+        <div class="coverage">
+          <div class="coverage-title" data-i18n="coverageBreach">Actor coverage during the breach hour</div>
+          <div id="coverage-breach" class="coverage-row"></div>
+        </div>
+      </article>
+    </div>
+    <p class="chain-caption" data-i18n="chainCaption"><strong>Structural deviation:</strong> the system did not simply execute the usual process faster. It rerouted public disclosure around the official account and concentrated review, coordination, and publication in Legal while four normal control actors were silent.</p>
+  </section>
+
+  <section class="answer">
+    <h2 data-i18n="answerTitle">Answer to Question 2</h2>
+    <p data-i18n="answerText">Typical behavior was role-specialized and predominantly internal: Legal and Judge reviewed risk, PR and PR Intern handled official communication, Platform Trust supplied governance evidence, and Social Media amplified messages. The breach behavior was qualitatively different. Legal's historical 90-message baseline contained no public posts, yet in the 17:00 hour Legal sent four public posts among 28 messages, including the 17:25 personal confirmation of the CivicLoom merger. The disclosure occurred through personal and anonymous channels, not the official account. At the same time, Judge, PR, PR Intern, and Platform Trust produced no messages, leaving only Legal, Social Media, and Intern active. The release therefore reflects a channel-boundary violation and role substitution under a collapsed control chain, rather than an ordinary high-volume version of prior behavior.</p>
+    <div class="answer-method" data-i18n="answerMethod">Method: 912 communication records were grouped into four predeclared temporal phases. Channel shares use each actor's phase message total as the denominator; timeline marks aggregate records by actor and round. Public channels are official_post, personal_post, and anonymous_post. No inferred anomaly score is used.</div>
+  </section>
+</main>
+
+<div id="tooltip" class="tooltip" role="tooltip"></div>
+
+<script src="q2_data.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  const data = window.Q2_DATA;
+  if (!data) {
+    document.body.innerHTML = '<div class="error"><strong>Data bundle not found.</strong><p>Run <code>python3 build_data.py</code> inside the question2 directory, then reopen this page.</p></div>';
+    return;
+  }
+
+  const NS = "http://www.w3.org/2000/svg";
+  const state = {
+    language: "en",
+    phase: "breach",
+    mode: "share",
+    actor: "legal_agent",
+    round: 22,
+    evidenceId: data.meta.breach_message_id
+  };
+
+  const text = {
+    en: {
+      heroTitle: "When the reviewer became the publisher.",
+      heroDeck: "The release was not merely a rise in message volume. Legal crossed a channel boundary, assumed the publishing role, and acted while the normal control actors were silent.",
+      heroConclusion: "<strong>Finding:</strong> historical Legal behavior was entirely internal. During the breach hour, Legal coordinated the release and published through personal and anonymous accounts, while no official post or Judge/PR/Platform Trust activity appeared.",
+      metricBaseline: "Legal public posts in the historical baseline",
+      metricBaselineNote: "zero public-channel use",
+      metricBreach: "Legal public posts during the breach hour",
+      metricBreachNote: "of Legal messages",
+      metricCoverage: "Active actors during the breach hour",
+      metricCoverageNote: "four control actors silent",
+      metricTiming: "Legal's merger confirmation",
+      metricTimingNote: "35 minutes before the formal lift",
+      view1Kicker: "View 1 · Compare",
+      view1Title: "Actor × channel behavior fingerprint",
+      view1Intro: "Each cell is the share of an actor's messages sent through a channel. Switch to deviation mode to compare the selected phase with the historical baseline on a common, zero-centered scale.",
+      phaseLabel: "Comparison phase",
+      modeLabel: "Encoding",
+      modeShare: "Share",
+      modeDelta: "Δ from baseline",
+      legendBaseline: "Historical baseline",
+      legendSelected: "Selected phase",
+      heatMethod: "Denominator: all messages sent by that actor in the phase. A zero-message actor is shown as inactive rather than assigned a percentage.",
+      view2Kicker: "View 2 · Trace",
+      view2Title: "Twenty-three rounds of behavioral drift",
+      view2Intro: "Position encodes time and actor; circle area encodes message count. A red ring marks public posting. Click a mark to filter the evidence panel and link the timeline back to the channel fingerprint.",
+      timelineTotal: "total messages (area)",
+      timelinePublic: "one or more public posts",
+      timelineSilent: "no activity",
+      resetSelection: "Reset linked selection",
+      evidenceTitle: "Evidence for the linked selection",
+      evidenceEmpty: "No public or breach-hour evidence for this selection.",
+      evidenceNotePublic: "This is a public-channel record. The original text is shown without semantic scoring.",
+      evidenceNoteInternal: "This internal breach-hour record provides coordination context for the public release.",
+      view3Kicker: "View 3 · Explain",
+      view3Title: "Role allocation versus release behavior",
+      view3Intro: "The comparison separates an increase in workload from a structural change: who reviewed, who published, which channel reached the public, and which safeguards were present.",
+      chainBaselineTitle: "Typical role allocation",
+      chainBaselineSub: "Role descriptions and observed historical channel use",
+      chainReview: "Judge + Legal<br>review and guardrails",
+      chainReviewNote: "Legal: 90 baseline messages, all internal",
+      chainPublish: "PR + PR Intern<br>official publishing",
+      chainPublishNote: "PR Intern holds official Flex access",
+      chainAmplify: "Social Manager<br>amplification",
+      chainAmplifyNote: "social messaging follows publication",
+      coverageBaseline: "Actors observed during the baseline",
+      chainBreachTitle: "Observed breach-hour allocation",
+      chainBreachSub: "Round 22 · 17:00-17:59 · before formal lift",
+      chainSilent: "Judge / PR / PR Intern / Trust",
+      chainSilentNote: "0 messages; no visible control handoff",
+      chainLegalShift: "Legal<br>reviewer → coordinator + publisher",
+      chainLegalShiftNote: "2 personal + 2 anonymous public posts",
+      chainSocialShift: "Social Manager<br>personal amplification",
+      chainSocialShiftNote: "3 personal posts; 0 official posts overall",
+      coverageBreach: "Actor coverage during the breach hour",
+      chainCaption: "<strong>Structural deviation:</strong> the system did not simply execute the usual process faster. It rerouted public disclosure around the official account and concentrated review, coordination, and publication in Legal while four normal control actors were silent.",
+      answerTitle: "Answer to Question 2",
+      answerText: "Typical behavior was role-specialized and predominantly internal: Legal and Judge reviewed risk, PR and PR Intern handled official communication, Platform Trust supplied governance evidence, and Social Media amplified messages. The breach behavior was qualitatively different. Legal's historical 90-message baseline contained no public posts, yet in the 17:00 hour Legal sent four public posts among 28 messages, including the 17:25 personal confirmation of the CivicLoom merger. The disclosure occurred through personal and anonymous channels, not the official account. At the same time, Judge, PR, PR Intern, and Platform Trust produced no messages, leaving only Legal, Social Media, and Intern active. The release therefore reflects a channel-boundary violation and role substitution under a collapsed control chain, rather than an ordinary high-volume version of prior behavior.",
+      answerMethod: "Method: 912 communication records were grouped into four predeclared temporal phases. Channel shares use each actor's phase message total as the denominator; timeline marks aggregate records by actor and round. Public channels are official_post, personal_post, and anonymous_post. No inferred anomaly score is used.",
+      selectedPhase: "Selected phase",
+      baseline: "Baseline",
+      publicPosts: "public posts",
+      messages: "messages",
+      inactive: "inactive",
+      percentagePoints: "percentage points",
+      round: "Round",
+      phase: "Phase",
+      publicCount: "Public posts",
+      clickForEvidence: "Click to inspect evidence",
+      noEvidence: "No matching evidence",
+      internal: "Internal",
+      public: "Public",
+      findingLegal: "Legal moved from 0% public-channel use in the historical baseline to {share}% during the selected phase. This is a role-and-channel change, not only more activity.",
+      findingInactive: "This actor produced no messages in the selected phase. Silence is analytically important when the role normally supplies review, approval, or official publishing.",
+      findingGeneric: "Compare the red selected-phase line with the blue baseline bar. Large differences identify changed channel allocation.",
+      heatShareLegend: "Share of actor messages",
+      heatDeltaLegend: "Selected phase minus baseline",
+      lower: "lower",
+      higher: "higher",
+      unchanged: "unchanged"
+    },
+    zh: {
+      heroTitle: "当审核者变成发布者。",
+      heroDeck: "这次泄密并不只是消息量上升。Legal 跨越了渠道边界，接管发布角色，并在常规控制角色集体沉默时采取行动。",
+      heroConclusion: "<strong>结论：</strong>Legal 的历史行为全部发生在内部渠道；泄密小时中，Legal 一边协调发布，一边通过个人与匿名账号公开发帖，而官方发帖以及 Judge、PR、Platform Trust 的活动均未出现。",
+      metricBaseline: "历史基线中 Legal 的公开帖",
+      metricBaselineNote: "公开渠道使用为零",
+      metricBreach: "泄密小时中 Legal 的公开帖",
+      metricBreachNote: "占 Legal 消息",
+      metricCoverage: "泄密小时中的活跃角色",
+      metricCoverageNote: "四个控制角色沉默",
+      metricTiming: "Legal 确认合并的时间",
+      metricTimingNote: "比正式解除禁发早 35 分钟",
+      view1Kicker: "视图 1 · 比较",
+      view1Title: "角色 × 渠道行为指纹",
+      view1Intro: "每个单元格表示某角色在该阶段通过某渠道发送的消息占比。切换至偏差模式，可在统一、以 0 为中心的色阶上比较所选阶段与历史基线。",
+      phaseLabel: "比较阶段",
+      modeLabel: "视觉编码",
+      modeShare: "占比",
+      modeDelta: "相对基线变化",
+      legendBaseline: "历史基线",
+      legendSelected: "所选阶段",
+      heatMethod: "分母为该角色在该阶段发送的全部消息。若角色没有消息，则显示为未活跃，而不赋予百分比。",
+      view2Kicker: "视图 2 · 追踪",
+      view2Title: "二十三轮行为漂移",
+      view2Intro: "位置编码时间与角色，圆面积编码消息量，红色外环表示出现公开发帖。点击标记可筛选原始证据，并与渠道指纹联动。",
+      timelineTotal: "全部消息（面积）",
+      timelinePublic: "至少一条公开帖",
+      timelineSilent: "无活动",
+      resetSelection: "恢复默认联动选择",
+      evidenceTitle: "当前联动选择的证据",
+      evidenceEmpty: "当前选择没有公开帖或泄密小时证据。",
+      evidenceNotePublic: "这是一条公开渠道记录；原始文本直接展示，未施加语义评分。",
+      evidenceNoteInternal: "这条泄密小时的内部记录提供了公开发布的协调背景。",
+      view3Kicker: "视图 3 · 解释",
+      view3Title: "角色分工与实际发布行为",
+      view3Intro: "该对照把工作量增加与结构变化分开：谁在审核、谁在发布、哪条渠道触达公众，以及哪些控制角色在场。",
+      chainBaselineTitle: "常规角色分工",
+      chainBaselineSub: "基于角色说明与历史渠道行为",
+      chainReview: "Judge + Legal<br>审核与合规约束",
+      chainReviewNote: "Legal 基线 90 条消息，全部为内部沟通",
+      chainPublish: "PR + PR Intern<br>官方发布",
+      chainPublishNote: "PR Intern 拥有官方 Flex 账号权限",
+      chainAmplify: "Social Manager<br>传播扩散",
+      chainAmplifyNote: "在正式发布后进行社交传播",
+      coverageBaseline: "历史基线中出现的角色",
+      chainBreachTitle: "泄密小时的实际分工",
+      chainBreachSub: "第 22 轮 · 17:00-17:59 · 正式解除禁发前",
+      chainSilent: "Judge / PR / PR Intern / Trust",
+      chainSilentNote: "0 条消息；未观察到控制权交接",
+      chainLegalShift: "Legal<br>审核者 → 协调者 + 发布者",
+      chainLegalShiftNote: "2 条个人帖 + 2 条匿名帖",
+      chainSocialShift: "Social Manager<br>个人账号扩散",
+      chainSocialShiftNote: "3 条个人帖；全阶段 0 条官方帖",
+      coverageBreach: "泄密小时中的角色覆盖",
+      chainCaption: "<strong>结构性偏差：</strong>系统并非只是加速执行常规流程，而是绕开官方账号完成公开披露，并在四个常规控制角色沉默时，把审核、协调和发布集中到 Legal。",
+      answerTitle: "任务 2 回答",
+      answerText: "常规行为具有明确分工且以内部沟通为主：Legal 与 Judge 评估风险，PR 与 PR Intern 负责官方传播，Platform Trust 提供治理证据，Social Media 承担扩散。泄密行为在性质上明显不同。Legal 的历史基线包含 90 条消息且没有公开帖，但在 17:00 所在小时的 28 条消息中，有 4 条进入公开渠道，包括 17:25 对 CivicLoom 合并的个人账号确认。披露经过个人及匿名渠道，而非官方账号。同时 Judge、PR、PR Intern 与 Platform Trust 没有产生任何消息，只剩 Legal、Social Media 与 Intern 活跃。因此，这次发布不是常规行为在高压下的简单放大，而是控制链崩解后出现的渠道越界和角色替代。",
+      answerMethod: "方法：将 912 条沟通记录划分为四个预先定义的时间阶段。渠道占比以该角色在阶段内的消息总数为分母；时间线按角色与轮次聚合。公开渠道包括 official_post、personal_post 与 anonymous_post。分析没有使用不透明的异常评分。",
+      selectedPhase: "所选阶段",
+      baseline: "基线",
+      publicPosts: "公开帖",
+      messages: "条消息",
+      inactive: "未活跃",
+      percentagePoints: "个百分点",
+      round: "第",
+      phase: "阶段",
+      publicCount: "公开帖",
+      clickForEvidence: "点击查看证据",
+      noEvidence: "没有匹配证据",
+      internal: "内部渠道",
+      public: "公开渠道",
+      findingLegal: "Legal 从历史基线 0% 的公开渠道使用，上升至所选阶段的 {share}%。这是角色与渠道的改变，而不只是活动量增加。",
+      findingInactive: "该角色在所选阶段没有产生消息。当其常规职责包含审核、批准或官方发布时，沉默本身具有分析意义。",
+      findingGeneric: "比较红色所选阶段线与蓝色基线条；明显差异表示渠道分配发生了变化。",
+      heatShareLegend: "角色消息占比",
+      heatDeltaLegend: "所选阶段减去基线",
+      lower: "降低",
+      higher: "升高",
+      unchanged: "不变"
+    }
+  };
+
+  const agentById = Object.fromEntries(data.agents.map(d => [d.id, d]));
+  const channelById = Object.fromEntries(data.channels.map(d => [d.id, d]));
+  const phaseById = Object.fromEntries(data.phases.map(d => [d.id, d]));
+  const phaseActorByKey = Object.fromEntries(data.phase_actor.map(d => [`${d.phase}|${d.agent}`, d]));
+  const roundActorByKey = Object.fromEntries(data.round_actor.map(d => [`${d.round}|${d.agent}`, d]));
+  const tooltip = document.querySelector("#tooltip");
+
+  function tr(key) {
+    return text[state.language][key] ?? key;
+  }
+
+  function localized(object, field) {
+    return object[`${field}_${state.language}`] ?? object[field] ?? "";
+  }
+
+  function svgEl(name, attributes = {}, parent) {
+    const node = document.createElementNS(NS, name);
+    Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+    if (parent) parent.appendChild(node);
+    return node;
+  }
+
+  function clear(node) {
+    while (node.firstChild) node.removeChild(node.firstChild);
+  }
+
+  function formatTime(value) {
+    const date = new Date(value);
+    return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function lerp(a, b, t) {
+    return Math.round(a + (b - a) * t);
+  }
+
+  function hexToRgb(hex) {
+    const value = hex.replace("#", "");
+    return [
+      parseInt(value.slice(0, 2), 16),
+      parseInt(value.slice(2, 4), 16),
+      parseInt(value.slice(4, 6), 16)
+    ];
+  }
+
+  function mixColor(a, b, t) {
+    const left = hexToRgb(a);
+    const right = hexToRgb(b);
+    const value = Math.max(0, Math.min(1, t));
+    return `rgb(${lerp(left[0], right[0], value)}, ${lerp(left[1], right[1], value)}, ${lerp(left[2], right[2], value)})`;
+  }
+
+  function shareColor(value) {
+    return mixColor("#f2eee6", "#9c352f", Math.min(value, 60) / 60);
+  }
+
+  function deltaColor(value) {
+    const magnitude = Math.min(Math.abs(value), 40) / 40;
+    return value < 0
+      ? mixColor("#f7f3eb", "#416d78", magnitude)
+      : mixColor("#f7f3eb", "#ad3d35", magnitude);
+  }
+
+  function contrastText(fillValue) {
+    const match = fillValue.match(/\d+/g);
+    if (!match) return "#211f1b";
+    const [r, g, b] = match.map(Number);
+    const luminance = .2126 * r + .7152 * g + .0722 * b;
+    return luminance < 145 ? "#fff" : "#211f1b";
+  }
+
+  function showTooltip(event, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add("visible");
+    const pad = 14;
+    const rect = tooltip.getBoundingClientRect();
+    const x = Math.min(event.clientX + 14, window.innerWidth - rect.width - pad);
+    const y = Math.min(event.clientY + 14, window.innerHeight - rect.height - pad);
+    tooltip.style.left = `${Math.max(pad, x)}px`;
+    tooltip.style.top = `${Math.max(pad, y)}px`;
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove("visible");
+  }
+
+  function updateStaticText() {
+    document.documentElement.lang = state.language === "zh" ? "zh-CN" : "en";
+    document.querySelectorAll("[data-i18n]").forEach(node => {
+      node.innerHTML = tr(node.dataset.i18n);
+    });
+    document.querySelectorAll("[data-lang]").forEach(button => {
+      button.setAttribute("aria-pressed", String(button.dataset.lang === state.language));
+    });
+    document.querySelector("#metric-breach-note").textContent =
+      `${data.summary.legal_breach_public_share}% ${tr("metricBreachNote")}`;
+  }
+
+  function renderPhaseSwitch() {
+    const host = document.querySelector("#phase-switch");
+    clear(host);
+    data.phases.filter(d => d.id !== "baseline").forEach(phase => {
+      const button = document.createElement("button");
+      button.className = "control-button";
+      button.dataset.phase = phase.id;
+      button.setAttribute("aria-pressed", String(phase.id === state.phase));
+      button.textContent = localized(phase, "label");
+      button.addEventListener("click", () => {
+        state.phase = phase.id;
+        document.querySelectorAll("[data-phase]").forEach(node => {
+          node.setAttribute("aria-pressed", String(node.dataset.phase === state.phase));
+        });
+        renderHeatmap();
+        renderActorDetail();
+      });
+      host.appendChild(button);
+    });
+  }
+
+  function renderHeatmap() {
+    const svg = document.querySelector("#heatmap");
+    clear(svg);
+    const margin = { top: 116, right: 28, bottom: 68, left: 174 };
+    const width = 970 - margin.left - margin.right;
+    const height = 570 - margin.top - margin.bottom;
+    const cellW = width / data.channels.length;
+    const cellH = height / data.agents.length;
+
+    const title = svgEl("text", { x: margin.left, y: 25, class: "svg-label strong" }, svg);
+    title.textContent = `${localized(phaseById[state.phase], "label")} · ${state.mode === "share" ? tr("heatShareLegend") : tr("heatDeltaLegend")}`;
+
+    const subtitle = svgEl("text", { x: margin.left, y: 47, class: "svg-label" }, svg);
+    subtitle.textContent = localized(phaseById[state.phase], "range");
+
+    const legendX = margin.left;
+    const legendY = 67;
+    const legendWidth = 280;
+    const steps = 28;
+    for (let i = 0; i < steps; i += 1) {
+      const value = state.mode === "share"
+        ? (i / (steps - 1)) * 60
+        : -40 + (i / (steps - 1)) * 80;
+      svgEl("rect", {
+        x: legendX + (legendWidth / steps) * i,
+        y: legendY,
+        width: legendWidth / steps + .5,
+        height: 10,
+        fill: state.mode === "share" ? shareColor(value) : deltaColor(value)
+      }, svg);
+    }
+    const legendLeft = svgEl("text", { x: legendX, y: legendY + 28, class: "svg-label" }, svg);
+    legendLeft.textContent = state.mode === "share" ? "0%" : "−40 pp";
+    const legendCenter = svgEl("text", {
+      x: legendX + legendWidth / 2,
+      y: legendY + 28,
+      class: "svg-label",
+      "text-anchor": "middle"
+    }, svg);
+    legendCenter.textContent = state.mode === "share" ? "30%" : "0";
+    const legendRight = svgEl("text", {
+      x: legendX + legendWidth,
+      y: legendY + 28,
+      class: "svg-label",
+      "text-anchor": "end"
+    }, svg);
+    legendRight.textContent = state.mode === "share" ? "60%+" : "+40 pp";
+
+    data.channels.forEach((channel, column) => {
+      const x = margin.left + column * cellW + cellW / 2;
+      const label = svgEl("text", {
+        x,
+        y: margin.top - 19,
+        class: "svg-label strong",
+        "text-anchor": "middle"
+      }, svg);
+      const words = localized(channel, "label").split(" ");
+      words.forEach((word, line) => {
+        const tspan = svgEl("tspan", { x, dy: line === 0 ? 0 : 14 }, label);
+        tspan.textContent = word;
+      });
+      if (channel.group === "public") {
+        svgEl("line", {
+          x1: margin.left + column * cellW + 12,
+          y1: margin.top - 4,
+          x2: margin.left + (column + 1) * cellW - 12,
+          y2: margin.top - 4,
+          stroke: "#ad3d35",
+          "stroke-width": 3
+        }, svg);
+      }
+    });
+
+    data.agents.forEach((agent, row) => {
+      const y = margin.top + row * cellH;
+      const selected = state.actor === agent.id;
+      if (selected) {
+        svgEl("rect", {
+          x: 7,
+          y: y + 3,
+          width: 950,
+          height: cellH - 6,
+          rx: 8,
+          fill: "#f5e9df"
+        }, svg);
+      }
+      const rowGroup = svgEl("g", { class: "heat-row", tabindex: "0", role: "button" }, svg);
+      rowGroup.addEventListener("click", () => selectActor(agent.id));
+      rowGroup.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") selectActor(agent.id);
+      });
+      const label = svgEl("text", {
+        x: margin.left - 18,
+        y: y + cellH / 2 + 4,
+        class: "svg-label strong",
+        "text-anchor": "end"
+      }, rowGroup);
+      label.textContent = localized(agent, "label");
+
+      data.channels.forEach((channel, column) => {
+        const current = phaseActorByKey[`${state.phase}|${agent.id}`];
+        const baseline = phaseActorByKey[`baseline|${agent.id}`];
+        const currentShare = current.channel_shares[channel.id];
+        const baselineShare = baseline.channel_shares[channel.id];
+        const value = state.mode === "share" ? currentShare : currentShare - baselineShare;
+        const fill = current.active
+          ? (state.mode === "share" ? shareColor(value) : deltaColor(value))
+          : "#f5f1ea";
+        const cell = svgEl("rect", {
+          x: margin.left + column * cellW + 4,
+          y: y + 5,
+          width: cellW - 8,
+          height: cellH - 10,
+          rx: 7,
+          fill,
+          stroke: current.active ? "#fffdf8" : "#c9c1b6",
+          "stroke-width": 1,
+          "stroke-dasharray": current.active ? "0" : "4 3",
+          class: "heat-cell",
+          tabindex: "0"
+        }, svg);
+        const display = current.active
+          ? (state.mode === "share"
+              ? `${currentShare.toFixed(1)}%`
+              : `${value > 0 ? "+" : ""}${value.toFixed(1)}`)
+          : "—";
+        const valueLabel = svgEl("text", {
+          x: margin.left + column * cellW + cellW / 2,
+          y: y + cellH / 2 + 4,
+          "text-anchor": "middle",
+          fill: current.active ? contrastText(fill) : "#8d857b",
+          "font-size": 12,
+          "font-weight": 750,
+          "pointer-events": "none"
+        }, svg);
+        valueLabel.textContent = display;
+        const tooltipHtml = current.active
+          ? `<strong>${localized(agent, "label")} · ${localized(channel, "label")}</strong><br>${tr("selectedPhase")}: ${currentShare.toFixed(1)}% (${current.channels[channel.id]} / ${current.messages})<br>${tr("baseline")}: ${baselineShare.toFixed(1)}% (${baseline.channels[channel.id]} / ${baseline.messages})<br>Δ ${value >= 0 ? "+" : ""}${(currentShare - baselineShare).toFixed(1)} ${tr("percentagePoints")}`
+          : `<strong>${localized(agent, "label")}</strong><br>${tr("inactive")} · ${localized(phaseById[state.phase], "label")}`;
+        [cell].forEach(node => {
+          node.addEventListener("mouseenter", event => showTooltip(event, tooltipHtml));
+          node.addEventListener("mousemove", event => showTooltip(event, tooltipHtml));
+          node.addEventListener("mouseleave", hideTooltip);
+          node.addEventListener("focus", event => {
+            const rect = event.target.getBoundingClientRect();
+            showTooltip({ clientX: rect.left, clientY: rect.bottom }, tooltipHtml);
+          });
+          node.addEventListener("blur", hideTooltip);
+          node.addEventListener("click", event => {
+            event.stopPropagation();
+            selectActor(agent.id);
+          });
+        });
+      });
+    });
+
+    const internalLabel = svgEl("text", {
+      x: margin.left + cellW * 1.5,
+      y: 558,
+      class: "svg-label",
+      "text-anchor": "middle"
+    }, svg);
+    internalLabel.textContent = tr("internal");
+    const publicLabel = svgEl("text", {
+      x: margin.left + cellW * 4.5,
+      y: 558,
+      fill: "#ad3d35",
+      "font-family": "Aptos, Microsoft YaHei, sans-serif",
+      "font-size": 12,
+      "font-weight": 750,
+      "text-anchor": "middle"
+    }, svg);
+    publicLabel.textContent = tr("public");
+  }
+
+  function renderActorDetail() {
+    const agent = agentById[state.actor];
+    const baseline = phaseActorByKey[`baseline|${state.actor}`];
+    const current = phaseActorByKey[`${state.phase}|${state.actor}`];
+    document.querySelector("#detail-name").textContent = localized(agent, "label");
+    document.querySelector("#detail-role").textContent = localized(agent, "role");
+
+    let finding = tr("findingGeneric");
+    if (!current.active) {
+      finding = tr("findingInactive");
+    } else if (state.actor === "legal_agent") {
+      finding = tr("findingLegal").replace("{share}", current.public_share.toFixed(1));
+    }
+    document.querySelector("#detail-finding").textContent = finding;
+
+    const host = document.querySelector("#detail-bars");
+    clear(host);
+    data.channels.forEach(channel => {
+      const row = document.createElement("div");
+      row.className = "bar-row";
+      const meta = document.createElement("div");
+      meta.className = "bar-meta";
+      const name = document.createElement("span");
+      name.textContent = localized(channel, "label");
+      const values = document.createElement("span");
+      values.textContent = `${baseline.channel_shares[channel.id].toFixed(1)}% → ${current.active ? current.channel_shares[channel.id].toFixed(1) + "%" : "—"}`;
+      meta.append(name, values);
+      const track = document.createElement("div");
+      track.className = "bar-track";
+      const baselineBar = document.createElement("i");
+      baselineBar.className = "bar-baseline";
+      baselineBar.style.width = `${Math.min(100, baseline.channel_shares[channel.id] / .6)}%`;
+      const currentBar = document.createElement("i");
+      currentBar.className = "bar-current";
+      currentBar.style.width = `${current.active ? Math.min(100, current.channel_shares[channel.id] / .6) : 0}%`;
+      track.append(baselineBar, currentBar);
+      row.append(meta, track);
+      host.appendChild(row);
+    });
+  }
+
+  function renderTimeline() {
+    const svg = document.querySelector("#timeline-chart");
+    clear(svg);
+    const margin = { top: 126, right: 28, bottom: 66, left: 176 };
+    const width = 1380 - margin.left - margin.right;
+    const height = 660 - margin.top - margin.bottom;
+    const colW = width / 23;
+    const rowH = height / data.agents.length;
+
+    const phaseBands = [
+      { id: "baseline", start: 1, end: 13, fill: "#e9e4da" },
+      { id: "crisis", start: 14, end: 21, fill: "#e4ecea" },
+      { id: "breach", start: 22, end: 22, fill: "#f0d5ce" },
+      { id: "post", start: 23, end: 23, fill: "#f1e2c6" }
+    ];
+
+    phaseBands.forEach(band => {
+      const x = margin.left + (band.start - 1) * colW;
+      const bandWidth = (band.end - band.start + 1) * colW;
+      svgEl("rect", {
+        x,
+        y: 26,
+        width: bandWidth,
+        height: height + margin.top - 10,
+        fill: band.fill,
+        opacity: .64
+      }, svg);
+      const label = svgEl("text", {
+        x: x + bandWidth / 2,
+        y: 45,
+        class: "svg-label strong",
+        "text-anchor": "middle"
+      }, svg);
+      const compactLabels = state.language === "zh"
+        ? { breach: "泄密", post: "解除后" }
+        : { breach: "Breach", post: "Post" };
+      label.textContent = compactLabels[band.id] || localized(phaseById[band.id], "label");
+    });
+
+    svgEl("line", {
+      x1: margin.left + 21 * colW,
+      y1: 18,
+      x2: margin.left + 21 * colW,
+      y2: margin.top + height + 8,
+      stroke: "#ad3d35",
+      "stroke-width": 2
+    }, svg);
+
+    const breachLabel = svgEl("text", {
+      x: margin.left + 21.5 * colW,
+      y: 69,
+      fill: "#7d2928",
+      "font-size": 11,
+      "font-weight": 800,
+      "text-anchor": "middle"
+    }, svg);
+    breachLabel.textContent = state.language === "zh" ? "17:25 泄密" : "17:25 breach";
+
+    data.rounds.forEach(round => {
+      const x = margin.left + (round.round - .5) * colW;
+      const tick = svgEl("text", {
+        x,
+        y: margin.top - 17,
+        class: "svg-label",
+        "text-anchor": "middle"
+      }, svg);
+      tick.textContent = round.round;
+      if ([1, 5, 9, 13, 14, 18, 21, 22, 23].includes(round.round)) {
+        const date = new Date(round.round_hour);
+        const dateLabel = svgEl("text", {
+          x,
+          y: margin.top - 38,
+          class: "svg-label",
+          "text-anchor": "middle"
+        }, svg);
+        dateLabel.textContent = round.round >= 14
+          ? `${String(date.getHours()).padStart(2, "0")}:00`
+          : `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+    });
+
+    data.agents.forEach((agent, row) => {
+      const y = margin.top + row * rowH + rowH / 2;
+      const selected = state.actor === agent.id;
+      svgEl("line", {
+        x1: margin.left,
+        y1: y,
+        x2: margin.left + width,
+        y2: y,
+        stroke: selected ? "#ad3d35" : "#d2cabf",
+        "stroke-width": selected ? 2 : 1
+      }, svg);
+      const label = svgEl("text", {
+        x: margin.left - 16,
+        y: y + 4,
+        class: "svg-label strong",
+        "text-anchor": "end",
+        tabindex: "0",
+        role: "button"
+      }, svg);
+      label.textContent = localized(agent, "label");
+      label.style.cursor = "pointer";
+      label.addEventListener("click", () => selectActor(agent.id));
+      label.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") selectActor(agent.id);
+      });
+
+      for (let round = 1; round <= 23; round += 1) {
+        const record = roundActorByKey[`${round}|${agent.id}`];
+        const x = margin.left + (round - .5) * colW;
+        const isSelected = state.actor === agent.id && state.round === round;
+        if (record.messages === 0) {
+          const silent = svgEl("circle", {
+            cx: x,
+            cy: y,
+            r: 4,
+            fill: "none",
+            stroke: "#bdb4a8",
+            "stroke-dasharray": "2 2",
+            class: "timeline-mark"
+          }, svg);
+          silent.addEventListener("click", () => selectTimeline(agent.id, round));
+          continue;
+        }
+        const radius = 5 + Math.sqrt(record.messages) * 2.4;
+        if (isSelected) {
+          svgEl("circle", {
+            cx: x,
+            cy: y,
+            r: radius + 6,
+            fill: "none",
+            stroke: "#211f1b",
+            "stroke-width": 2
+          }, svg);
+        }
+        const mark = svgEl("circle", {
+          cx: x,
+          cy: y,
+          r: radius,
+          fill: record.public_count > 0 ? "#ad3d35" : "#7e9a9e",
+          "fill-opacity": record.public_count > 0 ? .88 : .62,
+          stroke: record.public_count > 0 ? "#fff" : "#416d78",
+          "stroke-width": record.public_count > 0 ? 3 : 1,
+          class: "timeline-mark",
+          tabindex: "0",
+          role: "button"
+        }, svg);
+        if (record.public_count > 0) {
+          svgEl("circle", {
+            cx: x,
+            cy: y,
+            r: radius + 3,
+            fill: "none",
+            stroke: "#ad3d35",
+            "stroke-width": 1.5,
+            "pointer-events": "none"
+          }, svg);
+        }
+        const tooltipHtml = `<strong>${localized(agent, "label")} · ${tr("round")} ${round}</strong><br>${record.messages} ${tr("messages")}<br>${tr("publicCount")}: ${record.public_count}<br>${tr("clickForEvidence")}`;
+        mark.addEventListener("mouseenter", event => showTooltip(event, tooltipHtml));
+        mark.addEventListener("mousemove", event => showTooltip(event, tooltipHtml));
+        mark.addEventListener("mouseleave", hideTooltip);
+        mark.addEventListener("focus", event => {
+          const rect = event.target.getBoundingClientRect();
+          showTooltip({ clientX: rect.left, clientY: rect.bottom }, tooltipHtml);
+        });
+        mark.addEventListener("blur", hideTooltip);
+        mark.addEventListener("click", () => selectTimeline(agent.id, round));
+        mark.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") selectTimeline(agent.id, round);
+        });
+      }
+    });
+
+    const xTitle = svgEl("text", {
+      x: margin.left + width / 2,
+      y: 645,
+      class: "svg-label strong",
+      "text-anchor": "middle"
+    }, svg);
+    xTitle.textContent = state.language === "zh" ? "轮次（日期 / 小时）" : "Round (date / hour)";
+  }
+
+  function evidenceForSelection() {
+    let matches = data.evidence.filter(item => item.agent === state.actor && item.round === state.round);
+    if (!matches.length && state.round === 22) {
+      matches = data.evidence.filter(item => item.round === 22);
+    }
+    if (!matches.length) {
+      matches = data.evidence.filter(item => item.agent === state.actor && ["personal_post", "anonymous_post", "official_post"].includes(item.channel));
+    }
+    matches.sort((left, right) => {
+      const leftPublic = channelById[left.channel].group === "public" ? 0 : 1;
+      const rightPublic = channelById[right.channel].group === "public" ? 0 : 1;
+      return leftPublic - rightPublic || left.timestamp.localeCompare(right.timestamp);
+    });
+    return matches.slice(0, 18);
+  }
+
+  function renderEvidence() {
+    const matches = evidenceForSelection();
+    if (!matches.some(item => item.message_id === state.evidenceId)) {
+      state.evidenceId = matches[0]?.message_id ?? null;
+    }
+
+    const host = document.querySelector("#evidence-list");
+    clear(host);
+    const head = document.createElement("div");
+    head.className = "evidence-list-head";
+    head.textContent = `${tr("evidenceTitle")} · ${localized(agentById[state.actor], "label")} · ${tr("round")} ${state.round}`;
+    host.appendChild(head);
+
+    if (!matches.length) {
+      const empty = document.createElement("div");
+      empty.style.padding = "18px";
+      empty.style.color = "var(--muted)";
+      empty.style.fontSize = "12px";
+      empty.textContent = tr("evidenceEmpty");
+      host.appendChild(empty);
+      document.querySelector("#evidence-copy-head").innerHTML = "";
+      document.querySelector("#evidence-text").textContent = tr("noEvidence");
+      document.querySelector("#evidence-note").textContent = "";
+      return;
+    }
+
+    matches.forEach(item => {
+      const button = document.createElement("button");
+      button.className = `evidence-item${item.message_id === state.evidenceId ? " active" : ""}`;
+      const timeNode = document.createElement("span");
+      timeNode.className = "evidence-time";
+      timeNode.textContent = formatTime(item.timestamp).slice(-5);
+      const meta = document.createElement("span");
+      const label = document.createElement("span");
+      label.className = "evidence-label";
+      label.textContent = localized(agentById[item.agent], "label");
+      const channel = document.createElement("span");
+      channel.className = "evidence-channel";
+      channel.textContent = localized(channelById[item.channel], "label");
+      meta.append(label, channel);
+      button.append(timeNode, meta);
+      button.addEventListener("click", () => {
+        state.evidenceId = item.message_id;
+        renderEvidence();
+      });
+      host.appendChild(button);
+    });
+
+    const selected = matches.find(item => item.message_id === state.evidenceId) || matches[0];
+    const copyHead = document.querySelector("#evidence-copy-head");
+    clear(copyHead);
+    [
+      formatTime(selected.timestamp),
+      localized(agentById[selected.agent], "label"),
+      localized(channelById[selected.channel], "label"),
+      selected.message_id
+    ].forEach((label, index) => {
+      const tag = document.createElement("span");
+      tag.className = `tag${index === 2 && channelById[selected.channel].group === "public" ? " public" : ""}`;
+      tag.textContent = label;
+      copyHead.appendChild(tag);
+    });
+    document.querySelector("#evidence-text").textContent = selected.content;
+    document.querySelector("#evidence-note").textContent =
+      channelById[selected.channel].group === "public"
+        ? tr("evidenceNotePublic")
+        : tr("evidenceNoteInternal");
+  }
+
+  function renderCoverage() {
+    const baselineHost = document.querySelector("#coverage-baseline");
+    const breachHost = document.querySelector("#coverage-breach");
+    clear(baselineHost);
+    clear(breachHost);
+
+    data.agents.forEach(agent => {
+      const baseline = phaseActorByKey[`baseline|${agent.id}`];
+      const breach = phaseActorByKey[`breach|${agent.id}`];
+      const baselineChip = document.createElement("span");
+      baselineChip.className = `actor-chip${baseline.active ? "" : " silent"}`;
+      baselineChip.textContent = `${agent.short} · ${baseline.messages}`;
+      baselineHost.appendChild(baselineChip);
+      const breachChip = document.createElement("span");
+      breachChip.className = `actor-chip${breach.active ? "" : " silent"}`;
+      breachChip.textContent = `${agent.short} · ${breach.messages}`;
+      breachHost.appendChild(breachChip);
+    });
+  }
+
+  function selectActor(agentId) {
+    state.actor = agentId;
+    renderHeatmap();
+    renderActorDetail();
+    renderTimeline();
+    renderEvidence();
+  }
+
+  function selectTimeline(agentId, round) {
+    state.actor = agentId;
+    state.round = round;
+    const roundMeta = data.rounds.find(item => item.round === round);
+    if (roundMeta && roundMeta.phase !== "baseline") {
+      state.phase = roundMeta.phase;
+      renderPhaseSwitch();
+    }
+    renderHeatmap();
+    renderActorDetail();
+    renderTimeline();
+    renderEvidence();
+  }
+
+  function renderAll() {
+    updateStaticText();
+    renderPhaseSwitch();
+    renderHeatmap();
+    renderActorDetail();
+    renderTimeline();
+    renderEvidence();
+    renderCoverage();
+  }
+
+  document.querySelectorAll("[data-lang]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.language = button.dataset.lang;
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll("[data-mode]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.mode = button.dataset.mode;
+      document.querySelectorAll("[data-mode]").forEach(node => {
+        node.setAttribute("aria-pressed", String(node.dataset.mode === state.mode));
+      });
+      renderHeatmap();
+    });
+  });
+
+  document.querySelector("#reset-selection").addEventListener("click", () => {
+    state.phase = "breach";
+    state.mode = "share";
+    state.actor = "legal_agent";
+    state.round = 22;
+    state.evidenceId = data.meta.breach_message_id;
+    document.querySelectorAll("[data-mode]").forEach(node => {
+      node.setAttribute("aria-pressed", String(node.dataset.mode === state.mode));
+    });
+    renderAll();
+  });
+
+  document.querySelector("#metric-baseline").textContent =
+    `${data.summary.legal_baseline_public_count} / ${data.summary.legal_baseline_messages}`;
+  document.querySelector("#metric-breach").textContent =
+    `${data.summary.legal_breach_public_count} / ${data.summary.legal_breach_messages}`;
+  document.querySelector("#metric-coverage").textContent =
+    `${data.summary.breach_active_count} / ${data.meta.agent_count}`;
+
+  document.querySelector("#app").hidden = false;
+  renderAll();
+})();
+</script>
+</body>
+</html>
