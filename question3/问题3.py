@@ -48,9 +48,13 @@ rcParams["axes.unicode_minus"] = False
 # ==================================================
 # 2. Load and merge CSV files
 # ==================================================
-FILES = [
+SPLIT_FILES = [
     "MC1_communications_flat拆分1.csv",
     "MC1_communications_flat拆分2.csv",
+]
+
+FILES = SPLIT_FILES if any(os.path.exists(f) for f in SPLIT_FILES) else [
+    "MC1_communications_flat.csv",
 ]
 
 dfs = []

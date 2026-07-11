@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -40,6 +40,41 @@
   .report-hero {
     padding: 18px 20px;
     margin-bottom: 18px;
+  }
+
+  .hero-topline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .lang-switch {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--report-rule);
+    background: #f4eee6;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .lang-switch a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    color: var(--report-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .lang-switch a[aria-current="true"] {
+    background: var(--report-accent);
+    color: #fffdfa;
   }
 
   .report-hero h1 {
@@ -97,6 +132,19 @@
 
   .figure-embed {
     padding: 0;
+    background: var(--report-bg);
+  }
+
+  .figure-actor-map {
+    background: var(--report-bg);
+    padding: 0;
+  }
+
+  .actor-map-frame {
+    display: block;
+    width: 100%;
+    height: 1450px;
+    border: 0;
     background: var(--report-bg);
   }
 
@@ -395,7 +443,7 @@
     font-size:11px;
     line-height:1.35;
     opacity:0.94;
-  }.figure-logic .sw{ background:#2a9898; }.figure-logic .rq{ background:#d6673b; }.figure-logic .cl{ background:#7d64d8; }.figure-logic .lg{ background:#c94a55; }.figure-logic .pr{ background:#4e78b8; }.figure-logic .sys{ background:#6f8e56; }.figure-logic .result{ background:#b8333f; border:3px solid #1e1e1e; }.figure-logic .ref{ background:#75787d; }.figure-logic .soft{
+  }.figure-logic .sw{ background:#b85b3f; }.figure-logic .rq{ background:#c05a3f; }.figure-logic .cl{ background:#9f4f45; }.figure-logic .lg{ background:#b92f3d; }.figure-logic .pr{ background:#a9473e; }.figure-logic .sys{ background:#8d6333; }.figure-logic .result{ background:#b92f3d; border:3px solid #4b1f1e; }.figure-logic .ref{ background:#8a7b68; }.figure-logic .soft{
     border:1px solid rgba(255,255,255,0.18);
   }.figure-logic .note{
     position:absolute;
@@ -492,218 +540,56 @@
 
 
 
-/* ===== q1_matrix.html scoped styles ===== */
-.figure-matrix{
-  --bg:#f6f4ef;
-  --ink:#24201c;
-  --muted:#6d665d;
-  --rule:#d9d1c4;
-
-  --legal:#c22f3e;
-  --media:#d95f02;
-  --civic:#6f3cc3;
-  --internal:#1f64b4;
-  --system:#00796b;
-  --ref:#5b6470;
-}.figure-matrix{
-  margin:0;
-  font-family:"Microsoft YaHei","Segoe UI",Arial,sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-}.figure-matrix main{
-  width:min(1280px, calc(100vw - 24px));
-  margin:20px auto;
-}.figure-matrix h1{
-  margin:0 0 8px;
-  font-size:30px;
-  line-height:1.2;
-}.figure-matrix .subtitle{
-  color:var(--muted);
-  line-height:1.65;
-  margin:0 0 14px;
-  font-size:14px;
-}.figure-matrix .matrix-card, .figure-matrix .notes{
-  background:#fffdfa;
-  border:1px solid var(--rule);
-  box-shadow:0 14px 38px rgba(55,44,31,.08);
-}.figure-matrix .matrix-card{
-  padding:18px;
-}.figure-matrix .matrix-head{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:18px;
-  align-items:end;
-  margin-bottom:14px;
-}.figure-matrix .matrix-head h2{
-  margin:0 0 6px;
-  font-size:22px;
-  line-height:1.25;
-}.figure-matrix .matrix-head p{
-  margin:0;
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.6;
-  max-width:920px;
-}.figure-matrix .matrix-legend{
-  display:grid;
-  gap:8px;
-  min-width:280px;
-  color:var(--muted);
-  font-size:12px;
-  justify-items:end;
-}.figure-matrix .heatbar{
-  width:220px;
-  height:10px;
-  border-radius:999px;
-  background:linear-gradient(90deg,#f4eee6,#dcc2a4,#b87924,#8f3a25);
-  border:1px solid rgba(36,32,28,.14);
-}.figure-matrix .matrix-readnote{
-  margin:0 0 14px;
-  padding:10px 12px;
-  background:#f7f1e8;
-  border-left:4px solid #b87924;
-  color:#3d352d;
-  font-size:13px;
-  line-height:1.6;
-}.figure-matrix .matrix-wrap{
-  overflow:auto;
-}.figure-matrix .matrix-grid{
-  display:grid;
-  grid-template-columns:160px repeat(6, 1fr);
-  gap:7px;
-  min-width:1080px;
-}.figure-matrix .matrix-colhead, .figure-matrix .matrix-rowhead, .figure-matrix .matrix-cell{
-  border:1px solid var(--rule);
-  background:#fffdfa;
-  min-height:76px;
-  padding:8px 9px;
-}.figure-matrix .matrix-colhead{
-  min-height:54px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:var(--ink);
-  font-size:12px;
-  font-weight:900;
-  line-height:1.2;
-}.figure-matrix .matrix-rowhead{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  font-weight:900;
-  color:var(--ink);
-  background:#f7f1e8;
-}.figure-matrix .role-dot{
-  flex:0 0 auto;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:var(--role-color);
-}.figure-matrix .matrix-cell{
-  position:relative;
-  text-align:center;
-  background:color-mix(in srgb, var(--heat-color) calc(var(--intensity) * 100%), #fffdfa);
-  box-shadow: inset 0 0 0 999px rgba(255,255,255, calc(.62 - var(--intensity) * .45));
-}.figure-matrix .matrix-cell.zero{
-  background:#fbf8f2;
-  color:#b4aa9e;
-  box-shadow:none;
-}.figure-matrix .matrix-cell.highlight{
-  outline:3px solid var(--legal);
-  outline-offset:-3px;
-  border-color:var(--legal);
-}.figure-matrix .matrix-cell .num-label{
-  display:block;
-  font-size:10px;
-  color:var(--muted);
-  line-height:1.1;
-  margin-bottom:2px;
-  letter-spacing:.2px;
-}.figure-matrix .matrix-cell .num{
-  display:block;
-  font-size:22px;
-  font-weight:900;
-  line-height:1;
-  color:#251f19;
-}.figure-matrix .matrix-cell .denom{
-  display:block;
-  margin-top:5px;
-  font-size:11px;
-  color:var(--muted);
-  line-height:1.3;
-}.figure-matrix .matrix-cell .tag{
-  position:absolute;
-  right:6px;
-  bottom:5px;
-  padding:2px 6px;
-  border-radius:999px;
-  background:var(--legal);
-  color:#fffdfa;
-  font-size:10px;
-  font-weight:900;
-}.figure-matrix .notes{
-  margin-top:16px;
-  padding:16px 18px;
-}.figure-matrix .notes h2{
-  margin:0 0 8px;
-  font-size:18px;
-}.figure-matrix .notes p{
-  margin:0;
-  color:var(--muted);
-  line-height:1.68;
-  font-size:14px;
-}.figure-matrix .takeaways{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-  margin-top:14px;
-}.figure-matrix .box{
-  padding:11px 12px;
-  background:#f3efe7;
-  border-left:4px solid var(--media);
-  color:#3b332c;
-  font-size:13px;
-  line-height:1.5;
-}.figure-matrix .box b{
-  color:var(--ink);
-}@media (max-width: 1120px){.figure-matrix .matrix-head{ grid-template-columns:1fr; }.figure-matrix .matrix-legend{ justify-items:start; }.figure-matrix .takeaways{ grid-template-columns:1fr; }
-}
-
 </style>
 </head>
 <body>
   <div class="report-shell">
-    <header class="report-hero">
-      <h1>MC1 Mini-Challenge 1 ? Question 1 Integrated Analytical Report</h1>
-      <p>This single-file report combines three coordinated visual analyses to explain the inappropriate release: the factual event sequence, the causal actor logic, and the actor-channel communication structure.</p>
-      <div class="focus"><b>Q1 focus:</b> identify the key actions, causal relationships, decision points, participating subjects, and the decision/system links that allowed information to bypass embargo enforcement and flow out before the official 18:00 lift.</div>
+    <header class="report-hero" id="summary-view">
+      <div class="hero-topline">
+        <div>
+          <h1>MC1 Mini-Challenge 1 · Question 1 综合分析报告</h1>
+          <p>本报告按五个部分组织：结论摘要、主体信息图、关键真实事件时间线、主体行为逻辑图，以及最终回答。重点解释 17:25 的 Legal personal_post 为什么构成不当提前发布。</p>
+        </div>
+        <nav class="lang-switch" aria-label="Language">
+          <a href="index_englishversion.htm">English</a>
+          <a href="index.htm" aria-current="true">中文</a>
+        </nav>
+      </div>
+      <div class="focus"><b>结论摘要：</b>不当发布是 Legal-Agent 在 2046-06-05 17:25 通过 personal_post 提前确认 CivicLoom-TenantThread merger，比 18:00 正式 embargo lift 早 35 分钟。关键原因不是单点失误，而是外部叙事压力、CivicLoom 纠错压力、Legal 的禁发冲突、审查链压缩和个人账号发布路径共同作用。</div>
     </header>
+
+    <section class="report-block" id="actor-map-view">
+      <div class="report-block-head">
+        <h2>第二部分：主体信息图</h2>
+        <p>先说明各主体、信息边界和公开传播渠道，帮助读者在进入时间线前理解 Q1 的基本世界结构。</p>
+      </div>
+      <div class="figure-embed figure-actor-map">
+        <iframe class="actor-map-frame" src="q1_actor_map.html" title="Q1 主体与信息边界图"></iframe>
+      </div>
+    </section>
 
     <section class="report-block" id="event-view">
       <div class="report-block-head">
-        <h2>Figure 1. Key Event Timeline</h2>
-        <p>This view reconstructs the factual sequence and shows why the 17:25 Legal personal_post is earlier than the 18:00 official embargo lift.</p>
+        <h2>第三部分：关键真实事件时间线</h2>
+        <p>重建真实事件顺序，说明 17:25 Legal personal_post 为什么早于 18:00 官方解禁。</p>
       </div>
       <div class="figure-embed figure-event">
         <main>
             <header>
               <div>
                 <h1>MC1 Q1 关键真实事件时间线</h1>
-                <p class="subtitle">节点位置仍按事件泳道组织，但节点颜色表示“与 17:25 embargo breach 的关联强度”：低分浅灰、中等中性强调、高分强强调，最终泄露节点最高分；18:00 official lift 单独用参照色。</p>
+                <p class="subtitle"><span class="zh-only">节点位置仍按事件泳道组织，但节点颜色表示“与 17:25 embargo breach 的关联强度”：低分浅灰、中等中性强调、高分强强调，最终泄露节点最高分；18:00 official lift 单独用参照色。</span><span class="en-only">Nodes are organized by event lanes; colors indicate correlation strength with the 17:25 embargo breach: low scores light gray, medium neutral emphasis, high strong emphasis, highest score for the final leak node; 18:00 official lift uses a separate reference color.</span></p>
               </div>
               <div class="legend-block">
                 <div class="legend">
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span>低关联 0-1</span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span>中关联 2</span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span>高关联 3-4</span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span>最终泄露</span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span>18:00 参照节点</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span><span class="zh-only">低关联 0-1</span><span class="en-only">Low 0-1</span></span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span><span class="zh-only">中关联 2</span><span class="en-only">Medium 2</span></span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span><span class="zh-only">高关联 3-4</span><span class="en-only">High 3-4</span></span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span><span class="zh-only">最终泄露</span><span class="en-only">Final Leak</span></span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span><span class="zh-only">18:00 参照节点</span><span class="en-only">18:00 Reference</span></span>
                 </div>
                 <div class="score-rule">
-                  <b>关联强度计分：</b>merger/embargo +2；发布渠道或审核控制 +2；6/5 且接近 17:25 +1；引发错误叙事或回应压力 +1；17:25 最终泄露节点设为最高分。18:00 official lift 只作时间参照，不参与评分。
-                </div>
+                  <b>关联强度计分：</b><span class="zh-only">merger/embargo +2；发布渠道或审核控制 +2；6/5 且接近 17:25 +1；引发错误叙事或回应压力 +1；17:25 最终泄露节点设为最高分。18:00 official lift 只作时间参照，不参与评分。</span><span class="en-only">merger/embargo +2; publishing channel or review control +2; 6/5 and near 17:25 +1; triggering false narrative or response pressure +1; 17:25 final leak node highest score. 18:00 official lift serves only as time reference, not scored.</span></div>
               </div>
             </header>
         
@@ -729,8 +615,8 @@
             </section>
         
             <section class="notes">
-              <h2>读图方式</h2>
-              <p>这张图只回答“发生了什么、顺序是什么”。节点不是推理概念，而是表中能直接找到的真实事件。颜色表示与最终 17:25 embargo breach 的关联强度，而不是市场情绪或泳道类别；市场压力信息保留在右侧证据/解释中。</p>
+              <h2><span class="zh-only">读图方式</span><span class="en-only">How to Read</span></h2>
+              <span class="zh-only"><p>这张图只回答“发生了什么、顺序是什么”。节点不是推理概念，而是表中能直接找到的真实事件。颜色表示与最终 17:25 embargo breach 的关联强度，而不是市场情绪或泳道类别；市场压力信息保留在右侧证据/解释中。</p></span><span class="en-only"><p>This chart only answers "what happened and in what sequence". Nodes are real events from the data, not inferred concepts. Colors represent correlation strength with the 17:25 embargo breach, not market sentiment. Market pressure information is retained in the evidence/explanation on the right.</p></span>
             </section>
           </main>
       </div>
@@ -738,8 +624,8 @@
 
     <section class="report-block" id="logic-view">
       <div class="report-block-head">
-        <h2>Figure 2. Actor Behavioral Logic</h2>
-        <p>This view explains how external narrative pressure, CivicLoom correction pressure, legal conflict, compressed review, and personal_post routing converged.</p>
+        <h2>第四部分：主体行为逻辑图</h2>
+        <p>解释外部叙事压力、CivicLoom 纠错压力、Legal 决策冲突、审查链压缩和 personal_post 路径如何汇合。</p>
       </div>
       <div class="figure-embed figure-logic">
         <div class="page">
@@ -753,13 +639,13 @@
         <!-- 图例 -->
         <div class="legend">
         <h4>图例</h4>
-        <div class="legend-row"><span class="swatch" style="background:#2a9898;"></span>SaltWind / 外部媒体</div>
-        <div class="legend-row"><span class="swatch" style="background:#d6673b;"></span>ResidentIQ / 竞品放大器</div>
-        <div class="legend-row"><span class="swatch" style="background:#7d64d8;"></span>CivicLoom / 交易对手</div>
-        <div class="legend-row"><span class="swatch" style="background:#c94a55;"></span>Legal / 决策与控制</div>
-        <div class="legend-row"><span class="swatch" style="background:#4e78b8;"></span>PR / Social / 发布系统</div>
-        <div class="legend-row"><span class="swatch" style="background:#6f8e56;"></span>System / Embargo / 控制结构</div>
-        <div class="legend-row"><span class="swatch" style="background:#b8333f;"></span>核心结果节点</div>
+        <div class="legend-row"><span class="swatch" style="background:#b85b3f;"></span>SaltWind / 外部媒体</div>
+        <div class="legend-row"><span class="swatch" style="background:#c05a3f;"></span>ResidentIQ / 竞品放大器</div>
+        <div class="legend-row"><span class="swatch" style="background:#9f4f45;"></span>CivicLoom / 交易对手</div>
+        <div class="legend-row"><span class="swatch" style="background:#b92f3d;"></span>Legal / 决策与控制</div>
+        <div class="legend-row"><span class="swatch" style="background:#a9473e;"></span>PR / Social / 发布系统</div>
+        <div class="legend-row"><span class="swatch" style="background:#8d6333;"></span>System / Embargo / 控制结构</div>
+        <div class="legend-row"><span class="swatch" style="background:#b92f3d;"></span>核心结果节点</div>
         <div class="legend-row"><span class="line-demo"></span>主行为链 / 关键因果</div>
         <div class="legend-row"><span class="line-demo dashed"></span>支撑条件 / 结构性影响</div>
         </div>
@@ -1000,77 +886,10 @@
       </div>
     </section>
 
-    <section class="report-block" id="matrix-view">
-      <div class="report-block-head">
-        <h2>Figure 3. Actor x Channel Communication Structure</h2>
-        <p>This view identifies the structural pathway: crisis communication shifted heavily through huddles and personal_post rather than only official_post.</p>
-      </div>
-      <div class="figure-embed figure-matrix">
-        <main>
-        
-          <h1>Actor × Channel 沟通结构矩阵</h1>
-          <p class="subtitle">
-            该图从 912 条 communications 中聚合出“谁通过什么渠道发声”。
-            矩阵用于分析 6/5 crisis day 中，不同 actor 在不同 channel 上的使用强度，
-            并识别正式发布路径与实际流出路径之间的偏移。
-          </p>
-        
-          <section class="matrix-card" aria-labelledby="actor-channel-title">
-            <div class="matrix-head">
-              <div>
-                <h2 id="actor-channel-title">Actor × Channel 沟通结构矩阵</h2>
-                <p>
-                  每个格子反映某一类 actor 在某一种 channel 上的 communication volume。
-                  颜色越深，说明该角色在 6/5 危机日越依赖该渠道。
-                </p>
-              </div>
-              <div class="matrix-legend">
-                <div><b>颜色深浅：</b>6/5 crisis day 消息量</div>
-                <div class="heatbar" aria-hidden="true"></div>
-                <div>浅 = 低频；深 = 高频；红框 = 17:25 泄露所在角色 × 渠道</div>
-              </div>
-            </div>
-        
-            <!-- 新增的明确读图说明 -->
-            <div class="matrix-readnote">
-              <b>读图说明：</b>
-              每个格子的<b>大号主数字</b>表示 <b>6/5 crisis day 消息数</b>；
-              下方的<b>小号附属数字</b>表示 <b>全样本总消息数</b>。
-              例如某格显示 “72”，下方写 “全样本 126”，表示该 actor 在该 channel 上
-              于 6/5 危机日发送了 72 条消息，而在全部样本期间一共发送了 126 条消息。
-            </div>
-        
-            <div class="matrix-wrap">
-              <div class="matrix-grid" id="actorChannelMatrix"></div>
-            </div>
-          </section>
-        
-          <section class="notes">
-            <h2>图像解释</h2>
-            <p>
-              这张图说明 crisis day 中 communication structure 的真实分布方式：
-              Legal、PR、Social Media 等角色并非只在正式渠道发声，而是在
-              comms_huddle、personal_post、anonymous_post 等 multiple channels 中形成混合传播结构。
-              其中，official_post 并不是唯一或最强的对外路径；
-              相反，personal_post 与 side_huddle 在危机期间的活跃度更高，
-              说明信息流在 crisis pressure 下出现了明显的去中心化迁移。
-            </p>
-        
-            <div class="takeaways">
-              <div class="box"><b>关键发现 1：</b>Legal 在危机日没有走 official_post，但出现了 personal_post 与 anonymous_post，说明法律口径并不只停留在内部审核。</div>
-              <div class="box"><b>关键发现 2：</b>Social Media 的 personal_post 在危机日非常活跃，说明个人账号已经被纳入外部叙事稳定链。</div>
-              <div class="box"><b>关键发现 3：</b>PR-Intern 承担了大量 official_post，而最终泄露却发生在 Legal × personal_post，体现正式发布路径和实际流出路径分离。</div>
-            </div>
-          </section>
-        
-        </main>
-      </div>
-    </section>
-    <section class="report-answer">
-      <h2>Final Q1 Answer</h2>
-      <p>The inappropriate release was the <b>17:25 Legal-Agent personal_post</b> confirming the CivicLoom-TenantThread merger, which occurred <b>35 minutes before</b> the 18:00 official embargo lift. The breach emerged from a coupled failure: SaltWind and ResidentIQ drove external narrative pressure; CivicLoom created correction pressure; Legal faced a conflict between correcting misinformation and preserving the merger embargo; key review capacity was weakened; and the communication structure allowed personal_post to carry company-level confirmation.</p>
-    </section>
-  </div>
+    <section class="report-answer" id="final-answer">
+      <h2>第五部分：Final Answer</h2>
+      <p>不当发布是 <b>17:25 Legal-Agent 通过 personal_post 提前确认 CivicLoom-TenantThread merger</b>，该发布比 18:00 官方 embargo lift 早 <b>35 分钟</b>。这次泄露不是单一主体的孤立失误，而是多个因素耦合后的结果：SaltWind 和 ResidentIQ 推动外部错误叙事，CivicLoom 形成纠错压力，Legal 在“必须纠错”和“不能提前确认 merger”的冲突中决策，关键审查能力被压缩，最终 personal_post 承载了公司级敏感确认。</p>
+    </section>  </div>
 
 <script>
 (() => {
@@ -1386,113 +1205,7 @@ const lanes = [
     });
 })();
 
-(() => {
-/* ===== q1_matrix.html scripts ===== */
-const matrixRows = [
-  { key: "legal", label: "Legal", color: "#c22f3e" },
-  { key: "social_media", label: "Social Media", color: "#d95f02" },
-  { key: "platform_trust", label: "Platform Trust", color: "#1f64b4" },
-  { key: "pr", label: "PR", color: "#6f3cc3" },
-  { key: "pr_intern", label: "PR Intern", color: "#8f6b2f" },
-  { key: "intern", label: "Intern", color: "#00796b" },
-  { key: "judge", label: "Judge", color: "#5b6470" }
-];
 
-const matrixCols = [
-  { key: "comms_huddle", label: "comms_huddle" },
-  { key: "one_on_one_chat", label: "one_on_one_chat" },
-  { key: "side_huddle", label: "side_huddle" },
-  { key: "official_post", label: "official_post" },
-  { key: "personal_post", label: "personal_post" },
-  { key: "anonymous_post", label: "anonymous_post" }
-];
-
-// 每个值为 [6/5 危机日消息数, 全样本总消息数]
-const matrixData = {
-  legal: {
-    comms_huddle: [72, 126], one_on_one_chat: [44, 77], side_huddle: [44, 47],
-    official_post: [0, 0], personal_post: [4, 4], anonymous_post: [12, 12]
-  },
-  social_media: {
-    comms_huddle: [57, 103], one_on_one_chat: [36, 53], side_huddle: [36, 38],
-    official_post: [1, 10], personal_post: [14, 16], anonymous_post: [0, 0]
-  },
-  platform_trust: {
-    comms_huddle: [19, 115], one_on_one_chat: [12, 47], side_huddle: [12, 16],
-    official_post: [0, 0], personal_post: [5, 5], anonymous_post: [0, 0]
-  },
-  pr: {
-    comms_huddle: [14, 56], one_on_one_chat: [7, 29], side_huddle: [7, 10],
-    official_post: [0, 6], personal_post: [0, 0], anonymous_post: [0, 0]
-  },
-  pr_intern: {
-    comms_huddle: [39, 42], one_on_one_chat: [23, 26], side_huddle: [0, 0],
-    official_post: [7, 12], personal_post: [0, 4], anonymous_post: [0, 0]
-  },
-  intern: {
-    comms_huddle: [15, 19], one_on_one_chat: [8, 10], side_huddle: [0, 0],
-    official_post: [0, 0], personal_post: [1, 8], anonymous_post: [0, 0]
-  },
-  judge: {
-    comms_huddle: [4, 15], one_on_one_chat: [2, 6], side_huddle: [0, 0],
-    official_post: [0, 0], personal_post: [0, 0], anonymous_post: [0, 0]
-  }
-};
-
-function renderActorChannelMatrix() {
-  const root = document.querySelector("#actorChannelMatrix");
-  if (!root) return;
-
-  const maxCrisis = Math.max(
-    ...matrixRows.flatMap(row => matrixCols.map(col => matrixData[row.key][col.key][0]))
-  );
-
-  root.innerHTML = "";
-
-  root.appendChild(
-    Object.assign(document.createElement("div"), {
-      className: "matrix-colhead",
-      textContent: "Actor / Channel"
-    })
-  );
-
-  matrixCols.forEach(col => {
-    const head = document.createElement("div");
-    head.className = "matrix-colhead";
-    head.textContent = col.label;
-    root.appendChild(head);
-  });
-
-  matrixRows.forEach(row => {
-    const rowHead = document.createElement("div");
-    rowHead.className = "matrix-rowhead";
-    rowHead.innerHTML = `<span class="role-dot" style="--role-color:${row.color}"></span><span>${row.label}</span>`;
-    root.appendChild(rowHead);
-
-    matrixCols.forEach(col => {
-      const [crisis, total] = matrixData[row.key][col.key];
-      const intensity = maxCrisis ? crisis / maxCrisis : 0;
-      const isBreachCell = row.key === "legal" && col.key === "personal_post";
-
-      const cell = document.createElement("div");
-      cell.className = `matrix-cell${crisis === 0 ? " zero" : ""}${isBreachCell ? " highlight" : ""}`;
-      cell.style.setProperty("--heat-color", "#b87924");
-      cell.style.setProperty("--intensity", intensity.toFixed(3));
-
-      cell.innerHTML = `
-        <span class="num-label">危机日</span>
-        <span class="num">${crisis}</span>
-        <span class="denom">全样本 ${total}</span>
-        ${isBreachCell ? '<span class="tag">17:25 breach</span>' : ''}
-      `;
-
-      root.appendChild(cell);
-    });
-  });
-}
-
-renderActorChannelMatrix();
-})();
 </script>
-</body>
+<script>function switchLang(l){document.documentElement.setAttribute("data-lang",l);document.querySelectorAll("#btn-zh, #btn-en").forEach(b=>b.classList.remove("active"));document.getElementById("btn-"+l).classList.add("active");}switchLang("zh");</script></body>
 </html>

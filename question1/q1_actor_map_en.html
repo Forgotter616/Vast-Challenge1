@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MC1 Q1 Actors and Information Boundary Map</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --ink: #24201c;
+      --muted: #6d665d;
+      --line: #d9d1c4;
+      --panel: #fffdfa;
+      --external: #b85b3f;
+      --control: #a9473e;
+      --public: #b87924;
+      --deal: #9f4f45;
+      --gate: #8d6333;
+      --risk: #b92f3d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1540px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 14px 0 28px;
+    }
+
+    header { margin-bottom: 12px; }
+
+    .eyebrow {
+      color: var(--risk);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 4px 0 6px;
+      font-size: 15px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 1120px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .map-board {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 14px 38px rgba(55, 44, 31, .08);
+      overflow: hidden;
+    }
+
+    .root-band {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 16px;
+      padding: 24px 28px;
+      background: #f3efe7;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .root-node,
+    .gate-node {
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+    }
+
+    .root-node { border-left: 6px solid var(--control); }
+
+    .gate-node {
+      border-color: #d9c3a4;
+      border-left: 6px solid var(--gate);
+      background: #fbf2e6;
+    }
+
+    .node-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .node-title strong {
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag.external { background: var(--external); }
+    .tag.control { background: var(--control); }
+    .tag.public { background: var(--public); }
+    .tag.deal { background: var(--deal); }
+    .tag.gate { background: var(--gate); }
+    .tag.risk { background: var(--risk); }
+
+    .root-node p,
+    .gate-node p,
+    .entity p,
+    .group-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tree-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      gap: 24px;
+      padding: 26px 28px 30px;
+    }
+
+    .branch { min-width: 0; }
+
+    .branch-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      color: #3d352d;
+      font-size: 17px;
+      font-weight: 900;
+      background: #f4eee6;
+      border: 1px solid var(--line);
+      border-left: 6px solid #c05a3f;
+      border-radius: 8px;
+    }
+
+    .branch.external .branch-head { border-left-color: var(--external); }
+    .branch.control .branch-head { border-left-color: var(--control); }
+    .branch.public .branch-head { border-left-color: var(--public); }
+
+    .entity-stack,
+    .subgroup {
+      display: grid;
+      gap: 12px;
+    }
+
+    .subgroup {
+      margin-bottom: 15px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8f1e8;
+    }
+
+    .subgroup-title {
+      margin: 0 0 2px;
+      font-size: 15px;
+      color: #3d352d;
+      font-weight: 900;
+    }
+
+    .entity {
+      min-height: 104px;
+      padding: 14px 14px 14px 18px;
+      background: #fffdfa;
+      border: 1px solid var(--line);
+      border-left: 5px solid #9aa8b6;
+      border-radius: 8px;
+      box-shadow: 0 8px 18px rgba(55, 44, 31, .07);
+    }
+
+    .entity.external { border-left-color: var(--external); }
+    .entity.control { border-left-color: var(--control); }
+    .entity.public { border-left-color: var(--public); }
+    .entity.deal { border-left-color: var(--deal); }
+    .entity.gate { border-left-color: var(--gate); }
+    .entity.risk {
+      border-color: #e8b7b4;
+      border-left-color: var(--risk);
+      background: #fff5f2;
+    }
+
+    .entity h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 7px;
+      font-size: 16px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .entity h3 span:first-child { min-width: 0; }
+
+    .compact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .footer-note {
+      padding: 14px 28px 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      background: #f4eee6;
+    }
+
+    @media (max-width: 1180px) {
+      .root-band,
+      .tree-grid,
+      .compact-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">MC1 Q1 context map</div>
+    <h1>Actors and Information Boundary Map</h1>
+    <p class="lead">This map places all Q1 actors in one three-layer structure: external pressure, company control, and public communication. Each node explains who the actor is and what role it plays in the causal analysis.</p>
+  </header>
+
+  <section class="map-board" aria-label="Q1 actors and information boundary tree">
+    <div class="root-band">
+      <div class="root-node">
+        <div class="node-title">
+          <strong>TenantThread</strong>
+          <span class="tag control">Event center</span>
+        </div>
+        <p>TenantThread is the center of Q1. It is simultaneously facing tenant-scoring exposure, client-retention risk, market narrative loss, and the CivicLoom merger embargo. Its position explains why the final-hour release decision becomes dangerous.</p>
+      </div>
+      <div class="gate-node">
+        <div class="node-title">
+          <strong>Embargo</strong>
+          <span class="tag gate">Boundary</span>
+        </div>
+        <p>The embargo is the information boundary that defines the improper release: before 18:00, TenantThread should not formally confirm the CivicLoom merger. It is a control rule that every actor must work around.</p>
+      </div>
+    </div>
+
+    <div class="tree-grid">
+      <section class="branch external" aria-label="External pressure layer">
+        <h2 class="branch-head">External Pressure Layer</h2>
+        <div class="entity-stack">
+          <article class="entity external">
+            <h3><span>SaltWind Journal</span><span class="tag external">Media</span></h3>
+            <p>The main source of external media pressure. It first exposes governance and re-identification risks, then breaks the CivicLoom merger story at 17:00, forcing TenantThread into a rapid-response posture.</p>
+          </article>
+          <article class="entity external">
+            <h3><span>ResidentIQ</span><span class="tag external">Competitor</span></h3>
+            <p>A competitor and reference point for the wrong transaction narrative. The market temporarily misidentifies ResidentIQ as the acquirer, creating pressure to correct the record without violating the embargo.</p>
+          </article>
+          <article class="entity external">
+            <h3><span>OceanCrunch</span><span class="tag external">Media</span></h3>
+            <p>Turns TenantThread's silence into a crisis story. This makes non-response itself risky and increases pressure for a public explanation in the final stage.</p>
+          </article>
+          <article class="entity external">
+            <h3><span>HorizonMgmt</span><span class="tag external">Client</span></h3>
+            <p>A key enterprise client. Its SLA termination signal shows that the crisis has moved from social and news narratives into real business-loss risk.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="branch control" aria-label="Company control layer">
+        <h2 class="branch-head">Company Control Layer</h2>
+        <div class="subgroup">
+          <h3 class="subgroup-title">Deal and Control Boundary</h3>
+          <p class="group-note">This group explains two constraints the company must handle at the same time: the true counterparty and the rule against confirming the transaction early.</p>
+          <article class="entity deal">
+            <h3><span>CivicLoom Realty Partners</span><span class="tag deal">Deal</span></h3>
+            <p>The true merger counterparty. CivicLoom needs TenantThread to correct false reporting, but its merger identity is still embargoed, creating conflict between correction and restraint.</p>
+          </article>
+          <article class="entity gate">
+            <h3><span>Embargo Gate</span><span class="tag gate">Boundary</span></h3>
+            <p>The information gate before formal release. Company-level confirmation should move through an approved publication route, with 18:00 as the formal lift point.</p>
+          </article>
+        </div>
+
+        <div class="subgroup">
+          <h3 class="subgroup-title">Internal Roles</h3>
+          <p class="group-note">These agents form the crisis-response and publication-control chain. Q1 cares about their responsibilities at the critical moment, not their message counts.</p>
+          <div class="compact-grid">
+            <article class="entity risk">
+              <h3><span>Legal-Agent</span><span class="tag risk">Legal</span></h3>
+              <p>The core actor for legal risk and embargo compliance. Legal should guard the boundary, but also faces pressure to correct the false narrative.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>Judge</span><span class="tag control">Review</span></h3>
+              <p>The compliance review and conflict-mediation role, representing the independent check that should exist before high-risk publication.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>PR-Agent</span><span class="tag control">Comms</span></h3>
+              <p>The formal communications lead. Under normal control, company-level confirmation should be coordinated through PR.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>PR-Intern</span><span class="tag control">Official</span></h3>
+              <p>The actor with access to TenantThread's official Flex account, making official_post the executable formal route.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>Platform Trust</span><span class="tag control">Trust</span></h3>
+              <p>Provides governance and platform-risk evidence that can support the frame that reform preceded the transaction.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>Social Media</span><span class="tag control">Amplify</span></h3>
+              <p>Monitors and amplifies social narratives, pushing already released information into the broader public sphere.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>Intern-Agent</span><span class="tag control">Support</span></h3>
+              <p>A support role in communications, showing the ad hoc crisis-response posture during the final hour.</p>
+            </article>
+            <article class="entity control">
+              <h3><span>Ajay / Senior Team</span><span class="tag control">Leadership</span></h3>
+              <p>Leadership and deal-aware actors who make the CivicLoom merger an internally known but externally constrained fact.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="branch public" aria-label="Public communication layer">
+        <h2 class="branch-head">Public Communication Layer</h2>
+        <div class="entity-stack">
+          <article class="entity public">
+            <h3><span>Flex Public Space</span><span class="tag public">Arena</span></h3>
+            <p>The public arena where posts become visible to media, markets, clients, tenants, and competitors, turning a single post into a public fact.</p>
+          </article>
+          <article class="entity public">
+            <h3><span>official_post</span><span class="tag public">Official</span></h3>
+            <p>The official company account route, appropriate for approved statements and company-level merger information.</p>
+          </article>
+          <article class="entity risk">
+            <h3><span>personal_post</span><span class="tag risk">Personal</span></h3>
+            <p>A personal public-account channel. Its risk is that personal identity can carry company-level sensitive information and blur the boundary with official release.</p>
+          </article>
+          <article class="entity public">
+            <h3><span>anonymous_post</span><span class="tag public">Anonymous</span></h3>
+            <p>An anonymous public route that can shape external narrative while weakening approval and accountability chains.</p>
+          </article>
+          <article class="entity public">
+            <h3><span>one_on_one_chat</span><span class="tag public">Private</span></h3>
+            <p>A private coordination or directed-confirmation route. If quoted or relayed, it can still affect public narrative indirectly.</p>
+          </article>
+          <article class="entity public">
+            <h3><span>comms_huddle / side_huddle</span><span class="tag public">Internal</span></h3>
+            <p>Internal group channels for crisis coordination and pre-publication judgment. They should not replace formal public release.</p>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer-note">
+      How to read the map: start with TenantThread and the embargo at the top, then move left to right. The left column explains where pressure comes from; the center column explains who is responsible for internal judgment and control; the right column explains the channels through which information can become public.
+    </div>
+  </section>
+</main>
+</body>
+</html>
