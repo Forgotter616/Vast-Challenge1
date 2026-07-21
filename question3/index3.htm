@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +26,7 @@
     margin: 0;
     background: var(--report-bg);
     color: var(--report-ink);
-    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
   }
 
   .report-shell {
@@ -274,162 +274,162 @@
 <div class="report-shell">
 
   <header class="report-hero">
-    <h1>MC1 Mini-Challenge 1 · Question 3 前置预警与异常行为综合分析</h1>
-    <p>围绕 TenantThread 2046-06-05 泄密事件，系统分析前置预警信号、历史异常行为模式、近失误案例，以及为何同类问题未能在过去触发有效管控。</p>
+    <h1>MC1 Mini-Challenge 1 · Question 3 Pre-Breach Warning and Anomaly Analysis</h1>
+    <p>This report analyzes the warning signals, historical anomaly patterns, near-miss cases, and governance gaps that preceded the TenantThread leak on 2046-06-05.</p>
 
     <div class="key-findings">
       <div class="finding-card">
         <div class="num">01</div>
-        <div class="label"><b>连续前置预警</b>从 5/17 起法务持续发出合规警告，5/22 明确指出外部报告与产品特征高度映射</div>
+        <div class="label"><b>Repeated early warnings</b>Legal had issued compliance warnings since 5/17, and on 5/22 explicitly mapped the external report to product features.</div>
       </div>
       <div class="finding-card">
         <div class="num">02</div>
-        <div class="label"><b>系统性异常</b>集中在公开敏感泄露、实习生高风险操作、已知风险未收敛、控制冲突四大类型</div>
+        <div class="label"><b>Systemic anomalies</b>The main patterns were sensitive public disclosure, high-risk intern actions, known risks left unresolved, and control conflicts.</div>
       </div>
       <div class="finding-card">
         <div class="num">03</div>
-        <div class="label"><b>近失误前例</b>5/29 "Big things coming!" 个人帖与本次泄密诱因高度同构</div>
+        <div class="label"><b>Near-miss precedent</b>The 5/29 personal post, "Big things coming!", had the same trigger structure as the later leak.</div>
       </div>
       <div class="finding-card">
         <div class="num">04</div>
-        <div class="label"><b>信号未转化</b>合规监控未构成有效发布闸门，信号未被转化为系统级约束</div>
+        <div class="label"><b>Signals not converted</b>Compliance monitoring did not become an effective release gate, so warning signals never became system-level constraints.</div>
       </div>
     </div>
   </header>
 
-  <!-- View 1: 前置预警信号时间线 -->
+  <!-- View 1: pre-breach warning signal timeline -->
   <section class="report-block">
     <div class="report-block-head">
-      <h2>View 1 · 前置预警信号时间线</h2>
-      <p>沿时间轴梳理从 5 月中旬到 6 月 5 日的合规预警发出与实际行为响应之间的差距</p>
+      <h2>View 1 · Pre-Breach Warning Signal Timeline</h2>
+      <p>A timeline view of the gap between compliance warnings and actual behavioral responses from mid-May through June 5.</p>
     </div>
     <div class="figure-embed">
-      <img src="task3_warning_timeline.png" alt="前置预警信号时间线">
+      <img src="task3_warning_timeline.png" alt="Pre-breach warning signal timeline">
       <div class="figure-caption">
-        <b>读图方式：</b>上方蓝色标记为 Legal-Agent 发出的合规预警信号，下方红色标记为代理实际行为（包括公开帖、个人帖等）。线条连接预警与后续行为，展示"提醒—行为未收缩"的模式。<br>
-        <b>关键发现：</b>最晚从 5/17 Q2 启动会议起，Legal 已将合规事项列为优先级；到 5/22 NHPI 报告出现，Legal 明确指出外部报告中的 behavioral scoring / renewal optimization / de-anonymization risk 与产品高度映射；5/29 管理层已明确认识到个人帖+embargo 敏感语境构成结构性风险。然而在多数预警之后，公开传播与个人帖并未显著收缩。
+        <b>How to read:</b> Blue markers above the timeline show compliance warning signals issued by Legal-Agent; red markers below the timeline show actual agent behaviors, including official posts and personal posts. Connecting lines reveal a repeated pattern in which warnings were issued but behavior did not contract.<br>
+        <b>Key finding:</b> By the 5/17 Q2 kickoff meeting at the latest, Legal had made compliance a priority. After the 5/22 NHPI report appeared, Legal explicitly noted that behavioral scoring, renewal optimization, and de-anonymization risk in the external report mapped closely to TenantThread's product. By 5/29, management had recognized that personal posting in an embargo-sensitive context was a structural risk. Even so, public communication and personal posts did not meaningfully decline after most warnings.
       </div>
     </div>
   </section>
 
-  <!-- View 2: 渠道分布变化 -->
+  <!-- View 2: channel distribution shift -->
   <section class="report-block">
     <div class="report-block-head">
-      <h2>View 2 · 危机前 vs 危机日渠道分布对比</h2>
-      <p>横向比较不同角色在危机前（历史基线）与危机日（6/5）的通信渠道使用模式变化</p>
+      <h2>View 2 · Pre-Crisis vs Crisis-Day Channel Distribution</h2>
+      <p>A comparison of how different roles used communication channels before the crisis and on the crisis day, 6/5.</p>
     </div>
     <div class="figure-embed">
-      <img src="task3_channel_distribution.png" alt="危机前 vs 危机日渠道分布">
+      <img src="task3_channel_distribution.png" alt="Pre-crisis vs crisis-day channel distribution">
       <div class="figure-caption">
-        <b>读图方式：</b>横轴为各类通信渠道（official_post、personal_post、comms_huddle、one_on_one_chat、side_huddle），纵轴为各角色使用该渠道的比例。不同颜色代表不同角色。<br>
-        <b>关键发现：</b>危机日 personal_post 和 official_post 占比上升，内部协调渠道（comms_huddle）虽有增加但未形成有效审批闸门。实习生/PR 实习生在危机日持续通过公开渠道发帖，Legal 虽然多次发出"hold everything"指令，但执行存在延迟与遗漏。
+        <b>How to read:</b> The x-axis lists communication channels, including official_post, personal_post, comms_huddle, one_on_one_chat, and side_huddle. The y-axis shows each role's share of usage for that channel, with colors representing roles.<br>
+        <b>Key finding:</b> On the crisis day, personal_post and official_post both increased. Internal coordination through comms_huddle also rose, but it did not become an effective approval gate. Intern and PR-Intern continued posting through public channels during the crisis. Although Legal repeatedly issued "hold everything" instructions, execution was delayed and incomplete.
       </div>
     </div>
   </section>
 
-  <!-- View 3: 历史异常矩阵 -->
+  <!-- View 3: historical anomaly matrix -->
   <section class="report-block">
     <div class="report-block-head">
-      <h2>View 3 · 历史异常行为矩阵</h2>
-      <p>按代理角色 × 异常类型交叉展示历史异常行为的分布密度与模式</p>
+      <h2>View 3 · Historical Anomaly Matrix</h2>
+      <p>A role-by-anomaly matrix showing the density and pattern of historical abnormal behavior.</p>
     </div>
     <div class="figure-embed">
-      <img src="task3_anomaly_matrix.png" alt="历史异常行为矩阵">
+      <img src="task3_anomaly_matrix.png" alt="Historical anomaly matrix">
       <div class="figure-caption">
-        <b>读图方式：</b>矩阵横轴为异常类型（ANOM3–ANOM6），纵轴为代理角色。颜色深浅表示该角色在该异常类型上的发生频次或强度。<br>
-        <b>关键发现：</b>实习生(Intern/PR-Intern)在 ANOM3（公开敏感披露）和 ANOM4（高风险操作）上高度集中；Legal-Agent 在 ANOM5（已知风险仍推进）和 ANOM6（控制冲突）上显著；Social-Media-Agent 在 ANOM3 上持续性存在——表明公开传播在敏感期并未系统性地受到抑制。
+        <b>How to read:</b> The matrix columns are anomaly types ANOM3 through ANOM6, while rows are agent roles. Darker colors indicate higher frequency or intensity for that role and anomaly type.<br>
+        <b>Key finding:</b> Intern and PR-Intern are concentrated in ANOM3, sensitive public disclosure, and ANOM4, high-risk operations. Legal-Agent is prominent in ANOM5, known risks still advanced, and ANOM6, control conflicts. Social-Media-Agent appears repeatedly in ANOM3, showing that public communication was not systematically suppressed during sensitive periods.
       </div>
     </div>
   </section>
 
-  <!-- 分析详情 -->
+  <!-- Analysis details -->
   <section class="report-block">
     <div class="report-block-head">
-      <h2>分析详情 · 数据与方法</h2>
-      <p>基于四个 CSV 数据集的三层分析框架</p>
+      <h2>Analysis Details · Data and Method</h2>
+      <p>A three-layer analytical framework built from four CSV datasets.</p>
     </div>
     <div class="report-block-body">
-      <h3>数据来源</h3>
+      <h3>Data Sources</h3>
       <table class="anomaly-table">
-        <tr><th>数据集</th><th>用途</th><th>记录概况</th></tr>
+        <tr><th>Dataset</th><th>Purpose</th><th>Record Scope</th></tr>
         <tr>
           <td><b>task3_anom1_compliance_warning_ignored.csv</b></td>
-          <td>识别法务/合规预警是否被业务侧、传播侧忽略</td>
-          <td>覆盖 5/17–6/5 期间所有合规预警-行为配对</td>
+          <td>Identifies whether legal and compliance warnings were ignored by business or communication actors.</td>
+          <td>Covers all compliance warning and behavior pairings from 5/17 to 6/5.</td>
         </tr>
         <tr>
           <td><b>task3_anomalies.csv</b></td>
-          <td>识别历史异常类型、角色分布、发生时间</td>
-          <td>包含 ANOM3/ANOM4/ANOM5/ANOM6 四大异常类型</td>
+          <td>Identifies historical anomaly types, role distribution, and occurrence time.</td>
+          <td>Includes the four anomaly types ANOM3, ANOM4, ANOM5, and ANOM6.</td>
         </tr>
         <tr>
           <td><b>task3_nearmiss.csv</b></td>
-          <td>识别与本次泄密诱因相似的"近失误"案例</td>
-          <td>覆盖 5/17–6/4 危机前全时段</td>
+          <td>Identifies near-miss cases with trigger structures similar to the final leak.</td>
+          <td>Covers the full pre-crisis period from 5/17 to 6/4.</td>
         </tr>
         <tr>
           <td><b>task3_warnings.csv</b></td>
-          <td>追踪 Legal-Agent 发出的所有正式与非正式警告</td>
-          <td>包含警告时间、内容片段、响应用时与响应行为</td>
+          <td>Tracks all formal and informal warnings issued by Legal-Agent.</td>
+          <td>Includes warning time, content snippets, response time, and response behavior.</td>
         </tr>
       </table>
 
-      <h3>三层分析框架</h3>
-      <p><b>（1）时间链分析：</b>沿事件时间轴梳理从 5/17 Q2 启动到 6/5 泄密日的信号升级过程。关键节点包括：</p>
+      <h3>Three-Layer Analytical Framework</h3>
+      <p><b>1. Timeline analysis:</b> The event timeline traces the escalation of signals from the 5/17 Q2 kickoff to the 6/5 leak day. Key moments include:</p>
       <ul>
-        <li><b>5/17：</b>Q2 规划启动，Legal 将 AG 调查纳入最高优先级，Ajay 私下提及"战略发展"</li>
-        <li><b>5/21：</b>数据治理审查激烈争论，发现三个运营商客户误用 Service Load Score</li>
-        <li><b>5/22：</b>NHPI 报告发布，Legal 明确指出产品特征与报告关注点高度映射，Shadow 频道首次激活</li>
-        <li><b>5/25：</b>CivicLoom 并购在 Shadow 频道简报，Q2 数据公布（收入增长降至 18%）</li>
-        <li><b>5/29：</b>Social-Manager 发出"Big things coming!" 个人帖——与本次泄密最相似的近失误</li>
-        <li><b>5/30：</b>Judge 加入 Comms Huddle，禁发规则被强化——但实习生仍持续通过个人帖发帖</li>
-        <li><b>5/31–6/4：</b>SaltWind 报道接连发布，外部压力急剧上升</li>
-        <li><b>6/5：</b>泄密事件发生——Legal-Agent 在 17:25 通过 personal_post 提前确认 CivicLoom 并购</li>
+        <li><b>5/17:</b> Q2 planning began. Legal elevated the AG investigation to the highest priority, while Ajay privately mentioned "strategic development."</li>
+        <li><b>5/21:</b> A heated data governance review found that three carrier clients had misused the Service Load Score.</li>
+        <li><b>5/22:</b> The NHPI report was released. Legal explicitly mapped the report's concerns to product features, and the Shadow channel was activated for the first time.</li>
+        <li><b>5/25:</b> The CivicLoom acquisition was briefed in the Shadow channel, and Q2 data showed revenue growth slowing to 18%.</li>
+        <li><b>5/29:</b> Social-Manager posted "Big things coming!" on a personal account, creating the closest near-miss to the final leak.</li>
+        <li><b>5/30:</b> Judge joined the Comms Huddle and embargo rules were reinforced, but interns continued posting through personal accounts.</li>
+        <li><b>5/31-6/4:</b> SaltWind published a series of stories, sharply increasing external pressure.</li>
+        <li><b>6/5:</b> The leak occurred when Legal-Agent confirmed the CivicLoom acquisition early through personal_post at 17:25.</li>
       </ul>
 
-      <p><b>（2）异常类型分析：</b>从代理、渠道、上下文三方面识别四大偏离规范的典型模式：</p>
+      <p><b>2. Anomaly type analysis:</b> The analysis identifies four recurring patterns of deviation from expected behavior across agents, channels, and contexts:</p>
       <ul>
-        <li><span class="tag tag-red">ANOM3</span> <b>公开敏感披露：</b>在并购/禁发敏感期，通过 official_post 或 personal_post 持续公开传播带 hashtag 的品牌内容</li>
-        <li><span class="tag tag-red">ANOM4</span> <b>实习生高风险操作：</b>实习生/PR 实习生在不知情背景下独立执行业务关键发布</li>
-        <li><span class="tag tag-blue">ANOM5</span> <b>已知风险仍推进：</b>Legal 在明知敏感上下文的情况下仍协调发布执行</li>
-        <li><span class="tag tag-gold">ANOM6</span> <b>发布控制冲突：</b>在多个代理同时执行发布时出现审批/执行的角色混淆</li>
+        <li><span class="tag tag-red">ANOM3</span> <b>Sensitive public disclosure:</b> During merger or embargo-sensitive periods, branded content with hashtags continued to be published through official_post or personal_post.</li>
+        <li><span class="tag tag-red">ANOM4</span> <b>High-risk intern operation:</b> Intern or PR-Intern independently executed business-critical publishing tasks without sufficient context.</li>
+        <li><span class="tag tag-blue">ANOM5</span> <b>Known risk still advanced:</b> Legal continued coordinating release execution despite knowing the context was sensitive.</li>
+        <li><span class="tag tag-gold">ANOM6</span> <b>Publishing control conflict:</b> Approval and execution roles became confused when several agents acted on publishing at the same time.</li>
       </ul>
 
-      <p><b>（3）因果治理分析：</b>解释为何早期预警、近失误与正式处置之间没有形成闭环：</p>
+      <p><b>3. Causal governance analysis:</b> This layer explains why early warnings, near-misses, and formal responses never formed a closed control loop:</p>
       <ul>
-        <li>Judge/合规监控机制上线较晚（5/30），且从结果看更像"观察与审阅"，并未构成有效"发布闸门"</li>
-        <li>实习生未被告知禁发原因（Ajay 明确指令"官方说法是例行协议审查"），导致其在不知情下继续高危操作</li>
-        <li>个人帖/官方帖的边界缺乏技术性硬阻断——所有控制依赖人工审批，而关键审核者在危机升级时不可用</li>
-        <li>信号虽被"看到"但未被转化为系统级约束——每次预警后的行为收缩是临时的、个体的，而非制度化的</li>
+        <li>The Judge and compliance-monitoring mechanism came online late, on 5/30, and functioned more like observation and review than an effective release gate.</li>
+        <li>Interns were not told the real reason for the embargo. Ajay explicitly said the official explanation should be "routine protocol review," leaving junior publishers to continue risky actions without full context.</li>
+        <li>The personal_post and official_post boundary lacked a technical hard block. Controls relied on manual approval, while key reviewers became unavailable as the crisis escalated.</li>
+        <li>Signals were seen but not converted into system-level constraints. Behavioral contraction after each warning was temporary and individual, not institutionalized.</li>
       </ul>
     </div>
   </section>
 
   <!-- Final Answer -->
   <section class="report-answer">
-    <h2>Final Answer · 四项核心结论</h2>
+    <h2>Final Answer · Four Core Conclusions</h2>
 
     <div class="conclusion-grid">
       <div class="conclusion-card">
-        <h4>1. 存在连续前置预警信号</h4>
-        <p>从 5/17 起 Legal-Agent 持续发出合规警告。5/22 NHPI 报告后 Legal 明确指出外部框架与产品特征高度映射。5/29 管理层已认识到"个人帖+embargo 敏感语境"是结构性风险。预警信号充足且逐步升级。</p>
+        <h4>1. Repeated leading indicators existed</h4>
+        <p>Legal-Agent had issued compliance warnings since 5/17. After the 5/22 NHPI report, Legal explicitly recognized that the external critique mapped closely to product features. By 5/29, management understood that personal posting in an embargo-sensitive context was a structural risk. The warning signals were sufficient and escalating.</p>
       </div>
       <div class="conclusion-card">
-        <h4>2. 历史异常行为具有系统性</h4>
-        <p>异常主要集中于 ANOM3（敏感期公开传播）、ANOM4（实习生高风险操作）、ANOM5（已知风险仍推进）、ANOM6（控制冲突）四类，覆盖所有代理角色，并非偶发个案。</p>
+        <h4>2. Historical anomalies were systemic</h4>
+        <p>The anomalies concentrated in four categories: ANOM3, public communication during sensitive periods; ANOM4, high-risk intern operations; ANOM5, known risks still advanced; and ANOM6, control conflicts. They covered all agent roles and were not isolated incidents.</p>
       </div>
       <div class="conclusion-card">
-        <h4>3. 近失误模式与本次泄密同构</h4>
-        <p>5/29 Social-Manager "Big things coming!" 个人帖在诱因结构上与 6/5 泄密高度相似：敏感期仍维持公开传播、个人帖突破禁发边界、控制以提醒为主缺少硬阻断。</p>
+        <h4>3. The near-miss matched the leak pattern</h4>
+        <p>The 5/29 Social-Manager personal post, "Big things coming!", closely matched the trigger structure of the 6/5 leak: public communication continued during a sensitive period, personal posting crossed the embargo boundary, and control relied on reminders rather than hard blocks.</p>
       </div>
       <div class="conclusion-card">
-        <h4>4. 信号未被转化为系统级约束</h4>
-        <p>Judge 监控机制上线太晚且未构成有效发布闸门；实习生不知情下继续高危操作；个人/官方边界缺乏技术硬阻断；每次预警后的行为收缩是临时的而非制度化的。</p>
+        <h4>4. Signals did not become system constraints</h4>
+        <p>The Judge monitoring mechanism came online too late and never became an effective release gate. Interns continued high-risk actions without full context. The personal and official channel boundary lacked technical enforcement, and each post-warning behavior reduction was temporary rather than institutionalized.</p>
       </div>
     </div>
 
     <p style="margin-top:14px; color:#38332c; font-size:13px; line-height:1.7;">
-      <b>综合判断：</b>本次泄密事件是在长期存在的权限管理失衡、敏感期传播收缩不足、合规约束弱执行和多代理协同失配的背景下，系统性风险最终实现的一次高后果泄漏。它并不是一个全新的、无法预见的故障模式，而是已有信号与近失误在制度化应缺失条件下的必然升级。
+      <b>Overall judgment:</b> The leak was a high-consequence realization of systemic risk under long-running permission imbalance, insufficient communication contraction during sensitive periods, weak compliance enforcement, and misaligned multi-agent coordination. It was not a new or unforeseeable failure mode; it was the escalation of known signals and near-misses under missing institutional controls.
     </p>
   </section>
 

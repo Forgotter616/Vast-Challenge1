@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MC1 Q3 · Pre-Breach Warning & Anomaly Analysis</title>
+<style>
+  :root {
+    --report-bg: #f6f4ef;
+    --report-panel: #fffdfa;
+    --report-ink: #24201c;
+    --report-muted: #6d665d;
+    --report-rule: #d9d1c4;
+    --report-accent: #b87924;
+    --red: #ad3d35;
+    --red-soft: #f0d5ce;
+    --blue: #416d78;
+    --blue-soft: #d7e2e1;
+    --gold: #b87822;
+    --gold-soft: #f1e2c6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--report-bg);
+    color: var(--report-ink);
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+  }
+
+  .report-shell {
+    width: min(1200px, calc(100vw - 28px));
+    margin: 0 auto;
+    padding: 18px 0 28px;
+  }
+
+  .report-hero, .report-block, .report-answer {
+    background: var(--report-panel);
+    border: 1px solid var(--report-rule);
+    box-shadow: 0 14px 38px rgba(55,44,31,.08);
+  }
+
+  .report-hero {
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border-top: 6px solid var(--red);
+  }
+
+  .report-hero h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    line-height: 1.18;
+  }
+
+  .report-hero p {
+    margin: 0;
+    color: var(--report-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 900px;
+  }
+
+  .report-hero .focus {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--red);
+    background: var(--red-soft);
+    color: #3d2522;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .key-findings {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .finding-card {
+    padding: 16px;
+    border: 1px solid var(--report-rule);
+    background: #faf7f2;
+  }
+
+  .finding-card .num {
+    color: var(--red);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .finding-card .label {
+    margin-top: 6px;
+    color: var(--report-muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .finding-card .label b {
+    color: var(--report-ink);
+    display: block;
+  }
+
+  .report-block {
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .report-block-head {
+    padding: 14px 18px;
+    background: #f3efe7;
+    border-bottom: 1px solid var(--report-rule);
+  }
+
+  .report-block-head h2 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  .report-block-head p {
+    margin: 0;
+    color: var(--report-muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .report-block-body {
+    padding: 18px 20px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #38332c;
+  }
+
+  .report-block-body h3 {
+    margin: 18px 0 8px;
+    font-size: 15px;
+    color: var(--report-ink);
+  }
+
+  .report-block-body h3:first-child {
+    margin-top: 0;
+  }
+
+  .report-block-body p {
+    margin: 0 0 10px;
+    color: #4a443b;
+  }
+
+  .report-block-body ul {
+    margin: 6px 0 12px;
+    padding-left: 20px;
+  }
+
+  .report-block-body li {
+    margin-bottom: 4px;
+    color: #4a443b;
+  }
+
+  .report-block-body b {
+    color: var(--report-ink);
+  }
+
+  .figure-embed {
+    padding: 16px;
+    background: var(--report-bg);
+    text-align: center;
+  }
+
+  .figure-embed img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--report-rule);
+    box-shadow: 0 6px 20px rgba(55,44,31,.08);
+  }
+
+  .figure-caption {
+    margin-top: 10px;
+    color: var(--report-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .figure-caption b {
+    color: var(--report-ink);
+  }
+
+  .anomaly-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 12px 0;
+  }
+
+  .anomaly-table th {
+    background: #f3efe7;
+    padding: 8px 10px;
+    text-align: left;
+    border: 1px solid var(--report-rule);
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--report-muted);
+    text-transform: uppercase;
+  }
+
+  .anomaly-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--report-rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .tag-red { background: var(--red-soft); color: var(--red); }
+  .tag-blue { background: var(--blue-soft); color: var(--blue); }
+  .tag-gold { background: var(--gold-soft); color: var(--gold); }
+
+  .report-answer {
+    padding: 22px 24px;
+    margin-top: 20px;
+  }
+
+  .report-answer h2 {
+    margin: 0 0 10px;
+    font-size: 19px;
+    color: var(--red);
+  }
+
+  .report-answer .conclusion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+
+  .conclusion-card {
+    padding: 14px;
+    border: 1px solid var(--report-rule);
+    background: #faf7f2;
+  }
+
+  .conclusion-card h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+  }
+
+  .conclusion-card p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--report-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .key-findings { grid-template-columns: repeat(2, 1fr); }
+    .conclusion-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="report-shell">
+
+  <header class="report-hero">
+    <h1>MC1 Mini-Challenge 1 · Question 3 前置预警与异常行为综合分析</h1>
+    <p>围绕 TenantThread 2046-06-05 泄密事件，系统分析前置预警信号、历史异常行为模式、近失误案例，以及为何同类问题未能在过去触发有效管控。</p>
+
+    <div class="key-findings">
+      <div class="finding-card">
+        <div class="num">01</div>
+        <div class="label"><b>连续前置预警</b>从 5/17 起法务持续发出合规警告，5/22 明确指出外部报告与产品特征高度映射</div>
+      </div>
+      <div class="finding-card">
+        <div class="num">02</div>
+        <div class="label"><b>系统性异常</b>集中在公开敏感泄露、实习生高风险操作、已知风险未收敛、控制冲突四大类型</div>
+      </div>
+      <div class="finding-card">
+        <div class="num">03</div>
+        <div class="label"><b>近失误前例</b>5/29 "Big things coming!" 个人帖与本次泄密诱因高度同构</div>
+      </div>
+      <div class="finding-card">
+        <div class="num">04</div>
+        <div class="label"><b>信号未转化</b>合规监控未构成有效发布闸门，信号未被转化为系统级约束</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- View 1: 前置预警信号时间线 -->
+  <section class="report-block">
+    <div class="report-block-head">
+      <h2>View 1 · 前置预警信号时间线</h2>
+      <p>沿时间轴梳理从 5 月中旬到 6 月 5 日的合规预警发出与实际行为响应之间的差距</p>
+    </div>
+    <div class="figure-embed">
+      <img src="task3_warning_timeline.png" alt="前置预警信号时间线">
+      <div class="figure-caption">
+        <b>读图方式：</b>上方蓝色标记为 Legal-Agent 发出的合规预警信号，下方红色标记为代理实际行为（包括公开帖、个人帖等）。线条连接预警与后续行为，展示"提醒—行为未收缩"的模式。<br>
+        <b>关键发现：</b>最晚从 5/17 Q2 启动会议起，Legal 已将合规事项列为优先级；到 5/22 NHPI 报告出现，Legal 明确指出外部报告中的 behavioral scoring / renewal optimization / de-anonymization risk 与产品高度映射；5/29 管理层已明确认识到个人帖+embargo 敏感语境构成结构性风险。然而在多数预警之后，公开传播与个人帖并未显著收缩。
+      </div>
+    </div>
+  </section>
+
+  <!-- View 2: 渠道分布变化 -->
+  <section class="report-block">
+    <div class="report-block-head">
+      <h2>View 2 · 危机前 vs 危机日渠道分布对比</h2>
+      <p>横向比较不同角色在危机前（历史基线）与危机日（6/5）的通信渠道使用模式变化</p>
+    </div>
+    <div class="figure-embed">
+      <img src="task3_channel_distribution.png" alt="危机前 vs 危机日渠道分布">
+      <div class="figure-caption">
+        <b>读图方式：</b>横轴为各类通信渠道（official_post、personal_post、comms_huddle、one_on_one_chat、side_huddle），纵轴为各角色使用该渠道的比例。不同颜色代表不同角色。<br>
+        <b>关键发现：</b>危机日 personal_post 和 official_post 占比上升，内部协调渠道（comms_huddle）虽有增加但未形成有效审批闸门。实习生/PR 实习生在危机日持续通过公开渠道发帖，Legal 虽然多次发出"hold everything"指令，但执行存在延迟与遗漏。
+      </div>
+    </div>
+  </section>
+
+  <!-- View 3: 历史异常矩阵 -->
+  <section class="report-block">
+    <div class="report-block-head">
+      <h2>View 3 · 历史异常行为矩阵</h2>
+      <p>按代理角色 × 异常类型交叉展示历史异常行为的分布密度与模式</p>
+    </div>
+    <div class="figure-embed">
+      <img src="task3_anomaly_matrix.png" alt="历史异常行为矩阵">
+      <div class="figure-caption">
+        <b>读图方式：</b>矩阵横轴为异常类型（ANOM3–ANOM6），纵轴为代理角色。颜色深浅表示该角色在该异常类型上的发生频次或强度。<br>
+        <b>关键发现：</b>实习生(Intern/PR-Intern)在 ANOM3（公开敏感披露）和 ANOM4（高风险操作）上高度集中；Legal-Agent 在 ANOM5（已知风险仍推进）和 ANOM6（控制冲突）上显著；Social-Media-Agent 在 ANOM3 上持续性存在——表明公开传播在敏感期并未系统性地受到抑制。
+      </div>
+    </div>
+  </section>
+
+  <!-- 分析详情 -->
+  <section class="report-block">
+    <div class="report-block-head">
+      <h2>分析详情 · 数据与方法</h2>
+      <p>基于四个 CSV 数据集的三层分析框架</p>
+    </div>
+    <div class="report-block-body">
+      <h3>数据来源</h3>
+      <table class="anomaly-table">
+        <tr><th>数据集</th><th>用途</th><th>记录概况</th></tr>
+        <tr>
+          <td><b>task3_anom1_compliance_warning_ignored.csv</b></td>
+          <td>识别法务/合规预警是否被业务侧、传播侧忽略</td>
+          <td>覆盖 5/17–6/5 期间所有合规预警-行为配对</td>
+        </tr>
+        <tr>
+          <td><b>task3_anomalies.csv</b></td>
+          <td>识别历史异常类型、角色分布、发生时间</td>
+          <td>包含 ANOM3/ANOM4/ANOM5/ANOM6 四大异常类型</td>
+        </tr>
+        <tr>
+          <td><b>task3_nearmiss.csv</b></td>
+          <td>识别与本次泄密诱因相似的"近失误"案例</td>
+          <td>覆盖 5/17–6/4 危机前全时段</td>
+        </tr>
+        <tr>
+          <td><b>task3_warnings.csv</b></td>
+          <td>追踪 Legal-Agent 发出的所有正式与非正式警告</td>
+          <td>包含警告时间、内容片段、响应用时与响应行为</td>
+        </tr>
+      </table>
+
+      <h3>三层分析框架</h3>
+      <p><b>（1）时间链分析：</b>沿事件时间轴梳理从 5/17 Q2 启动到 6/5 泄密日的信号升级过程。关键节点包括：</p>
+      <ul>
+        <li><b>5/17：</b>Q2 规划启动，Legal 将 AG 调查纳入最高优先级，Ajay 私下提及"战略发展"</li>
+        <li><b>5/21：</b>数据治理审查激烈争论，发现三个运营商客户误用 Service Load Score</li>
+        <li><b>5/22：</b>NHPI 报告发布，Legal 明确指出产品特征与报告关注点高度映射，Shadow 频道首次激活</li>
+        <li><b>5/25：</b>CivicLoom 并购在 Shadow 频道简报，Q2 数据公布（收入增长降至 18%）</li>
+        <li><b>5/29：</b>Social-Manager 发出"Big things coming!" 个人帖——与本次泄密最相似的近失误</li>
+        <li><b>5/30：</b>Judge 加入 Comms Huddle，禁发规则被强化——但实习生仍持续通过个人帖发帖</li>
+        <li><b>5/31–6/4：</b>SaltWind 报道接连发布，外部压力急剧上升</li>
+        <li><b>6/5：</b>泄密事件发生——Legal-Agent 在 17:25 通过 personal_post 提前确认 CivicLoom 并购</li>
+      </ul>
+
+      <p><b>（2）异常类型分析：</b>从代理、渠道、上下文三方面识别四大偏离规范的典型模式：</p>
+      <ul>
+        <li><span class="tag tag-red">ANOM3</span> <b>公开敏感披露：</b>在并购/禁发敏感期，通过 official_post 或 personal_post 持续公开传播带 hashtag 的品牌内容</li>
+        <li><span class="tag tag-red">ANOM4</span> <b>实习生高风险操作：</b>实习生/PR 实习生在不知情背景下独立执行业务关键发布</li>
+        <li><span class="tag tag-blue">ANOM5</span> <b>已知风险仍推进：</b>Legal 在明知敏感上下文的情况下仍协调发布执行</li>
+        <li><span class="tag tag-gold">ANOM6</span> <b>发布控制冲突：</b>在多个代理同时执行发布时出现审批/执行的角色混淆</li>
+      </ul>
+
+      <p><b>（3）因果治理分析：</b>解释为何早期预警、近失误与正式处置之间没有形成闭环：</p>
+      <ul>
+        <li>Judge/合规监控机制上线较晚（5/30），且从结果看更像"观察与审阅"，并未构成有效"发布闸门"</li>
+        <li>实习生未被告知禁发原因（Ajay 明确指令"官方说法是例行协议审查"），导致其在不知情下继续高危操作</li>
+        <li>个人帖/官方帖的边界缺乏技术性硬阻断——所有控制依赖人工审批，而关键审核者在危机升级时不可用</li>
+        <li>信号虽被"看到"但未被转化为系统级约束——每次预警后的行为收缩是临时的、个体的，而非制度化的</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Final Answer -->
+  <section class="report-answer">
+    <h2>Final Answer · 四项核心结论</h2>
+
+    <div class="conclusion-grid">
+      <div class="conclusion-card">
+        <h4>1. 存在连续前置预警信号</h4>
+        <p>从 5/17 起 Legal-Agent 持续发出合规警告。5/22 NHPI 报告后 Legal 明确指出外部框架与产品特征高度映射。5/29 管理层已认识到"个人帖+embargo 敏感语境"是结构性风险。预警信号充足且逐步升级。</p>
+      </div>
+      <div class="conclusion-card">
+        <h4>2. 历史异常行为具有系统性</h4>
+        <p>异常主要集中于 ANOM3（敏感期公开传播）、ANOM4（实习生高风险操作）、ANOM5（已知风险仍推进）、ANOM6（控制冲突）四类，覆盖所有代理角色，并非偶发个案。</p>
+      </div>
+      <div class="conclusion-card">
+        <h4>3. 近失误模式与本次泄密同构</h4>
+        <p>5/29 Social-Manager "Big things coming!" 个人帖在诱因结构上与 6/5 泄密高度相似：敏感期仍维持公开传播、个人帖突破禁发边界、控制以提醒为主缺少硬阻断。</p>
+      </div>
+      <div class="conclusion-card">
+        <h4>4. 信号未被转化为系统级约束</h4>
+        <p>Judge 监控机制上线太晚且未构成有效发布闸门；实习生不知情下继续高危操作；个人/官方边界缺乏技术硬阻断；每次预警后的行为收缩是临时的而非制度化的。</p>
+      </div>
+    </div>
+
+    <p style="margin-top:14px; color:#38332c; font-size:13px; line-height:1.7;">
+      <b>综合判断：</b>本次泄密事件是在长期存在的权限管理失衡、敏感期传播收缩不足、合规约束弱执行和多代理协同失配的背景下，系统性风险最终实现的一次高后果泄漏。它并不是一个全新的、无法预见的故障模式，而是已有信号与近失误在制度化应缺失条件下的必然升级。
+    </p>
+  </section>
+
+</div>
+</body>
+</html>

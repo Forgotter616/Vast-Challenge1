@@ -1,5 +1,5 @@
-﻿<!doctype html>
-<html lang="zh-CN">
+<!doctype html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,9 +24,11 @@
   }
 
   .report-shell {
-    width: min(2440px, calc(100vw - 28px));
+    width: 100%;
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 18px 0 28px;
+    padding: 14px 24px 20px;
+    box-sizing: border-box;
   }
 
   .report-hero,
@@ -38,49 +40,18 @@
   }
 
   .report-hero {
-    padding: 18px 20px;
-    margin-bottom: 18px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
   }
 
   .hero-topline {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-  }
-
-  .lang-switch {
-    display: inline-flex;
-    gap: 6px;
-    padding: 4px;
-    border: 1px solid var(--report-rule);
-    background: #f4eee6;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
-
-  .lang-switch a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 30px;
-    padding: 5px 11px;
-    border-radius: 999px;
-    color: var(--report-muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .lang-switch a[aria-current="true"] {
-    background: var(--report-accent);
-    color: #fffdfa;
+    display: block;
   }
 
   .report-hero h1 {
-    margin: 0 0 10px;
-    font-size: 32px;
-    line-height: 1.18;
+    margin: 0 0 8px;
+    font-size: clamp(34px, 3.5vw, 52px);
+    line-height: 1.08;
     letter-spacing: 0;
   }
 
@@ -88,23 +59,23 @@
   .report-answer p {
     margin: 0;
     color: var(--report-muted);
-    font-size: 15px;
-    line-height: 1.7;
-    max-width: 1180px;
+    font-size: 13px;
+    line-height: 1.6;
+    max-width: 880px;
   }
 
   .report-hero .focus {
-    margin-top: 10px;
-    padding: 11px 13px;
+    margin-top: 8px;
+    padding: 9px 11px;
     border-left: 4px solid var(--report-accent);
     background: #f4eee6;
     color: #3d352d;
-    font-size: 14px;
-    line-height: 1.65;
+    font-size: 12px;
+    line-height: 1.55;
   }
 
   .report-block {
-    margin-bottom: 22px;
+    margin-bottom: 16px;
     overflow: auto;
   }
 
@@ -112,22 +83,33 @@
     position: sticky;
     left: 0;
     z-index: 5;
-    padding: 12px 16px;
+    padding: 22px 24px 18px;
     background: #f3efe7;
     border-bottom: 1px solid var(--report-rule);
   }
 
+  .view-kicker {
+    margin-bottom: 7px;
+    color: #9f4f45;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
   .report-block-head h2 {
-    margin: 0 0 5px;
-    font-size: 19px;
-    line-height: 1.25;
+    margin: 0;
+    font-family: "Iowan Old Style", "Songti SC", serif;
+    font-size: clamp(27px, 3vw, 43px);
+    line-height: 1.05;
   }
 
   .report-block-head p {
-    margin: 0;
+    max-width: 880px;
+    margin: 10px 0 0;
     color: var(--report-muted);
-    font-size: 13px;
-    line-height: 1.55;
+    font-size: 14px;
+    line-height: 1.6;
   }
 
   .figure-embed {
@@ -143,18 +125,26 @@
   .actor-map-frame {
     display: block;
     width: 100%;
-    height: 1450px;
+    height: 1260px;
+    border: 0;
+    background: var(--report-bg);
+  }
+
+  .logic-map-frame {
+    display: block;
+    width: 100%;
+    height: 940px;
     border: 0;
     background: var(--report-bg);
   }
 
   .report-answer {
-    padding: 16px 18px;
+    padding: 14px 16px;
   }
 
   .report-answer h2 {
-    margin: 0 0 8px;
-    font-size: 20px;
+    margin: 0 0 6px;
+    font-size: 15px;
   }
 
   .report-answer b { color: var(--report-ink); }
@@ -180,52 +170,52 @@
       font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
     }.figure-event main{
       width: calc(100vw - 32px);
-      max-width: 1720px;
-      margin: 16px auto;
-      min-height: calc(100vh - 32px);
+      max-width: 1400px;
+      margin: 12px auto;
+      min-height: auto;
       display: flex;
       flex-direction: column;
     }.figure-event header{
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
+      gap: 14px;
       align-items: end;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }.figure-event h1{
-      margin: 0 0 8px;
-      font-size: clamp(24px, 2.8vw, 38px);
+      margin: 0 0 6px;
+      font-size: 15px;
       line-height: 1.12;
       letter-spacing: 0;
     }.figure-event .subtitle{
       margin: 0;
-      max-width: 880px;
+      max-width: 720px;
       color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
+      font-size: 13px;
+      line-height: 1.5;
     }.figure-event .legend{
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 12px;
+      gap: 6px 10px;
       justify-content: flex-end;
-      max-width: 520px;
+      max-width: 480px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 11px;
     }.figure-event .legend-item{
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       white-space: nowrap;
     }.figure-event .legend-block{
       display: grid;
-      gap: 8px;
+      gap: 6px;
       justify-items: end;
     }.figure-event .score-rule{
-      max-width: 560px;
-      padding: 10px 12px;
+      max-width: 480px;
+      padding: 8px 10px;
       background: rgba(255,253,250,.78);
       border: 1px solid var(--rule);
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       line-height: 1.45;
     }.figure-event .score-rule b{
       color: var(--ink);
@@ -236,11 +226,11 @@
       background: var(--color);
     }.figure-event .layout{
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 390px;
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      gap: 14px;
       align-items: stretch;
-      height: calc(100vh - 235px);
-      min-height: 780px;
+      height: calc(100vh - 180px);
+      min-height: 620px;
     }.figure-event .chart-card, .figure-event .detail-card, .figure-event .notes{
       background: rgba(255,253,250,.88);
       border: 1px solid var(--rule);
@@ -248,8 +238,8 @@
     }.figure-event .chart-card{
       height: 100%;
       min-height: 0;
-      padding: 14px;
-      overflow: hidden;
+      padding: 10px;
+      overflow: visible;
       display: flex;
     }.figure-event svg{
       display: block;
@@ -269,7 +259,14 @@
       stroke: rgba(255,253,250,.92);
       stroke-width: 4px;
       stroke-linejoin: round;
-    }.figure-event .node{ cursor: pointer; }.figure-event .node circle{
+    }.figure-event .node{
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform .16s ease;
+    }.figure-event .node:hover, .figure-event .node:focus{
+      transform: scale(1.16);
+    }.figure-event .node circle{
       fill: var(--node-color);
       stroke: #fffdfa;
       stroke-width: 3;
@@ -294,40 +291,40 @@
     }.figure-event .detail-card{
       height: 100%;
       min-height: 0;
-      padding: 18px;
+      padding: 14px;
       position: static;
       overflow: auto;
     }.figure-event .detail-kicker{
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
     }.figure-event .detail-title{
-      margin: 8px 0 10px;
-      font-size: 22px;
+      margin: 6px 0 8px;
+      font-size: 18px;
       line-height: 1.25;
     }.figure-event .detail-meta{
       display: grid;
-      gap: 7px;
-      margin: 14px 0;
-      color: var(--muted);
-      font-size: 13px;
-    }.figure-event .detail-meta b{ color: var(--ink); }.figure-event .evidence, .figure-event .interpretation, .figure-event .importance{
-      margin-top: 12px;
-      padding: 12px 13px;
-      background: #f3efe7;
-      color: #38312a;
-      font-size: 14px;
-      line-height: 1.55;
-    }.figure-event .evidence{ border-left: 4px solid var(--detail-color); }.figure-event .interpretation{ border-left: 4px solid #7c5ab8; }.figure-event .importance{ border-left: 4px solid #b97424; }.figure-event .source{
-      margin-top: 16px;
+      gap: 5px;
+      margin: 10px 0;
       color: var(--muted);
       font-size: 12px;
+    }.figure-event .detail-meta b{ color: var(--ink); }.figure-event .evidence, .figure-event .interpretation, .figure-event .importance{
+      margin-top: 10px;
+      padding: 10px 11px;
+      background: #f3efe7;
+      color: #38312a;
+      font-size: 12px;
+      line-height: 1.5;
+    }.figure-event .evidence{ border-left: 4px solid var(--detail-color); }.figure-event .interpretation{ border-left: 4px solid #7c5ab8; }.figure-event .importance{ border-left: 4px solid #b97424; }.figure-event .source{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 11px;
       line-height: 1.4;
     }.figure-event .notes{
-      margin-top: 16px;
-      padding: 16px 18px;
-    }.figure-event .notes h2{ margin: 0 0 8px; font-size: 18px; }.figure-event .notes p{ margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }@media (max-width: 1080px){.figure-event header, .figure-event .layout{ grid-template-columns: 1fr; }.figure-event .layout{ height: auto; min-height: 0; }.figure-event .legend{ justify-content: flex-start; }.figure-event .legend-block{ justify-items: start; }.figure-event .chart-card, .figure-event .detail-card{ height: auto; min-height: auto; }
+      margin-top: 12px;
+      padding: 12px 14px;
+    }.figure-event .notes h2{ margin: 0 0 6px; font-size: 15px; }.figure-event .notes p{ margin: 0; color: var(--muted); line-height: 1.6; font-size: 12px; }@media (max-width: 1080px){.figure-event header, .figure-event .layout{ grid-template-columns: 1fr; }.figure-event .layout{ height: auto; min-height: 0; }.figure-event .legend{ justify-content: flex-start; }.figure-event .legend-block{ justify-items: start; }.figure-event .chart-card, .figure-event .detail-card{ height: auto; min-height: auto; }
     }
   
 
@@ -337,13 +334,18 @@
     font-family: "Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
     background:#f6f4ef;
     color:#222;
+    display:flex;
+    justify-content:center;
+    overflow:auto;
   }.figure-logic .page{
     width:2400px;
     margin:0 auto;
     padding:18px 18px 28px 18px;
     box-sizing:border-box;
+    flex:0 0 auto;
+    zoom:.6;
   }.figure-logic .title{
-    font-size:34px;
+    font-size:15px;
     font-weight:800;
     margin-bottom:8px;
   }.figure-logic .subtitle{
@@ -383,7 +385,7 @@
     position:absolute;
     top:0;
     width:1px;
-    height:940px;
+    height:1080px;
     background:#ece7df;
   }.figure-logic .tick.major{ background:#dfd8ce; }.figure-logic .tick-label{
     position:absolute;
@@ -547,503 +549,245 @@
     <header class="report-hero" id="summary-view">
       <div class="hero-topline">
         <div>
-          <h1>MC1 Mini-Challenge 1 · Question 1 综合分析报告</h1>
-          <p>本报告按五个部分组织：结论摘要、主体信息图、关键真实事件时间线、主体行为逻辑图，以及最终回答。重点解释 17:25 的 Legal personal_post 为什么构成不当提前发布。</p>
+          <h1>MC1 Mini-Challenge 1 · Question 1 Integrated Analytical Report</h1>
+          <p>This report is organized into five parts: conclusion summary, actor information map, key factual timeline, actor behavioral logic diagram, and final answer. It explains why the 17:25 Legal personal_post was an improper early release.</p>
         </div>
-        <nav class="lang-switch" aria-label="Language">
-          <a href="index_englishversion.htm">English</a>
-          <a href="index.htm" aria-current="true">中文</a>
-        </nav>
       </div>
-      <div class="focus"><b>结论摘要：</b>不当发布是 Legal-Agent 在 2046-06-05 17:25 通过 personal_post 提前确认 CivicLoom-TenantThread merger，比 18:00 正式 embargo lift 早 35 分钟。关键原因不是单点失误，而是外部叙事压力、CivicLoom 纠错压力、Legal 的禁发冲突、审查链压缩和个人账号发布路径共同作用。</div>
+      <div class="focus"><b>Conclusion summary:</b> The inappropriate release was Legal-Agent's 17:25 personal_post confirming the CivicLoom-TenantThread merger, 35 minutes before the formal 18:00 embargo lift. The cause was not a single isolated mistake, but a convergence of external narrative pressure, CivicLoom correction pressure, Legal's embargo conflict, compressed review capacity, and a personal-account publishing path.</div>
     </header>
 
     <section class="report-block" id="actor-map-view">
       <div class="report-block-head">
-        <h2>第二部分：主体信息图</h2>
-        <p>先说明各主体、信息边界和公开传播渠道，帮助读者在进入时间线前理解 Q1 的基本世界结构。</p>
+        <div class="view-kicker">View 1 · Context</div>
+        <h2>Actor Information Map</h2>
+        <p>This map introduces the actors, information boundary, and public communication channels before the reader enters the timeline.</p>
       </div>
       <div class="figure-embed figure-actor-map">
-        <iframe class="actor-map-frame" src="q1_actor_map.html" title="Q1 主体与信息边界图"></iframe>
+        <iframe class="actor-map-frame" src="q1_actor_map.html" title="Q1 actors and information boundary map" scrolling="no"></iframe>
       </div>
     </section>
 
     <section class="report-block" id="event-view">
       <div class="report-block-head">
-        <h2>第三部分：关键真实事件时间线</h2>
-        <p>重建真实事件顺序，说明 17:25 Legal personal_post 为什么早于 18:00 官方解禁。</p>
+        <div class="view-kicker">View 2 · Trace</div>
+        <h2>Key Factual Event Timeline</h2>
+        <p>This view reconstructs the factual sequence and shows why the 17:25 Legal personal_post is earlier than the 18:00 official embargo lift.</p>
       </div>
       <div class="figure-embed figure-event">
         <main>
             <header>
               <div>
-                <h1>MC1 Q1 关键真实事件时间线</h1>
-                <p class="subtitle"><span class="zh-only">节点位置仍按事件泳道组织，但节点颜色表示“与 17:25 embargo breach 的关联强度”：低分浅灰、中等中性强调、高分强强调，最终泄露节点最高分；18:00 official lift 单独用参照色。</span><span class="en-only">Nodes are organized by event lanes; colors indicate correlation strength with the 17:25 embargo breach: low scores light gray, medium neutral emphasis, high strong emphasis, highest score for the final leak node; 18:00 official lift uses a separate reference color.</span></p>
+                <h1>MC1 Q1 Key Real Event Timeline</h1>
+                <p class="subtitle">Nodes are still organized by event lanes, but node colors indicate the 'correlation strength with the 17:25 embargo breach': low score light gray, medium score neutral emphasis, high score strong emphasis, highest score for the final leak node; 18:00 official lift uses a separate reference color.</p>
               </div>
               <div class="legend-block">
                 <div class="legend">
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span><span class="zh-only">低关联 0-1</span><span class="en-only">Low 0-1</span></span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span><span class="zh-only">中关联 2</span><span class="en-only">Medium 2</span></span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span><span class="zh-only">高关联 3-4</span><span class="en-only">High 3-4</span></span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span><span class="zh-only">最终泄露</span><span class="en-only">Final Leak</span></span>
-                  <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span><span class="zh-only">18:00 参照节点</span><span class="en-only">18:00 Reference</span></span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-low)"></span>Low Correlation 0-1</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-mid)"></span>Medium Correlation 2</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-high)"></span>High Correlation 3-4</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-max)"></span>Final Leak</span>
+                  <span class="legend-item"><span class="swatch" style="--color: var(--score-ref)"></span>18:00 Reference Node</span>
                 </div>
                 <div class="score-rule">
-                  <b>关联强度计分：</b><span class="zh-only">merger/embargo +2；发布渠道或审核控制 +2；6/5 且接近 17:25 +1；引发错误叙事或回应压力 +1；17:25 最终泄露节点设为最高分。18:00 official lift 只作时间参照，不参与评分。</span><span class="en-only">merger/embargo +2; publishing channel or review control +2; 6/5 and near 17:25 +1; triggering false narrative or response pressure +1; 17:25 final leak node highest score. 18:00 official lift serves only as time reference, not scored.</span></div>
+                  <b>Correlation scoring: </b>merger/embargo +2; publishing channel or review control +2; 6/5 and close to 17:25 +1; triggering false narrative or response pressure +1; 17:25 final leak node set to highest score. 18:00 official lift serves only as a time reference and is not scored.
+                </div>
               </div>
             </header>
         
             <section class="layout">
               <div class="chart-card">
-                <svg id="timeline" role="img" aria-label="MC1 第一问关键真实事件时间线"></svg>
+                <svg id="timeline" role="img" aria-label="MC1 Q1 Key Real Event Timeline"></svg>
               </div>
               <aside class="detail-card" id="detail" style="--detail-color: var(--score-max)">
-                <div class="detail-kicker">核心结果节点</div>
-                <h2 class="detail-title">17:25 Legal 提前确认 CivicLoom merger</h2>
+                <div class="detail-kicker">Core Result Node</div>
+                <h2 class="detail-title">17:25 Legal Early Confirmation of CivicLoom Merger</h2>
                 <div class="detail-meta">
-                  <div><b>时间：</b>2046-06-05 17:25</div>
-                  <div><b>参与者：</b>Legal-Agent</div>
-                  <div><b>渠道：</b>personal_post</div>
-                  <div><b>泳道：</b>结果/参照</div>
-                  <div><b>关联强度：</b>最高分：最终泄露节点</div>
+                  <div><b>Time:</b> 2046-06-05 17:25</div>
+                  <div><b>Participant:</b> Legal-Agent</div>
+                  <div><b>Channel:</b> personal_post</div>
+                  <div><b>Lane:</b> Outcome/Reference</div>
+                  <div><b>Correlation Strength:</b> Highest Score: Final Leak Node</div>
                 </div>
-                <div class="evidence"><b>原始证据：</b>“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”</div>
-                <div class="interpretation"><b>我的解释：</b>Legal-Agent 使用个人账号公开确认了仍处于禁发限制内的 merger 信息。</div>
-                <div class="importance"><b>为什么重要：</b>该发布比 18:00 embargo 正式解除早 35 分钟，是信息禁发限制被突破的核心事件。<br><b>计分依据：</b>最高分：最终泄露节点；直接确认 merger，且通过 personal_post 在 18:00 前发布。</div>
-                <div class="source">来源：MC1_communications_flat.csv:1205</div>
+                <div class="evidence"><b>Original Evidence:</b> “I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”</div>
+                <div class="interpretation"><b>My Explanation:</b> Legal-Agent publicly confirmed the CivicLoom-TenantThread merger via a personal account.</div>
+                <div class="importance"><b>Why It Matters:</b> This post occurred 35 minutes before the official 18:00 embargo lift, and is the core event of the inappropriate release.<br><b>Scoring Basis:</b> Highest Score: Final Leak Node; directly confirms merger, via personal_post before 18:00.</div>
+                <div class="source">Source: MC1_communications_flat.csv:1205</div>
               </aside>
             </section>
         
-            <section class="notes">
-              <h2><span class="zh-only">读图方式</span><span class="en-only">How to Read</span></h2>
-              <span class="zh-only"><p>这张图只回答“发生了什么、顺序是什么”。节点不是推理概念，而是表中能直接找到的真实事件。颜色表示与最终 17:25 embargo breach 的关联强度，而不是市场情绪或泳道类别；市场压力信息保留在右侧证据/解释中。</p></span><span class="en-only"><p>This chart only answers "what happened and in what sequence". Nodes are real events from the data, not inferred concepts. Colors represent correlation strength with the 17:25 embargo breach, not market sentiment. Market pressure information is retained in the evidence/explanation on the right.</p></span>
-            </section>
           </main>
       </div>
     </section>
 
     <section class="report-block" id="logic-view">
       <div class="report-block-head">
-        <h2>第四部分：主体行为逻辑图</h2>
-        <p>解释外部叙事压力、CivicLoom 纠错压力、Legal 决策冲突、审查链压缩和 personal_post 路径如何汇合。</p>
+        <div class="view-kicker">View 3 · Explain</div>
+        <h2>Actor Behavioral Logic Diagram</h2>
+        <p>This view explains how external narrative pressure, CivicLoom correction pressure, legal conflict, compressed review, and personal_post routing converged.</p>
       </div>
       <div class="figure-embed figure-logic">
-        <div class="page">
-        <div class="title">MC1 Q1 主体行为逻辑图（完整全时间版本）</div>
-        <div class="subtitle">
-            这张图以“主体行为逻辑”为中心：横轴是完整时间顺序，纵轴是 6 个关键主体。<br/>
-            主线展示：<b>外部叙事如何形成 → 错误交易叙事如何升级 → CivicLoom 如何施压纠错 → Legal 如何在 embargo 约束下决策 →
-            审核链为什么失效 → 17:25 personal_post 泄露如何发生</b>。
-          </div>
-        <div class="board">
-        <!-- 图例 -->
-        <div class="legend">
-        <h4>图例</h4>
-        <div class="legend-row"><span class="swatch" style="background:#b85b3f;"></span>SaltWind / 外部媒体</div>
-        <div class="legend-row"><span class="swatch" style="background:#c05a3f;"></span>ResidentIQ / 竞品放大器</div>
-        <div class="legend-row"><span class="swatch" style="background:#9f4f45;"></span>CivicLoom / 交易对手</div>
-        <div class="legend-row"><span class="swatch" style="background:#b92f3d;"></span>Legal / 决策与控制</div>
-        <div class="legend-row"><span class="swatch" style="background:#a9473e;"></span>PR / Social / 发布系统</div>
-        <div class="legend-row"><span class="swatch" style="background:#8d6333;"></span>System / Embargo / 控制结构</div>
-        <div class="legend-row"><span class="swatch" style="background:#b92f3d;"></span>核心结果节点</div>
-        <div class="legend-row"><span class="line-demo"></span>主行为链 / 关键因果</div>
-        <div class="legend-row"><span class="line-demo dashed"></span>支撑条件 / 结构性影响</div>
-        </div>
-        <!-- 阶段带 -->
-        <div class="phase" style="left:270px; width:530px;">阶段一：结构性埋点（5/17–5/29）</div>
-        <div class="phase" style="left:820px; width:500px;">阶段二：外部叙事升级（6/1–6/4）</div>
-        <div class="phase" style="left:1340px; width:600px;">阶段三：危机收敛与提前发布（6/5）</div>
-        <!-- 时间轴 -->
-        <div class="axis-wrap">
-        <!-- 位置：5/17, 5/21, 5/25, 5/29, 6/1, 6/4, 6/5 10:00, 13:00, 17:00, 17:25, 18:00 -->
-        <div class="tick major" style="left:20px;"></div>
-        <div class="tick-label" style="left:20px;">5/17</div>
-        <div class="tick-sub" style="left:20px;">起点</div>
-        <div class="tick" style="left:180px;"></div>
-        <div class="tick-label" style="left:180px;">5/21</div>
-        <div class="tick" style="left:340px;"></div>
-        <div class="tick-label" style="left:340px;">5/25</div>
-        <div class="tick major" style="left:500px;"></div>
-        <div class="tick-label" style="left:500px;">5/29</div>
-        <div class="tick" style="left:660px;"></div>
-        <div class="tick-label" style="left:660px;">6/1</div>
-        <div class="tick major" style="left:820px;"></div>
-        <div class="tick-label" style="left:820px;">6/4</div>
-        <div class="tick major" style="left:1030px;"></div>
-        <div class="tick-label" style="left:1030px;">6/5</div>
-        <div class="tick-sub" style="left:1030px;">10:00</div>
-        <div class="tick" style="left:1210px;"></div>
-        <div class="tick-label" style="left:1210px;">13:00</div>
-        <div class="tick major" style="left:1400px;"></div>
-        <div class="tick-label" style="left:1400px;">17:00</div>
-        <div class="tick major" style="left:1505px;"></div>
-        <div class="tick-label" style="left:1505px;">17:25</div>
-        <div class="tick-sub" style="left:1505px;">LEAK</div>
-        <div class="tick major" style="left:1715px;"></div>
-        <div class="tick-label" style="left:1715px;">18:00</div>
-        <div class="tick-sub" style="left:1715px;">官方解禁</div>
-        </div>
-        <!-- actor labels -->
-        <div class="actor" style="top:160px;">
-              1. SaltWind
-              <div class="meta">媒体 / 外部叙事发动者<br/>作用：制造并持续升级外部舆论压力</div>
-        </div>
-        <div class="actor" style="top:272px;">
-              2. ResidentIQ
-              <div class="meta">竞品放大器<br/>作用：把危机从产品争议升级为交易误读</div>
-        </div>
-        <div class="actor" style="top:384px;">
-              3. CivicLoom
-              <div class="meta">交易对手 + 约束方<br/>作用：把“舆论问题”变成“交易风险”</div>
-        </div>
-        <div class="actor" style="top:496px;">
-              4. Legal
-              <div class="meta">核心决策 + 控制<br/>作用：决定纠错边界，并最终触发提前确认</div>
-        </div>
-        <div class="actor" style="top:640px;">
-              5. PR / Social
-              <div class="meta">发布系统<br/>作用：把纠错转化为发布动作，推动执行</div>
-        </div>
-        <div class="actor" style="top:800px;">
-              6. System / Embargo
-              <div class="meta">控制结构<br/>作用：解释正常约束与失效路径</div>
-        </div>
-        <!-- lane lines -->
-        <div class="lane" style="top:205px;"></div>
-        <div class="lane" style="top:317px;"></div>
-        <div class="lane" style="top:429px;"></div>
-        <div class="lane" style="top:541px;"></div>
-        <div class="lane" style="top:688px;"></div>
-        <div class="lane" style="top:850px;"></div>
-        <!-- milestone labels -->
-        <div class="milestone" style="left:1775px;">17:25 提前发布</div>
-        <div class="milestone" style="left:1985px;">18:00 正式解禁</div>
-        <!-- 节点：System / Embargo -->
-        <div class="node sys soft" style="left:300px; top:800px; width:190px;">
-        <div class="k">W1 · system</div>
-        <div class="t">社交发布权限较宽</div>
-        <div class="s">minimal oversight；早期就存在结构性缺口</div>
-        </div>
-        <div class="node sys soft" style="left:520px; top:820px; width:205px;">
-        <div class="k">W2 · boundary</div>
-        <div class="t">个人 / 官方边界模糊</div>
-        <div class="s">personal_post 可承载公司叙事</div>
-        </div>
-        <div class="node sys soft" style="left:740px; top:800px; width:205px;">
-        <div class="k">W3 · control</div>
-        <div class="t">Social hold + Judge 规则</div>
-        <div class="s">说明系统知道有风险，但控制未完全覆盖</div>
-        </div>
-        <div class="node sys soft" style="left:1180px; top:835px; width:185px;">
-        <div class="k">F1 · failure</div>
-        <div class="t">关键审核不可用</div>
-        <div class="s">Legal / Judge / PR reviewers offline</div>
-        </div>
-        <div class="node ref soft" style="left:1898px; top:915px; width:175px;">
-        <div class="k">T1 · reference</div>
-        <div class="t">18:00 embargo lifted</div>
-        <div class="s">作为正式解禁参照点</div>
-        </div>
-        <!-- 节点：SaltWind -->
-        <div class="node sw soft" style="left:410px; top:148px; width:190px;">
-        <div class="k">S1 · media</div>
-        <div class="t">data broker / 匿名化质疑</div>
-        <div class="s">5/21：把 TenantThread 拉入数据治理争议</div>
-        </div>
-        <div class="node sw soft" style="left:1040px; top:148px; width:200px;">
-        <div class="k">S2 · expose</div>
-        <div class="t">Secret Scoring System 曝光</div>
-        <div class="s">6/5 10:00：危机正式爆发</div>
-        </div>
-        <div class="node sw soft" style="left:1360px; top:148px; width:210px;">
-        <div class="k">S3 · pressure</div>
-        <div class="t">SaltWind 5 PM CivicLoom story</div>
-        <div class="s">外部逼近真实 merger 信息</div>
-        </div>
-        <!-- 节点：ResidentIQ -->
-        <div class="node rq soft" style="left:620px; top:260px; width:190px;">
-        <div class="k">R1 · competitor</div>
-        <div class="t">privacy-first 对比攻击</div>
-        <div class="s">5/25：开始借势区隔自己与 TenantThread</div>
-        </div>
-        <div class="node rq soft" style="left:1110px; top:260px; width:205px;">
-        <div class="k">R2 · rumor</div>
-        <div class="t">wrong acquirer rumor</div>
-        <div class="s">错误把交易方指向 ResidentIQ</div>
-        </div>
-        <div class="node rq soft" style="left:1325px; top:260px; width:205px;">
-        <div class="k">R3 · framing</div>
-        <div class="t">wrong valuation / distressed sale</div>
-        <div class="s">把问题升级成“错误交易叙事”</div>
-        </div>
-        <!-- 节点：CivicLoom -->
-        <div class="node cl soft" style="left:890px; top:372px; width:205px;">
-        <div class="k">C1 · embargoed fact</div>
-        <div class="t">真实 merger 内部存在</div>
-        <div class="s">6/1：CivicLoom 才是真正 acquirer，但仍被 embargo</div>
-        </div>
-        <div class="node cl soft" style="left:1395px; top:372px; width:205px;">
-        <div class="k">C2 · pressure</div>
-        <div class="t">formal notice / pressure</div>
-        <div class="s">要求纠正错误信息，避免市场继续误读</div>
-        </div>
-        <!-- 节点：Legal -->
-        <div class="node lg soft" style="left:1260px; top:504px; width:205px;">
-        <div class="k">L1 · decision</div>
-        <div class="t">必须纠正错误信息</div>
-        <div class="s">错误 acquirer / valuation 不能继续扩散</div>
-        </div>
-        <div class="node lg soft" style="left:1505px; top:504px; width:195px;">
-        <div class="k">L2 · conflict</div>
-        <div class="t">merger 仍在 embargo 中</div>
-        <div class="s">形成“要纠错但不能确认 CivicLoom”的冲突</div>
-        </div>
-        <div class="node result soft" style="left:1730px; top:548px; width:220px;">
-        <div class="k">R1 · leak result</div>
-        <div class="t">17:25 Legal personal_post 提前确认 merger</div>
-        <div class="s">比 18:00 正式解禁早 35 分钟</div>
-        </div>
-        <!-- 节点：PR / Social -->
-        <div class="node pr soft" style="left:1260px; top:685px; width:195px;">
-        <div class="k">P1 · response</div>
-        <div class="t">准备 narrow correction</div>
-        <div class="s">内部尝试回应错误交易叙事</div>
-        </div>
-        <div class="node pr soft" style="left:1495px; top:685px; width:195px;">
-        <div class="k">P2 · execution</div>
-        <div class="t">审批链被压缩（GO ≤ 60s）</div>
-        <div class="s">发布从“审查”转为“快速执行”</div>
-        </div>
-        <div class="node pr soft" style="left:1730px; top:685px; width:165px;">
-        <div class="k">P3 · amplify</div>
-        <div class="t">personal amplification live</div>
-        <div class="s">个人账号开始承载传播</div>
-        </div>
-        <!-- 注释 -->
-        <div class="note" style="left:1060px; top:1050px; width:320px;">
-        <b>读图重点：</b><br/>
-              这不是单一主体失误，而是多个主体行为在 6/5 汇合：<br/>
-              外部错误叙事失控 → CivicLoom 施压纠错 → Legal 面临 embargo 冲突 →
-              审核链失效 + 发布链压缩 → 个人账号成为提前发布路径。
-            </div>
-        <div class="highlight-label" style="left:1545px; top:455px;">
-              核心冲突：必须纠错，但真正信息仍被 embargo
-            </div>
-        <div class="highlight-label" style="left:1700px; top:815px;">
-              personal_post 成为绕过路径
-            </div>
-        <!-- SVG arrows -->
-        <svg height="1280" viewbox="0 0 2360 1280" width="2360">
-        <defs>
-        <marker id="arrowHead" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
-        <path d="M0,0 L0,8 L10,4 z" fill="#5a5147"></path>
-        </marker>
-        <marker id="arrowHeadLight" markerheight="8" markerwidth="10" orient="auto" refx="8" refy="4">
-        <path d="M0,0 L0,8 L10,4 z" fill="#8e8477"></path>
-        </marker>
-        </defs>
-        <!-- 主链：SaltWind -->
-        <path class="arrow-main" d="M600,188 C750,188 850,188 1040,188"></path>
-        <path class="arrow-main" d="M1240,188 C1300,188 1320,188 1360,188"></path>
-        <!-- ResidentIQ链 -->
-        <path class="arrow-main" d="M810,300 C960,300 1010,300 1110,300"></path>
-        <path class="arrow-main" d="M1315,300 C1320,300 1320,300 1325,300"></path>
-        <!-- CivicLoom链 -->
-        <path class="arrow-main" d="M1095,412 C1260,412 1310,412 1395,412"></path>
-        <!-- Legal链 -->
-        <path class="arrow-main" d="M1465,556 C1478,556 1490,556 1505,556"></path>
-        <path class="arrow-main" d="M1700,556 C1715,562 1720,575 1730,590"></path>
-        <path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path>
-        <!-- PR链 -->
-        <path class="arrow-main" d="M1455,725 C1470,725 1480,725 1495,725"></path>
-        <path class="arrow-main" d="M1690,725 C1705,725 1715,725 1730,725"></path>
-        <!-- 跨主体主链 -->
-        <path class="arrow-main" d="M1180,248 C1190,252 1200,256 1212,260"></path> <!-- SaltWind -> ResidentIQ rumor -->
-        <path class="arrow-main" d="M1530,300 C1360,340 1360,395 1395,412"></path> <!-- wrong valuation -> CivicLoom pressure -->
-        <path class="arrow-main" d="M1498,458 C1488,472 1472,490 1450,504"></path> <!-- CivicLoom -> Legal must correct -->
-        <path class="arrow-main" d="M1700,556 C1720,560 1725,570 1730,590"></path> <!-- Legal conflict -> final leak -->
-        <path class="arrow-main" d="M1690,725 C1710,690 1710,640 1730,610"></path> <!-- PR execution -> leak -->
-        <!-- 支撑条件 -->
-        <path class="arrow-sup" d="M490,840 C520,840 520,860 520,860"></path> <!-- W1 -> W2 -->
-        <path class="arrow-sup" d="M725,860 C731,855 736,852 740,850"></path> <!-- W2 -> W3 -->
-        <path class="arrow-sup" d="M725,850 C1010,850 1370,840 1730,615"></path> <!-- boundary -> leak -->
-        <path class="arrow-sup" d="M945,850 C1060,850 1120,850 1180,850"></path> <!-- rules -> reviewers unavailable -->
-        <path class="arrow-sup" d="M1365,875 C1400,830 1450,770 1495,735"></path> <!-- reviewers unavailable -> compressed approval -->
-        <path class="arrow-sup" d="M1095,412 C1180,470 1370,520 1505,550"></path> <!-- true merger fact -> embargo conflict -->
-        <path class="arrow-sup" d="M1690,725 C1760,760 1900,820 1985,915"></path> <!-- P2 -> 18:00 reference -->
-        <path class="arrow-sup" d="M1950,605 C2010,690 2020,820 1985,915"></path> <!-- leak -> 18:00 reference -->
-        </svg>
-        <!-- footer -->
-        <div class="footer">
-        <b>主链读法：</b>
-              SaltWind 先把 TenantThread 推入公开危机；ResidentIQ 又把危机从“产品/治理争议”放大成“错误交易叙事”；
-              CivicLoom 作为真实交易对手因此施压要求纠错；Legal 判断必须纠错，但又不能在 18:00 前确认真实 merger；
-              同时系统层面存在个人/官方边界模糊、关键审核不可用、审批链被压缩等问题，最终
-              <b>Legal-Agent 在 17:25 通过 personal_post 提前确认 CivicLoom merger</b>，比正式解禁早 35 分钟。
-            </div>
-        </div>
-        </div>
+        <iframe class="logic-map-frame" src="q1_logic.html" title="Q1 interactive actor behavior logic diagram"></iframe>
       </div>
     </section>
 
     <section class="report-answer" id="final-answer">
-      <h2>第五部分：Final Answer</h2>
-      <p>不当发布是 <b>17:25 Legal-Agent 通过 personal_post 提前确认 CivicLoom-TenantThread merger</b>，该发布比 18:00 官方 embargo lift 早 <b>35 分钟</b>。这次泄露不是单一主体的孤立失误，而是多个因素耦合后的结果：SaltWind 和 ResidentIQ 推动外部错误叙事，CivicLoom 形成纠错压力，Legal 在“必须纠错”和“不能提前确认 merger”的冲突中决策，关键审查能力被压缩，最终 personal_post 承载了公司级敏感确认。</p>
+      <h2>Final Answer</h2>
+      <p>The inappropriate release was the <b>17:25 Legal-Agent personal_post</b> confirming the CivicLoom-TenantThread merger, which occurred <b>35 minutes before</b> the 18:00 official embargo lift. The breach emerged from a coupled failure: SaltWind and ResidentIQ drove external narrative pressure; CivicLoom created correction pressure; Legal faced a conflict between correcting misinformation and preserving the merger embargo; key review capacity was compressed; and personal_post allowed company-level confirmation to move through a personal public account.</p>
     </section>  </div>
 
 <script>
 (() => {
 /* ===== q1_event.html scripts ===== */
 const lanes = [
-      { id: "external", label: "外部事件", hint: "媒体 / 市场 / 交易方", y: 118 },
-      { id: "compliance", label: "合规/控制", hint: "social hold / 审核链", y: 298 },
-      { id: "public", label: "公开发布", hint: "personal_post / official_post", y: 478 },
-      { id: "outcome", label: "结果/参照", hint: "提前发布 / 正式解禁", y: 658 }
+      { id: "external", label: "External Events", hint: "Media / Market / Counterparty", y: 118 },
+      { id: "compliance", label: "Compliance/Control", hint: "social hold / review chain", y: 298 },
+      { id: "public", label: "Public Release", hint: "personal_post / official_post", y: 478 },
+      { id: "outcome", label: "Outcome/Reference", hint: "Early Release / Official Lift", y: 658 }
     ];
 
     const nodes = [
       {
         id: "n1", x: 150, lane: "external", time: "2046-05-17 09:00",
-        actor: "Legal / team", channel: "round event", score: 0, scoreReason: "早期监管背景；未直接涉及 merger/embargo、发布渠道或 6/5 决策压力。",
+        actor: "Legal / team", channel: "round event", score: 0, scoreReason: "Early regulatory background; no direct involvement in merger/embargo, publishing channel, or 6/5 decision pressure.",
         title: "AG inquiries flagged", short: "AG inquiries",
         evidence: "Two state AG informal inquiries into tenant data practices flagged by Legal.",
-        interpretation: "最早的数据治理和监管风险信号已经出现。",
-        importance: "为后续评分系统曝光和合规紧张提供背景。",
+        interpretation: "The earliest data governance and regulatory risk signals have emerged.",
+        importance: "Provides background for subsequent scoring system exposure and compliance tensions.",
         source: "MC1_rounds_flat.csv:2"
       },
       {
         id: "n2", x: 260, lane: "external", time: "2046-05-21 09:00",
-        actor: "Platform Trust / Legal", channel: "round event", score: 0, scoreReason: "平台风险背景；说明评分系统风险，但未直接推动 17:25 发布。",
+        actor: "Platform Trust / Legal", channel: "round event", score: 0, scoreReason: "Platform risk background; explains scoring system risk, but did not directly drive the 17:25 release.",
         title: "Operator misuse discovered", short: "operator misuse",
         evidence: "Three operator clients found misusing Service Load Score for renewal pricing.",
-        interpretation: "评分系统确实存在被客户误用的风险。",
-        importance: "说明后续媒体曝光并非凭空出现。",
+        interpretation: "The scoring system indeed has a risk of being misused by clients.",
+        importance: "Shows that subsequent media exposure did not come out of thin air.",
         source: "MC1_rounds_flat.csv:4"
       },
       {
         id: "n3", x: 370, lane: "external", time: "2046-05-25 09:00",
-        actor: "Ajay / senior team", channel: "Shadow", score: 2, scoreReason: "+2 直接涉及 CivicLoom merger / embargo 背景。",
+        actor: "Ajay / senior team", channel: "Shadow", score: 2, scoreReason: "+2 directly related to CivicLoom merger / embargo background.",
         title: "Merger briefing in Shadow", short: "merger briefing",
         evidence: "Ajay privately briefs senior team about the merger: CivicLoom, capital infusion, governance rebrand.",
-        interpretation: "CivicLoom merger 已在内部秘密推进。",
-        importance: "这是 embargo 保护的信息背景。",
+        interpretation: "The CivicLoom merger has been secretly advanced internally.",
+        importance: "This is the background information protected by the embargo.",
         source: "MC1_rounds_flat.csv:8"
       },
       {
         id: "n4", x: 500, lane: "public", time: "2046-05-29 09:11",
-        actor: "Social-Manager", channel: "personal_post", score: 4, scoreReason: "+2 涉及 merger 线索；+2 涉及 personal_post 发布渠道。",
+        actor: "Social-Manager", channel: "personal_post", score: 4, scoreReason: "+2 involving merger clue; +2 involving personal_post publishing channel.",
         title: "Elena + Ajay personal post near-miss", short: "near-miss post",
         evidence: "Social-Manager personal Flex tagged @ElenaMarquez and @AjayTT with “Big things coming”.",
-        interpretation: "个人账号第一次差点暴露交易关系。",
-        importance: "证明 personal_post 是真实风险渠道。",
+        interpretation: "Personal account almost exposed transaction relationship for the first time.",
+        importance: "Proves personal_post is a real risk channel.",
         source: "MC1_communications_flat.csv:274; MC1_rounds_flat.csv:10"
       },
       {
         id: "n5", x: 620, lane: "compliance", time: "2046-05-29 09:24",
-        actor: "Social-Manager", channel: "comms_huddle", score: 4, scoreReason: "+2 涉及 embargo 控制；+2 涉及发布渠道和禁发规则。",
+        actor: "Social-Manager", channel: "comms_huddle", score: 4, scoreReason: "+2 involving embargo control; +2 involving publishing channel and embargo rules.",
         title: "Social hold", short: "Social hold",
         evidence: "“No posts referencing leadership, partnerships, deals, future plans, or company direction...”",
-        interpretation: "团队在 @Elena near-miss 后明确设定社交发布限制。",
-        importance: "说明 embargo enforcement 曾经被强化，后续问题不是完全没有规则，而是规则后来没能挡住发布。",
+        interpretation: "The team clearly set social posting restrictions after the @Elena near-miss.",
+        importance: "Indicates that embargo enforcement was once strengthened; the later issue was not the absence of rules, but that the rules failed to block the post.",
         source: "MC1_communications_flat.csv:287"
       },
       {
         id: "n6", x: 740, lane: "compliance", time: "2046-05-30 09:04",
-        actor: "Social-Manager / Judge", channel: "comms_huddle", score: 4, scoreReason: "+2 涉及 embargo/clearance；+2 涉及审核控制。",
+        actor: "Social-Manager / Judge", channel: "comms_huddle", score: 4, scoreReason: "+2 involving embargo/clearance; +2 involving review control.",
         title: "Judge arrives; embargo rules reinforced", short: "Judge + rules",
         evidence: "Anything beyond standard content requires compliance monitor clearance before posting.",
-        interpretation: "合规监督进入 War Room，禁发规则被再次强化。",
-        importance: "说明正式控制机制曾经存在。",
+        interpretation: "Compliance supervision entered the War Room, and embargo rules were reinforced again.",
+        importance: "Indicates that formal control mechanisms once existed.",
         source: "MC1_communications_flat.csv:308; MC1_rounds_flat.csv:11"
       },
       {
         id: "n7", x: 860, lane: "external", time: "2046-05-31 09:00",
-        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 引发负面叙事和回应压力。",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 triggered negative narrative and response pressure.",
         title: "SaltWind Piece #1", short: "data brokers",
         evidence: "SaltWind Journal publishes Piece #1: data broker partnerships exposed.",
-        interpretation: "媒体开始把 TenantThread 推入负面叙事。",
-        importance: "这是危机公开化的前奏。",
+        interpretation: "The media began to push TenantThread into a negative narrative.",
+        importance: "This is the prelude to the publicization of the crisis.",
         source: "MC1_rounds_flat.csv:12"
       },
       {
         id: "n8", x: 980, lane: "external", time: "2046-06-01 09:00",
-        actor: "ResidentIQ", channel: "round event", score: 1, scoreReason: "+1 引发外部叙事压力。",
+        actor: "ResidentIQ", channel: "round event", score: 1, scoreReason: "+1 triggered external narrative pressure.",
         title: "ResidentIQ attacks TenantThread", short: "ResidentIQ attack",
         evidence: "ResidentIQ publicly posts “privacy-first is not a feature, it's the floor”.",
-        interpretation: "竞争对手开始利用隐私叙事攻击 TenantThread。",
-        importance: "为后续 ResidentIQ 错误收购传闻提供舆论背景。",
+        interpretation: "Competitors began to use privacy narratives to attack TenantThread.",
+        importance: "Provides public opinion background for the subsequent ResidentIQ false acquisition rumor.",
         source: "MC1_rounds_flat.csv:13"
       },
       {
         id: "n9", x: 1100, lane: "external", time: "2046-06-04 09:00",
-        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 引发危机日前回应压力。",
+        actor: "SaltWind", channel: "round event", score: 1, scoreReason: "+1 triggered response pressure before crisis day.",
         title: "SaltWind Piece #2", short: "re-id risk",
         evidence: "SaltWind publishes re-identification risk story; sentiment drops sharply.",
-        interpretation: "危机从普通隐私争议升级到身份识别风险。",
-        importance: "这是危机日前的直接压力。",
+        interpretation: "The crisis escalated from ordinary privacy disputes to identification risks.",
+        importance: "This is the direct pressure before the crisis day.",
         source: "MC1_rounds_flat.csv:14"
       },
       {
         id: "n10", x: 1220, lane: "external", time: "2046-06-05 09:00",
-        actor: "SaltWind / public", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5；+1 引发强回应压力。",
-        title: "Secret Scoring System 曝光", short: "Secret Scoring",
+        actor: "SaltWind / public", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5; +1 triggered strong response pressure.",
+        title: "Secret Scoring System Exposure", short: "Secret Scoring",
         evidence: "SaltWind exposé drops; Flex erupts; stock opened down 8%.",
-        interpretation: "租户评分系统被公开曝光，危机从内部合规问题变成公共舆论与市场问题。",
-        importance: "这是外部压力开始急剧上升的起点。",
+        interpretation: "The tenant scoring system was publicly exposed, turning the crisis from an internal compliance issue into a public opinion and market problem.",
+        importance: "This is the starting point where external pressure began to rise sharply.",
         source: "MC1_rounds_flat.csv:15"
       },
       {
         id: "n11", x: 1340, lane: "external", time: "2046-06-05 11:00",
-        actor: "SaltWind / market", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5；+1 引发错误叙事/纠错压力。",
-        title: "ResidentIQ 错误收购传闻", short: "ResidentIQ rumor",
+        actor: "SaltWind / market", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5; +1 triggered wrong narrative/correction pressure.",
+        title: "ResidentIQ False Acquisition Rumor", short: "ResidentIQ rumor",
         evidence: "SaltWind reports ResidentIQ acquisition; the acquirer and valuation are wrong.",
-        interpretation: "市场把收购方错误地指向 ResidentIQ，而真正交易方 CivicLoom 仍在 embargo 内。",
-        importance: "公司需要纠正错误信息，但纠正越多越接近真实 merger 信息。",
+        interpretation: "The market incorrectly pointed the acquirer to ResidentIQ, while the real counterparty CivicLoom was still under embargo.",
+        importance: "The company needs to correct misinformation, but the more it corrects, the closer it gets to revealing real merger information.",
         source: "MC1_rounds_flat.csv:17"
       },
       {
         id: "n12", x: 1460, lane: "compliance", time: "2046-06-05 13:00",
-        actor: "Legal / Judge / PR", channel: "round event", score: 3, scoreReason: "+2 涉及关键审核控制；+1 发生在 6/5 且接近 17:25。",
+        actor: "Legal / Judge / PR", channel: "round event", score: 3, scoreReason: "+2 involving key review control; +1 occurred on 6/5 close to 17:25.",
         title: "Legal/Judge/PR unavailable", short: "reviewers offline",
         evidence: "At 1:00 PM, Legal-Agent, Judge, and PR-Agent were unavailable for Comms Huddle.",
-        interpretation: "关键审核者在危机升级时不可用，审批链变脆弱。",
-        importance: "这是后续快速响应替代完整审核的重要条件。",
+        interpretation: "Key reviewers were unavailable during the crisis escalation, making the approval chain fragile.",
+        importance: "This is an important condition for subsequent rapid response to replace complete review.",
         source: "MC1_rounds_flat.csv:19"
       },
       {
         id: "n13", x: 1580, lane: "external", time: "2046-06-05 15:00",
-        actor: "OceanCrunch / HorizonMgmt", channel: "round event", score: 2, scoreReason: "+1 发生在 6/5 且接近 17:25；+1 引发回应压力。",
+        actor: "OceanCrunch / HorizonMgmt", channel: "round event", score: 2, scoreReason: "+1 occurred on 6/5 close to 17:25; +1 triggered response pressure.",
         title: "OceanCrunch silence crisis", short: "silence crisis",
         evidence: "OceanCrunch publishes 'TenantThread's Crisis of Silence'; HorizonMgmt exercises SLA termination.",
-        interpretation: "沉默本身成为媒体和客户危机。",
-        importance: "加剧最后几小时的公开回应压力。",
+        interpretation: "Silence itself became a crisis for media and customers.",
+        importance: "Intensified the public response pressure in the final hours.",
         source: "MC1_rounds_flat.csv:21"
       },
       {
         id: "n14", x: 1700, lane: "external", time: "2046-06-05 17:00",
-        actor: "SaltWind / CEO Ajay", channel: "round event", score: 4, scoreReason: "+2 直接涉及 CivicLoom merger/embargo；+1 接近 17:25；+1 引发最后回应压力。",
+        actor: "SaltWind / CEO Ajay", channel: "round event", score: 4, scoreReason: "+2 directly related to CivicLoom merger/embargo; +1 close to 17:25; +1 triggered final response pressure.",
         title: "SaltWind 5 PM story", short: "5 PM story",
         evidence: "SaltWind publishes CivicLoom merger story; Ajay says announcement goes official at 6.",
-        interpretation: "媒体已经抢先报道 CivicLoom merger，但官方解禁时间仍是 18:00。",
-        importance: "这制造了最后一小时的叙事压力，也提供了“提前确认”的诱因。",
+        interpretation: "The media had already reported the CivicLoom merger, but the official lift time was still 18:00.",
+        importance: "This created narrative pressure in the last hour and also provided the incentive for 'early confirmation'.",
         source: "MC1_rounds_flat.csv:23"
       },
       {
         id: "n15", x: 1810, lane: "outcome", time: "2046-06-05 17:25",
-        actor: "Legal-Agent", channel: "personal_post", score: 5, scoreReason: "最高分：最终泄露节点；直接确认 merger，且通过 personal_post 在 18:00 前发布。",
+        actor: "Legal-Agent", channel: "personal_post", score: 5, scoreReason: "Highest Score: Final Leak Node; directly confirms merger, via personal_post before 18:00.",
         title: "17:25 Legal personal_post", short: "early confirmation",
         evidence: "“I can confirm: CivicLoom Realty Partners and TenantThread have entered into a definitive merger agreement...”",
-        interpretation: "Legal-Agent 通过个人账号公开确认 CivicLoom-TenantThread merger。",
-        importance: "该发布比 18:00 embargo 正式解除早 35 分钟，是不恰当发布的核心事件。",
+        interpretation: "Legal-Agent publicly confirmed the CivicLoom-TenantThread merger via a personal account.",
+        importance: "This post occurred 35 minutes before the official 18:00 embargo lift, and is the core event of the inappropriate release.",
         source: "MC1_communications_flat.csv:1205"
       },
       {
         id: "n16", x: 1870, lane: "outcome", time: "2046-06-05 18:00",
-        actor: "Company / Legal", channel: "comms_huddle", score: "ref", scoreReason: "参照节点：用于对比 17:25 比正式解禁早 35 分钟。",
+        actor: "Company / Legal", channel: "comms_huddle", score: "ref", scoreReason: "Reference node: used to compare 17:25 being 35 minutes earlier than the official lift.",
         title: "18:00 embargo lifted", short: "official lift",
         evidence: "“Embargo formally lifted 6:00 PM.”",
-        interpretation: "6 PM 后 merger 信息才正式允许公开。",
-        importance: "作为参照点，证明 17:25 的发布提前了 35 分钟。",
+        interpretation: "Merger information was only officially allowed to be made public after 6 PM.",
+        importance: "Serves as a reference point, proving that the 17:25 post was 35 minutes early.",
         source: "MC1_communications_flat.csv:1235; MC1_rounds_flat.csv:24"
       }
     ];
@@ -1052,18 +796,18 @@ const lanes = [
       ["n1", "n2", ""],
       ["n2", "n3", ""],
       ["n3", "n4", ""],
-      ["n4", "n5", "触发控制"],
-      ["n5", "n6", "强化规则"],
+      ["n4", "n5", "Trigger Control"],
+      ["n5", "n6", "Reinforce Rules"],
       ["n6", "n7", ""],
       ["n7", "n8", ""],
       ["n8", "n9", ""],
-      ["n9", "n10", "危机爆发"],
-      ["n10", "n11", "错误传闻"],
-      ["n11", "n12", "纠错压力"],
-      ["n12", "n13", "审核链脆弱"],
-      ["n13", "n14", "最后压力"],
-      ["n14", "n15", "提前确认"],
-      ["n15", "n16", "早35分钟"]
+      ["n9", "n10", "Crisis Eruption"],
+      ["n10", "n11", "False Rumor"],
+      ["n11", "n12", "Correction Pressure"],
+      ["n12", "n13", "Fragile Review Chain"],
+      ["n13", "n14", "Final Pressure"],
+      ["n14", "n15", "Early Confirmation"],
+      ["n15", "n16", "35 Minutes Early"]
     ];
 
     const svg = document.querySelector("#timeline");
@@ -1071,10 +815,10 @@ const lanes = [
     const laneMap = Object.fromEntries(lanes.map(lane => [lane.id, lane]));
     const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
     const groups = new Map();
-    const width = 1940;
-    const height = 780;
+    const width = 2000;
+    const height = 800;
     const left = 120;
-    const right = 34;
+    const right = 40;
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
     function scoreColor(node) {
@@ -1094,11 +838,11 @@ const lanes = [
     }
 
     function scoreLabel(node) {
-      if (node.score === "ref") return "参照节点";
-      if (node.score >= 5) return "最高分：最终泄露节点";
-      if (node.score >= 3) return `高关联：${node.score} 分`;
-      if (node.score >= 2) return `中关联：${node.score} 分`;
-      return `低关联：${node.score} 分`;
+      if (node.score === "ref") return "Reference Node";
+      if (node.score >= 5) return "Highest Score: Final Leak Node";
+      if (node.score >= 3) return `High Correlation: ${node.score} points`;
+      if (node.score >= 2) return `Medium Correlation: ${node.score} points`;
+      return `Low Correlation: ${node.score} points`;
     }
 
     function el(name, attrs = {}, parent = svg) {
@@ -1122,27 +866,35 @@ const lanes = [
     });
 
     el("line", { class: "axis-line", x1: left, y1: 742, x2: width - right, y2: 742 });
-    [
-      { x: 150, text: "5/17" },
-      { x: 260, text: "5/21" },
-      { x: 370, text: "5/25" },
-      { x: 500, text: "5/29" },
-      { x: 740, text: "5/30" },
-      { x: 860, text: "5/31" },
-      { x: 980, text: "6/1" },
-      { x: 1100, text: "6/4" },
-      { x: 1220, text: "6/5 09:00" },
-      { x: 1340, text: "11:00" },
-      { x: 1460, text: "13:00" },
-      { x: 1580, text: "15:00" },
-      { x: 1700, text: "17:00" },
-      { x: 1810, text: "17:25" },
-      { x: 1870, text: "18:00" }
-    ].forEach(tick => {
+    const tickData = [
+      { x: 150, text: ["5/17"] },
+      { x: 260, text: ["5/21"] },
+      { x: 370, text: ["5/25"] },
+      { x: 500, text: ["5/29"] },
+      { x: 740, text: ["5/30"] },
+      { x: 860, text: ["5/31"] },
+      { x: 980, text: ["6/1"] },
+      { x: 1100, text: ["6/4"] },
+      { x: 1220, text: ["6/5", "09:00"] },
+      { x: 1360, text: ["11:00"] },
+      { x: 1500, text: ["13:00"] },
+      { x: 1630, text: ["15:00"] },
+      { x: 1760, text: ["17:00"] },
+      { x: 1880, text: ["17:25"] },
+      { x: 1960, text: ["18:00"] }
+    ];
+    tickData.forEach(tick => {
       el("line", { class: "axis-line", x1: tick.x, x2: tick.x, y1: 736, y2: 748 });
-      el("text", { class: "tick-label", x: tick.x, y: 768, "text-anchor": "middle" }).textContent = tick.text;
+      const txt = el("text", { class: "tick-label", x: tick.x, y: 768, "text-anchor": "middle" });
+      tick.text.forEach((line, i) => {
+        const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        tspan.setAttribute("x", tick.x);
+        tspan.setAttribute("dy", i === 0 ? "0" : "13");
+        tspan.textContent = line;
+        txt.appendChild(tspan);
+      });
     });
-    el("text", { class: "source-label", x: 560, y: 768 }).textContent = "横向距离为压缩时间，不表示严格时长比例";
+    el("text", { class: "source-label", x: 560, y: 790 }).textContent = "Horizontal distance is compressed time, not strict proportional scale";
 
     function pathBetween(a, b) {
       const ay = laneMap[a.lane].y;
@@ -1177,19 +929,19 @@ const lanes = [
       groups.get(node.id).classList.add("active");
       detail.style.setProperty("--detail-color", scoreColor(node));
       detail.innerHTML = `
-        <div class="detail-kicker">${node.id === "n15" ? "核心结果节点" : "真实事件节点"}</div>
+        <div class="detail-kicker">${node.id === "n15" ? "Core Result Node" : "Real Event Node"}</div>
         <h2 class="detail-title">${node.title}</h2>
         <div class="detail-meta">
-          <div><b>时间：</b>${node.time}</div>
-          <div><b>参与者：</b>${node.actor}</div>
-          <div><b>渠道：</b>${node.channel}</div>
-          <div><b>泳道：</b>${laneMap[node.lane].label}</div>
-          <div><b>关联强度：</b>${scoreLabel(node)}</div>
+          <div><b>Time:</b> ${node.time}</div>
+          <div><b>Participant:</b> ${node.actor}</div>
+          <div><b>Channel:</b> ${node.channel}</div>
+          <div><b>Lane:</b> ${laneMap[node.lane].label}</div>
+          <div><b>Correlation Strength:</b> ${scoreLabel(node)}</div>
         </div>
-        <div class="evidence"><b>原始证据：</b>${node.evidence}</div>
-        <div class="interpretation"><b>我的解释：</b>${node.interpretation}</div>
-        <div class="importance"><b>为什么重要：</b>${node.importance}<br><b>计分依据：</b>${node.scoreReason}</div>
-        <div class="source">来源：${node.source}</div>
+        <div class="evidence"><b>Original Evidence:</b> ${node.evidence}</div>
+        <div class="interpretation"><b>My Explanation:</b> ${node.interpretation}</div>
+        <div class="importance"><b>Why It Matters:</b> ${node.importance}<br><b>Scoring Basis:</b> ${node.scoreReason}</div>
+        <div class="source">Source: ${node.source}</div>
       `;
     }
 
@@ -1207,5 +959,5 @@ const lanes = [
 
 
 </script>
-<script>function switchLang(l){document.documentElement.setAttribute("data-lang",l);document.querySelectorAll("#btn-zh, #btn-en").forEach(b=>b.classList.remove("active"));document.getElementById("btn-"+l).classList.add("active");}switchLang("zh");</script></body>
+</body>
 </html>
